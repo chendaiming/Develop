@@ -1,0 +1,102 @@
+<!-- RFID基站设备管理 -->
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class=" left-con vbox">
+				<div class="input icon" >
+				  	<input id="input" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				 <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+
+		<div class="hz-col-9 right-con">
+			<form class="form-horizontal">
+				<div class="form-group ">
+			        <label class="col-sm-2 control-label">所属区域</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled="true" v-model="station['rbd_area']" placeholder="请选择所属区域">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">所属部门</label>
+			        <div class="col-sm-8">
+			            <div class="input-group">
+			            	<input type="text" class="form-control" id="dep"  disabled="true" v-model="station['rbd_dept']"  placeholder="请选择所属部门">
+							<div class="input-group-btn">
+								<button type="button"  class="btn btn-default" >所属部门<span class="caret"></span></button>
+							</div>
+						</div>
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-2 control-label">基站名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="station['name']" placeholder="请输入基站名称">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">厂商唯一编号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="station['rbd_other_id']" maxlength="25" placeholder="请输入厂商唯一编号">
+			        </div>
+			    </div>
+			    <div class="form-group">
+				    <label class="col-sm-2 control-label" >基站品牌</label>
+				    <div class="col-sm-8">
+					  		<hz-select 
+					  			tip="请选择基站品牌" 
+					  			code="RBD_BRAND"
+					  			:id.sync="station['rbd_brand']"
+					  		/>
+				    </div>
+				 </div>
+				 <div class="form-group ">
+			        <label class="col-sm-2 control-label">IP地址</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="station['rbd_ip']" placeholder="请输入IP地址">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">端口</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="station['rbd_port']" placeholder="请输入端口">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">安装位置</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="station['rbd_dvc_addrs']" maxlength="85" placeholder="请输入安装位置">
+			        </div>
+			    </div>
+			    <div class="form-group">
+				    <label class="col-sm-2 control-label" >状态</label>
+				    <div class="col-sm-8">
+					  		<hz-select 
+					  			tip="请选择状态" 
+					  			code="RBD_STTS"
+					  			:id.sync="station['rbd_stts']"
+					  		/>
+				    </div>
+				 </div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/rfid/rfidMng"]);
+</script>

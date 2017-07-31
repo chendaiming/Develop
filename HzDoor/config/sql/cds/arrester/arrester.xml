@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="update_car_arrester_use_state" desc="更新阻车器的使用状态">
+		<sql>
+			UPDATE dvc_car_arrester_info
+			   SET cai_updt_time = SYSDATE, 
+			       cai_use_stts = :device_status
+			 WHERE cai_cus_number = :cusNumber
+			   AND cai_id = :device_id
+		</sql>
+	</item>
+	<item id="delete_arrester">
+		<sql>
+			DELETE FROM dvc_car_arrester_info
+			WHERE cai_id=:cai_id
+		</sql>
+	</item>
+	<item id="update_arrester" desc="更新阻车器信息">
+		<sql>
+			UPDATE dvc_car_arrester_info
+			SET
+			cai_id = :cai_id,
+			cai_other_id = :cai_other_id,
+			cai_name = :cai_name,
+			cai_brand = :cai_brand,
+			cai_type = :cai_type,
+			cai_ip = :cai_ip,
+			cai_port = :cai_port,
+			cai_dept_id = :cai_dept_id,
+			cai_area_id = :cai_area_id,
+			cai_work_stts = :cai_work_stts,
+			cai_use_stts = :cai_use_stts,
+			cai_seq = :cai_seq,
+			cai_addrs = :cai_addrs,
+			cai_updt_time = SYSDATE,
+			cai_updt_user_id = :userid
+			WHERE
+			cai_id          =:cai_id
+		</sql>
+	</item>
+	<item id="insert_arrester" desc="新增阻车器信息">
+		<seq>dvc_car_arrester_info@cai_id</seq>
+		<sql>
+			insert into dvc_car_arrester_info
+			(cai_cus_number,
+			cai_id,
+			cai_other_id,
+			cai_name,
+			cai_brand,
+			cai_type,
+			cai_ip,
+			cai_port,
+			cai_dept_id,
+			cai_area_id,
+			cai_addrs,
+			cai_work_stts,
+			cai_use_stts,
+			cai_seq,
+			cai_crte_time,
+			cai_crte_user_id,
+			cai_updt_time,
+			cai_updt_user_id)
+			values
+			(:cus,
+			:cai_id,
+			:cai_other_id,
+			:cai_name,
+			:cai_brand,
+			:cai_type,
+			:cai_ip,
+			:cai_port,
+			:cai_dept_id,
+			:cai_area_id,
+			:cai_addrs,
+			:cai_work_stts,
+			:cai_use_stts,
+			:cai_seq,
+			SYSDATE,
+			:userid,
+			SYSDATE,
+			:userid)
+		</sql>
+	</item>
+	<item id="query_car_arrester_tree" desc="查询阻车器的信息">
+		<sql>
+			SELECT '1-' || odd_id id,
+			'1-' || odd_parent_id pid,
+			odd_id gid,
+			odd_name name,
+			'org.png' icon,
+			odd_id org,
+			odd_id cus,
+			'-1' type,
+			odd_seq seq
+			FROM sys_org_dept_dtls
+			WHERE level &lt; :type
+			START WITH odd_id = :org
+			CONNECT BY PRIOR odd_id = odd_parent_id
+			UNION ALL
+			SELECT id,
+			pid,
+			gid,
+			name,
+			icon,
+			org,
+			cus,
+			type,
+			seq
+			FROM (SELECT '' || cai_id id,
+			'1-' || cai_area_id pid,
+			cai_area_id gid,
+			cai_name name,
+			'alarm.png' icon,
+			cai_cus_number org,
+			cai_cus_number cus,
+			'1' type,
+			cai_seq seq
+			FROM dvc_car_arrester_info
+			UNION ALL
+			SELECT '1-' || abd_area_id id,
+			'1-' || abd_parent_id pid,
+			abd_area_id gid,
+			abd_area_name name,
+			'area.png' icon,
+			abd_cus_number org,
+			abd_cus_number cus,
+			'0' type,
+			abd_seq seq
+			FROM com_area_base_dtls) t
+		</sql>
+	</item>
+	<item id="query_arrester_by_node" desc="根据树查询节点信息">
+		<sql>
+			select   cai_id,
+		             cai_other_id,
+		             cai_name,
+		             cai_brand,
+		             cai_type,
+		             cai_ip,
+		             cai_port,
+		             cai_dept_id,
+		             cai_area_id,
+		             cai_addrs,
+		             cai_work_stts,
+		             cai_use_stts,
+		             cai_seq
+	         from dvc_car_arrester_info
+	      
+	         WHERE cai_id = :cai_id
+	         AND cai_cus_number = :cai_cus_number
+		</sql>
+	</item>
+</sqlItem>

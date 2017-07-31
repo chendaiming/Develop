@@ -1,0 +1,112 @@
+
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<div class="vbox box-con" id="handFlowBody">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				<ul class="hz-col-1 list-group" style="cursor:pointer;margin-top:15px;border:1px solid #1e689d" id="handFlowList">
+					<template v-if="list.length > 0">
+					  	<li class="list-group-item" v-bind:class="{'active':$index == 0}" v-cloak v-for="item in list" @click="refresh(item,this)" >
+					  		{{item.hfm_flow_name}}
+				  		</li>
+				  	</template>
+				  	<template v-else>
+				  		<li class="list-group-item" style="text-align: center">
+					  		暂无数据
+				  		</li>
+				  	</template>
+				</ul>
+			</div>
+
+			<div style="height:20px" id="handleFlowGroupBtn">
+				<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_mini" ><i class="btn_icon icon_edit"></i><span>编辑</span></a>
+				<a class="hbtn btn_primary btn_mini" ><i class="btn_icon icon_del"></i><span>删除</span></a>
+			</div>
+		</div>
+		
+		<div class="hz-col-9 right-con">
+	       	<table id="table" ></table>
+		</div>
+	</div>
+	
+	<div class="bottom" >
+		<div class="buttons" id="handleFlowItemGroupBtn">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_large" ><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div> 
+	
+	<!-- 增加/修改 处置流程项 -->
+	<div class="vbox hz-col-1" id="updateHandleFlowItem" style="display:none;">
+		<div class="hz-col-9">
+			<form class="form-horizontal"  style="margin-top:20px;overflow-x: hidden;">
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">流程项名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="30" disalbled=true v-model="handleFlow.hfd_flow_item_name" placeholder="请输入流程项名称">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">流程项序号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="3" v-model="handleFlow.hfd_flow_order" placeholder="请输入流程项序号">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div class="hz-col-1">
+		    <a class="hbtn btn_primary btn_mini pull-right" id="saveHandleFlowItem"  style="margin-right:20px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+	
+	<!-- 增加/修改 处置流程 -->
+	<div class="vbox hz-col-1" id="updateHandleFlow" style="display:none;">
+		<div class="hz-col-9">
+			<form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+		
+		    	<div class="form-group ">
+			        <label class="col-sm-3 control-label">流程名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="15"  v-model="handleFlow.hfm_flow_name" placeholder="请输入流程名称">
+			        </div>
+			    </div>
+			    
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">流程类型</label>
+			        <div class="col-sm-8">
+			            <hz-select
+			            	tip="请选择流程类型"
+			            	code="HANDLE_FLOW_TYPE"
+			            	:id.sync="handleFlow.hfm_type_indc"
+			            />
+			        </div>
+			    </div>
+			    
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">流程序号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="handleFlow.hfm_show_seq" placeholder="请输入排列顺序">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		 <div class="hz-col-1">
+			 <a class="hbtn btn_primary btn_mini pull-right" id="saveHandleFlow" style="margin-right:15px;margin-bottom:10px">
+			  	<i class="btn_icon icon_save"></i>
+			  	<span>保存</span>
+		 	</a>
+		 </div>	
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(['hz/cds/alarm/alarmHandleFlow'])
+</script>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_opr_record_bydate" desc="查询门禁操作日志">
+		<const key="type">DAL_ACTION_TYPE</const>
+		<sql>
+			SELECT 
+				 dal_door_id  door,
+				 dal_user_id  plc,
+				 dal_action_type  type,
+				 to_char(dal_action_time,'yyyy-mm-dd hh24:mm:ss')  time
+			FROM
+				dor_door_action_log  	
+			WHERE	
+				dal_cus_number=:cus
+		</sql>
+		<WHERE id="0">
+			AND 	
+				dal_door_id=:doorId
+		</WHERE>
+		<order id="0">
+			ORDER BY
+				dal_action_time
+		</order>
+	</item>
+	<item id="select_record_type" desc="操作类型">
+		<const key="type">DAL_ACTION_TYPE</const>
+		<sql>
+			SELECT	
+				COUNT(dal_door_id) value,
+				dal_action_type	   name
+			FROM
+				dor_door_action_log
+			WHERE
+				dal_cus_number=:cus
+		</sql>
+		<where id="0">
+			AND
+				AND 	
+				dal_door_id=:doorId
+		</where>
+		<order id="0">
+			GROUP BY dal_action_type
+		</order>
+	</item>
+	<item id="insert_into_door_log" desc="门禁操作日志">
+		<seq>dor_door_action_log@dal_log_id</seq>
+		<sql>
+			INSERT INTO 
+				dor_door_action_log
+				(
+				   dal_cus_number      ,
+				   dal_log_id          ,
+				   dal_door_id         ,
+				   dal_user_id         ,
+				   dal_action_type     ,
+				   dal_action_time     ,
+				)
+			VALUES(
+				   :cus,
+				   :dal_log_id,
+				   :doorId,
+				   :user,
+				   :type,
+				   SYSDATE
+			)
+		</sql>
+	</item>
+</sqlItem>
+ 

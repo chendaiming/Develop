@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_constant_bycode" desc="查询常量值">
+		<sql>
+			SELECT 
+				ccd_key as "id",
+				ccd_value as "name" 
+			FROM sys_constant_code_dtls 
+		</sql>
+		<where id="0">
+			 WHERE ccd_type_id=?
+			 ORDER BY ccd_seq 
+		</where>
+    </item>
+    <item id="query_const_group" desc="常量组查询">
+    	<sql>
+			SELECT 	
+				ctd_type_id,
+				ctd_type_name,
+				ctd_type_seq
+			FROM 	
+				sys_constant_type_dtls
+		</sql>
+		<where id="0">
+			WHERE
+				ctd_type_id=:ctd_type_id
+			ORDER By 	
+				ctd_type_seq
+		</where>
+	</item>
+
+	<item id="insert_const_group" desc="常量组新增">
+		<sql>
+			INSERT INTO
+				sys_constant_type_dtls
+				(
+					ctd_type_id,
+					ctd_type_name
+		
+				)
+			VALUES(
+					:ctd_type_id,
+					:ctd_type_name
+		
+				)
+		</sql>
+	</item>
+	<item id="update_const_group" desc="常量组更新">
+		<sql>
+			UPDATE
+				sys_constant_type_dtls
+			SET
+				ctd_type_id=:ctd_type_id,
+				ctd_type_name=:ctd_type_name,
+				ctd_type_seq=:ctd_type_seq
+			WHERE
+				ctd_type_id=:ctd_type_code
+		</sql>
+	</item>
+	<item id="delete_const_group" desc="常量组删除">
+		<sql>
+			DELETE from 
+				sys_constant_type_dtls
+			WHERE	
+				ctd_type_id=:ctd_type_id
+		</sql>
+	</item>
+    <item id="query_const_const" desc="常量查询">
+		<sql>
+			SELECT 
+           			ccd_key,
+				    ccd_value,
+				    ccd_seq,
+				    ccd_type_id
+			FROM 	
+					sys_constant_code_dtls
+		</sql>
+		<where id="0">
+			WHERE ccd_type_id = :ccd_type_id
+		</where>
+		<where id="1">
+		    WHERE ccd_type_id = :ccd_type_id 
+		      AND ccd_value like concat('%',concat(:ccd_value,'%'))
+		</where>
+		<order id="0">
+			ORDER BY  ccd_seq
+		</order>
+    </item>
+    <item id="insert_const_const" desc="常量新增">
+		<sql>
+			INSERT INTO
+				 sys_constant_code_dtls
+				 (
+				 	ccd_type_id,
+				 	ccd_key,
+				 	ccd_value,
+				 	ccd_seq,
+				 	ccd_crte_user_id,
+				 	ccd_crte_time
+				 )
+			values
+				(
+					:ctd_type_id,
+				 	:ccd_key,
+				 	:ccd_value,
+				 	:ccd_seq,
+				 	:ccd_crte_user_id,
+					sysdate 
+				)
+		</sql>
+    </item>
+    <item id="delete_const_const" desc="常量删除">
+		<sql>
+			DELETE FROM 
+				sys_constant_code_dtls
+		<where id="0">
+			WHERE 
+				ccd_type_id=:ccd_type_id
+			and				
+				ccd_key=:ccd_key
+		</where>
+		<where id="1">
+			where 
+				ccd_type_id=:ctd_type_id
+		</where>
+		</sql>
+   </item>
+   <item id="update_const_const" desc="常量修改">
+		<sql>
+			UPDATE 
+				sys_constant_code_dtls
+			SET 	
+					ccd_key=:ccd_key,
+	         		ccd_value=:ccd_value,
+	         		ccd_seq	=:ccd_seq,
+	         		ccd_updt_user_id=:ccd_seq,
+	         		ccd_updt_time=sysdate
+			WHERE 
+				ccd_type_id=:ctd_type_id
+			AND
+				ccd_key=:key
+		</sql>
+   </item>
+   
+   <item id="update_const_group_const">
+   		<sql>
+   			UPDATE
+   				sys_constant_code_dtls
+   			SET
+   				ccd_type_id=:ctd_type_id
+   			WHERE
+   				ccd_type_id=:ctd_type_code
+   		</sql>
+   </item>
+</sqlItem>

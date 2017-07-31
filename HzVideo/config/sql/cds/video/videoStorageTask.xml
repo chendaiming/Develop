@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_alarm_record_dtls" desc="查询当天摄像机报警(视频分析报警)及其他事件关联摄像机报警记录">
+		<sql>
+			SELECT 
+				ard_record_id as record_id,
+				ldr_dvc_id as alertor_id,
+				ard_dvc_type as dvc_type,
+				TO_CHAR(ard_alert_time,'YYYY-MM-DD HH24:MI:SS') alert_time,
+				TO_CHAR(ard_oprtn_finish_time,'YYYY-MM-DD HH24:MI:SS') oprtn_finish_time,
+				TO_CHAR(ard_alert_date,'YYYYMMDD') as alert_date,
+				cbd_name as dvc_name,
+				vel_event_name as event_name,
+				vel_storage_addr as storage_addr,
+				vel_before_time as before_time,
+				vel_after_time as after_time
+			FROM
+				ALT_ALERT_RECORD_DTLS
+			INNER JOIN 
+				ALT_LINK_DVC_RLTN ON ard_alertor_id = ldr_alertor_id and ldr_dvc_type = 1
+			INNER JOIN 
+				CMR_VIDEO_STORAGE_DTLS on ard_dvc_type = vel_event_id
+			INNER JOIN 
+				CMR_CAMERA_BASE_DTLS on ldr_dvc_id = cbd_id
+			WHERE  
+				ARD_ALERT_DATE=TRUNC(SYSDATE)
+			UNION ALL
+			SELECT 
+				ard_record_id as record_id,
+				ard_alertor_id as alertor_id,
+				ard_dvc_type as dvc_type,
+				TO_CHAR(ard_alert_time,'YYYY-MM-DD HH24:MI:SS') alert_time,
+				TO_CHAR(ard_oprtn_finish_time,'YYYY-MM-DD HH24:MI:SS') oprtn_finish_time,
+				TO_CHAR(ard_alert_date,'YYYYMMDD') as alert_date,
+				cbd_name as dvc_name,
+				vel_event_name as event_name,
+				vel_storage_addr as storage_addr,
+				vel_before_time as before_time,
+				vel_after_time as after_time
+			FROM
+				ALT_ALERT_RECORD_DTLS
+			INNER JOIN 
+				CMR_VIDEO_STORAGE_DTLS on ard_dvc_type = vel_event_id
+			INNER JOIN 
+				CMR_CAMERA_BASE_DTLS on ard_alertor_id = cbd_id
+			WHERE 
+				ard_alert_date = TRUNC(SYSDATE)
+				AND
+				ard_dvc_type = 1
+		</sql>
+	</item>
+	
+	<item id="select_flighttalk_call_record" desc="查询受虐对讲记录-呼叫方">
+		<sql>
+			SELECT 
+				frd_fighttalk_id as record_id,
+				ldr_dvc_id as dvc_id,
+				frd_call_talk_name as call_name,
+				TO_CHAR(frd_start_time,'YYYY-MM-DD HH24:MI:SS') start_time,
+				TO_CHAR(frd_end_time,'YYYY-MM-DD HH24:MI:SS') end_time,
+				TO_CHAR(frd_crte_time,'YYYYMMDD') as create_date,
+				cbd_name as dvc_name,
+				vel_event_name as event_name,
+				vel_storage_addr as storage_addr,
+				vel_before_time as before_time,
+				vel_after_time as after_time
+			FROM
+				TBK_FIGHTTALK_RECORD_DTLS
+			INNER JOIN 
+				ALT_LINK_DVC_RLTN ON frd_call_talk_id = ldr_alertor_id and ldr_alertor_type = 3 and ldr_dvc_type = 1
+			INNER JOIN 
+				CMR_VIDEO_STORAGE_DTLS on vel_event_id = 20
+			INNER JOIN 
+				CMR_CAMERA_BASE_DTLS on ldr_dvc_id = cbd_id
+			WHERE  
+				TRUNC(frd_crte_time)=TRUNC(SYSDATE)
+			UNION
+			SELECT 
+				frd_fighttalk_id as record_id,
+				dld_dvc_id as dvc_id,
+				frd_call_talk_name as call_name,
+				TO_CHAR(frd_start_time,'YYYY-MM-DD HH24:MI:SS') start_time,
+				TO_CHAR(frd_end_time,'YYYY-MM-DD HH24:MI:SS') end_time,
+				TO_CHAR(frd_crte_time,'YYYYMMDD') as create_time,
+				dld_dvc_name as dvc_name,
+				vel_event_name as event_name,
+				vel_storage_addr as storage_addr,
+				vel_before_time as before_time,
+				vel_after_time as after_time
+			FROM
+				TBK_FIGHTTALK_RECORD_DTLS
+			INNER JOIN 
+				COM_DVC_LINK_MIAN on frd_call_talk_id = dlm_dvc_id and dlm_dvc_type = 3 
+			INNER JOIN
+				COM_DVC_LINK_DTLS on dld_link_id = dlm_link_id
+			INNER JOIN 
+				CMR_VIDEO_STORAGE_DTLS on vel_event_id = 20
+			WHERE 
+				TRUNC(frd_crte_time)=TRUNC(SYSDATE)
+		</sql>
+	</item>
+	
+	<item id="select_flighttalk_receive_record" desc="查询受虐对讲记录-接听方">
+		<sql>
+			SELECT 
+				frd_fighttalk_id as record_id,
+				ldr_dvc_id as dvc_id,
+				frd_receive_talk_name as receive_name,
+				TO_CHAR(frd_start_time,'YYYY-MM-DD HH24:MI:SS') start_time,
+				TO_CHAR(frd_end_time,'YYYY-MM-DD HH24:MI:SS') end_time,
+				TO_CHAR(frd_crte_time,'YYYYMMDD') as create_date,
+				cbd_name as dvc_name,
+				vel_event_name as event_name,
+				vel_storage_addr as storage_addr,
+				vel_before_time as before_time,
+				vel_after_time as after_time
+			FROM
+				TBK_FIGHTTALK_RECORD_DTLS
+			INNER JOIN 
+				ALT_LINK_DVC_RLTN ON frd_receive_talk_id = ldr_alertor_id and ldr_alertor_type = 3 and ldr_dvc_type = 1
+			INNER JOIN 
+				CMR_VIDEO_STORAGE_DTLS on vel_event_id = 20
+			INNER JOIN 
+				CMR_CAMERA_BASE_DTLS on ldr_dvc_id = cbd_id
+			WHERE  
+				TRUNC(frd_crte_time)=TRUNC(SYSDATE)
+			UNION
+			SELECT 
+				frd_fighttalk_id as record_id,
+				dld_dvc_id as dvc_id,
+				frd_receive_talk_name as receive_name,
+				TO_CHAR(frd_start_time,'YYYY-MM-DD HH24:MI:SS') start_time,
+				TO_CHAR(frd_end_time,'YYYY-MM-DD HH24:MI:SS') end_time,
+				TO_CHAR(frd_crte_time,'YYYYMMDD') as create_time,
+				dld_dvc_name as dvc_name,
+				vel_event_name as event_name,
+				vel_storage_addr as storage_addr,
+				vel_before_time as before_time,
+				vel_after_time as after_time
+			FROM
+				TBK_FIGHTTALK_RECORD_DTLS
+			INNER JOIN 
+				COM_DVC_LINK_MIAN on frd_receive_talk_id = dlm_dvc_id and dlm_dvc_type = 3 
+			INNER JOIN
+				COM_DVC_LINK_DTLS on dld_link_id = dlm_link_id
+			INNER JOIN 
+				CMR_VIDEO_STORAGE_DTLS on vel_event_id = 20
+			WHERE 
+				TRUNC(frd_crte_time)=TRUNC(SYSDATE)
+		</sql>
+	</item>
+	
+	<item id="select_video_storage_record">
+		<sql>
+			SELECT 
+			  vsr_id as id,
+			  TO_CHAR(vsr_start_time,'YYYY-MM-DD HH24:MI:SS') as start_time,
+			  TO_CHAR(vsr_end_time,'YYYY-MM-DD HH24:MI:SS') as end_time,
+			  vsr_camera_id  as camera_id,
+			  cbd_name as camera_name,
+			  cbd_type as camera_type
+			FROM 
+				CMR_VIDEO_STORAGE_RECORD
+			INNER JOIN 
+				CMR_CAMERA_BASE_DTLS on vsr_camera_id = cbd_id
+		</sql>
+		<where id="0">
+		 	WHERE vsr_cus_number = :cus_number
+		</where>
+		<where id="1">
+		 	WHERE vsr_cus_number = :cus_number
+		 	AND TO_CHAR(vsr_send_time,'YYYYMMDD') = :send_time
+		</where>
+		<where id="2">
+		 	WHERE vsr_cus_number = :cus_number
+		 	AND TO_CHAR(vsr_send_time,'YYYYMMDD') = :send_time
+		 	AND vsr_filepath = :file_path
+		</where>
+		<where id="3">
+		 	WHERE vsr_cus_number = :cus_number
+		 	AND TO_CHAR(vsr_send_time,'YYYYMMDD') = :send_time
+		 	AND vsr_filepath = :file_path
+		 	AND vsr_event_id = :event_id
+		</where>
+	</item>
+	
+	<item id="insert_video_storage_record" desc="插入发送存储记录">
+	<sql>
+		INSERT INTO 
+			cmr_video_storage_record(
+			   vsr_cus_number ,
+               vsr_id         ,
+               vsr_event_type ,
+               vsr_event_name ,
+               vsr_event_id   ,
+               vsr_start_time ,
+               vsr_end_time   ,
+               vsr_camera_id  ,
+               vsr_filepath   ,
+               vsr_send_time  
+			)
+		VALUES(
+		   :vsr_cus_number ,
+		   :vsr_id         ,
+		   :vsr_event_type ,
+		   :vsr_event_name,
+		   :vsr_event_id  ,
+		   TO_DATE(:vsr_start_time,'YYYY-MM-DD HH24:MI:SS'),
+		   TO_DATE(:vsr_end_time,'YYYY-MM-DD HH24:MI:SS'),
+		   :vsr_camera_id  ,
+		   :vsr_filepath  ,
+		   TO_DATE(:vsr_send_time,'YYYY-MM-DD HH24:MI:SS')
+		)
+	</sql>
+	</item>
+</sqlItem>

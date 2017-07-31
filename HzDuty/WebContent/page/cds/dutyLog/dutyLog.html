@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>指挥中心值班日志</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+
+#constd{
+	position:absolute;
+	width:100%;
+	height:93%;
+	z-index:10;
+	    display: block;
+    background: rgba(0,0,0,.8);
+    top: 0;
+}
+#constd input,#constd textarea,#myModal input{ 
+	color: #fefefe;
+	outline: none;
+}
+#constd .form-content {
+	margin: 20px 5% 0 5% ;
+    background: rgb(2, 26, 53);
+    color: #fefefe;
+    width: 90%;
+    height:97%;
+    max-height: 98%;
+    padding: 0 20px;
+    padding-bottom: 20px;
+    position:relative;
+}
+#constd .form-write {
+	width: 50px;
+    padding-left: 10px;
+    border-bottom: 1px solid #000;
+}
+
+/* 关闭按钮样式 */
+#constd .close {
+  position: relative;
+  display: inline-block;
+  width: 27px;
+  height: 50px;
+  overflow: hidden;  
+  opacity: 0.8;
+  color: #f7f3f3;
+  
+  
+}
+#constd .close:hover::before, .close:hover::after {
+  background: #f10303;
+}
+#constd .close::before, .close::after {
+		content: '';
+		position: absolute;
+		height: 2px;
+		width: 100%;
+		top: 50%;
+		left: 0;
+		margin-top: -1px;
+		background: #fffdfd;
+}
+#constd .close::before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+#constd .close::after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+#constd .close.thick::before, .close.thick::after {
+  height: 4px;
+  margin-top: -2px;
+}
+
+#constd table.normal-info input.form-write {
+	border: 0 none;
+}
+
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0;
+}
+
+#constd .table td{
+    border: 1px solid #1f699d;
+    text-align: center;
+    vertical-align: middle;
+}
+#constd .table {
+	margin-bottom: 0; 
+}
+#constd .table-textA{
+	resize:none;
+	width:100%;
+	outline:none;
+	vertical-align:top;
+	margin-top:3px;
+}
+#constd input{
+	width: 100%;
+	
+}
+#constd .plus-table {
+	text-align: center;
+}
+#constd .plus-table>span {
+	width: 60px;
+    background: transparent;
+    height: 20px;
+    line-height: 20px;
+    margin-top: 3px;
+    border: 1px solid #1f56b1;
+    cursor: pointer;
+}
+#constd .form-title {
+	text-align: center;
+    font-size: 20px;
+    padding: 20px;
+} 
+.query-line {
+	position: absolute;
+	top: 8px;
+    left: 5px;
+}
+.query-content >div {
+	display: inline-block;
+}
+.query-content {
+    margin-right: 5px; 
+}
+.query-line a{
+	margin-top: 4px;
+    margin-left: 15px;
+}
+.form-part {
+	position: relative;
+}
+.delButton {
+    position: absolute;
+    top: 4px; 
+    right: -2px;
+}
+.outsideBorder {
+	padding: 2px;
+}
+</style>
+</head>
+<body>
+
+<div class="vbox box-con" id="container">
+	<div class="hbox hz-col-1 query-line" v-show="!isPrinter">
+		<div class="query-content">
+			<hz-date 
+	      		tip="选择开始日期" 
+	      		:val.sync="search.clm_date_start"
+	      	/>
+		</div>
+		<div class="query-content">
+			<hz-date 
+	      		tip="选择结束日期" 
+	      		:val.sync="search.clm_date_end"
+	      	/>
+		</div>
+		<a v-cloak class="hbtn btn_primary btn_large" @click="searchInfo"><span>查询</span></a>
+		<a v-cloak class="hbtn btn_primary btn_large" @click='resetSearch'><span>重置</span></a>
+	</div>
+	<div class="hbox hz-col-1" v-show="!isPrinter">
+		<div class="hz-col-9 right-con">
+	       	<table id="table" ></table>
+		</div>
+	</div>
+
+	<div class="bottom" v-show="!isPrinter"> 
+		<div class="buttons">
+			<a v-show="labelFlag" class="hbtn btn_primary btn_large" @click="del()"><i class="btn_icon icon_del" ></i><span>删除</span></a>
+			<a v-show="labelFlag" class="hbtn btn_primary btn_large" @click="add()"><i class="btn_icon icon_add" ></i><span>新增</span></a>
+			<a v-show="!labelFlag" class="hbtn btn_primary btn_large" @click="save()"><i class="btn_icon icon_save" ></i><span>保存</span></a>
+			<a class="hbtn btn_primary btn_large printBtnSH" style="display: none;" @click="print()"><i class="btn_icon icon_save" ></i><span>打印</span></a>
+		</div>
+	</div>
+	<div class="hbox box-con" id="constd" style="display:none;background:rgba(0,0,0,.8);page-break-before:always;"> 
+		<form class="form-horizontal form-content">
+			<span class="close thick"  @click="close()"></span>
+			<div class="form-title">
+				指挥中心值班日志
+			</div>
+			<div style="padding: 2px;height:92%;overflow-y:scroll;">
+				<div class="outsideBorder" style="">  
+					<div class="form-part">
+						<table class="table table-bordered normal-info"> 
+							<tr>
+								<td class="col-xs-1">日期</td>
+								<td class="col-xs-2" colspan="2">{{main.clm_date}}</td> 
+								<td class="col-xs-1">正班领导</td>
+								<td class="col-xs-1"><input type="text" placeholder="请输入正班领导" v-model="main.clm_regular_leader"/></td> 
+								<td class="col-xs-1">副班领导</td>
+								<td class="col-xs-1"><input type="text" placeholder="请输入副班领导" v-model="main.clm_deputy_leader"/></td>
+								<td class="col-xs-1" rowspan="2">交班民警</td>
+								<td class="col-xs-1" rowspan="2">接班民警</td>
+							</tr>
+							<tr>
+								<td class="col-xs-1">时段</td>
+								<td class="col-xs-1">记录内容</td> 
+								<td class="col-xs-1" colspan="5">登记情况</td>
+							</tr>
+							<tr>
+								<td class="col-xs-1" rowspan="2">
+									<input type="time" v-model="first.cld_begin_time" style="text-align: center;width: 40%" placeholder="请输入开始时间"/>
+									至
+									<input type="time" v-model="first.cld_end_time" style="text-align: center;width: 40%" placeholder="请输入结束时间"/>
+								</td>
+								<td class="col-xs-1">接处警信息及处置情况</td> 
+								<td class="col-xs-1" colspan="5">
+									<textarea rows="6" placeholder="请输入登记情况" class="table-textA" v-model="first.cld_handle_situation"></textarea>
+								</td> 
+								<td class="col-xs-1">
+									<textarea rows="6" placeholder="请输入交班警察" class="table-textA" v-model="first.cld_handle_sender"></textarea>
+								</td>
+								<td class="col-xs-1">
+									<textarea rows="6" placeholder="请输入接班警察" class="table-textA" v-model="first.cld_handle_receiver"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td class="col-xs-1">设施设备运转情况</td> 
+								<td class="col-xs-1" colspan="5">
+									<input type="text" placeholder='请输入设施设备运转情况' v-model="first.cld_device_situation" />
+								</td> 
+								<td class="col-xs-1"><input type="text" placeholder="请输入交班警察" v-model="first.cld_device_sender"/></td>
+								<td class="col-xs-1"><input type="text" placeholder="请输入接班警察" v-model="first.cld_device_receiver" /></td>
+							</tr>
+						</table>
+					</div>
+					<div class="form-part" v-for="item in subs">
+						<table class="table table-bordered normal-info">
+							<tr>
+								<td class="col-xs-1">时段</td>
+								<td class="col-xs-1">记录内容</td> 
+								<td class="col-xs-5" colspan="5">登记情况</td> 
+								<td class="col-xs-1"></td>
+								<td class="col-xs-1"></td> 
+							</tr>
+							<tr>
+								<td class="col-xs-1" rowspan="2">
+									<input type="time" v-model="item.cld_begin_time" style="text-align: center;width: 40%" placeholder="请输入开始时间"/>
+									至
+									<input type="time" v-model="item.cld_end_time" style="text-align: center;width: 40%" placeholder="请输入结束时间"/>
+								</td>
+								<td class="col-xs-1">接处警信息及处置情况</td>
+								<td class="col-xs-5" colspan="5">
+									<textarea rows="6" placeholder="请输入登记情况" class="table-textA" v-model="item.cld_handle_situation"></textarea>
+								</td> 
+								<td class="col-xs-1">
+									<textarea rows="6" placeholder="请输入交班警察" class="table-textA" v-model="item.cld_handle_sender"></textarea>
+								</td>
+								<td class="col-xs-1">
+									<textarea rows="6" placeholder="请输入接班警察" class="table-textA" v-model="item.cld_handle_receiver"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td class="col-xs-1">设施设备运转情况</td> 
+								<td class="col-xs-5" colspan="5">
+									<input type="text" placeholder='请输入设施设备运转情况' v-model="item.cld_device_situation" />
+								</td> 
+								<td class="col-xs-1"><input type="text" placeholder="请输入交班警察" v-model="item.cld_device_sender"/></td>
+								<td class="col-xs-1"><input type="text" placeholder="请输入接班警察" v-model="item.cld_device_receiver"/></td>
+							</tr>
+						</table>		
+						<div class="delButton" v-show="!isPrinter">
+							<div class="buttons" @click="delTable($index)">
+								<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del" ></i></a>
+							</div>
+						</div>			
+					</div>
+					<div class="plus-table" v-show="!isPrinter">
+						<a  @click="addTable" class="hbtn btn_primary btn_large" style="width: 50px;"><i class="btn_icon icon_add" ></i></a>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	
+	
+	
+	
+	
+	
+</div>
+	
+	
+	
+	
+	
+	
+	
+	
+
+</body>
+
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyLog/dutyLog"]);
+</script>
+
+</html>

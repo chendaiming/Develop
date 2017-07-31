@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_suol_log_table" desc="查询操作日志">
+		<const key="uol_type_name">UOL_TYPE</const>
+		<sql>
+			SELECT uol_cus_number,
+			       uol_id,
+			       uol_user_id,
+			       uol_user_name,
+			       TO_CHAR(uol_operated_time, 'yyyy-mm-dd hh24:mi:ss') uol_operated_time,
+			       uol_operated_desc,
+			       uol_login_ip,
+			       uol_type,
+			       uol_type uol_type_name,
+			       TO_CHAR(uol_system_time, 'yyyy-mm-dd hh24:mi:ss') uol_system_time
+			  FROM SYS_USER_OPERATED_LOG
+			 WHERE uol_cus_number = :uol_cus_number
+		</sql>
+		<where id='0'>
+			   AND (TRIM(:uol_user_name) IS NULL OR uol_user_name LIKE CONCAT('%', CONCAT(:uol_user_name, '%')))
+			   AND (TRIM(:uol_operated_desc) IS NULL OR uol_operated_desc LIKE CONCAT('%', CONCAT(:uol_operated_desc, '%')))
+			   AND (TRIM(:uol_startTime) IS NULL OR uol_operated_time >= TO_DATE(:uol_startTime, 'YYYY-MM-DD hh24:mi:ss'))
+			   AND (TRIM(:uol_endTime) IS NULL OR uol_operated_time #= TO_DATE(:uol_endTime, 'YYYY-MM-DD hh24:mi:ss'))
+			   AND (TRIM(:uol_type) IS NULL OR uol_type LIKE CONCAT('%', CONCAT(:uol_type, '%')))
+		</where>
+		<order id="0">
+			ORDER BY uol_system_time DESC
+		</order>
+	</item>
+	
+	<item id="insert_log_table" desc="用户日志表插入">
+		<sql>
+			INSERT INTO sys_user_operated_log(
+				uol_cus_number,
+				uol_id,
+				uol_user_id,
+				uol_user_name,
+				uol_operated_time,
+				uol_operated_desc,
+				uol_login_ip,
+				uol_system_time,
+				uol_type
+			)VALUES(
+				:cusNumber,
+				:id,
+				:userId,
+				:userName,
+				TO_DATE(:operatedTime,'yyyy-mm-dd hh24:mi:ss'),
+				:operatedDesc,
+				:loginIp,
+				SYSDATE,
+				:type
+			)
+		
+		</sql>
+	
+	</item>
+	
+</sqlItem>
+

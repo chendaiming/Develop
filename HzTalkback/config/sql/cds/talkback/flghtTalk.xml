@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_fighttalk_record_dtls" desc="查询受虐对讲记录信息">
+    	<sql>
+    		SELECT frd_cus_number,
+    			   frd_fighttalk_id,
+    			   frd_call_talk_id,
+    			   frd_call_talk_name,
+    			   frd_call_dept_id,
+    			   frd_call_dept_name,
+    			   frd_call_area_id,
+    			   frd_call_area_name,
+    			   TO_CHAR(frd_start_time,'YYYY-MM-DD HH24:mi:ss') AS frd_start_time,
+    			   TO_CHAR(frd_connect_time,'YYYY-MM-DD HH24:mi:ss') AS frd_connect_time,
+    			   TO_CHAR(frd_end_time,'YYYY-MM-DD HH24:mi:ss') AS frd_end_time,
+    			   frd_receive_talk_id,
+    			   frd_receive_talk_name,
+    			   frd_receive_dept_id,
+    			   frd_receive_dept_name,
+    			   frd_receive_area_id,
+    			   frd_receive_area_name,
+    			   frd_crte_time,
+    			   frd_crte_user_id,
+    			   frd_updt_time,
+    			   frd_updt_user_id
+    		  FROM tbk_fighttalk_record_dtls
+		</sql>
+		<where id="0">
+			WHERE frd_cus_number = :frd_cus_number
+		</where>
+		<where id="1">
+			WHERE frd_cus_number = :frd_cus_number AND
+				  (frd_call_talk_name = :frd_call_talk_name  OR TRIM(:frd_call_talk_name2) IS NULL) AND
+				  (frd_receive_talk_name = :frd_receive_talk_name OR TRIM(:frd_receive_talk_name2) IS NULL) AND
+				  (TRUNC(frd_start_time) = TO_DATE(:frd_start_time,'YYYY-MM-DD') OR TRIM(:frd_start_time2) IS NULL)
+		</where>
+		<order id="0">
+			ORDER BY frd_start_time DESC
+		</order>
+	</item>
+</sqlItem>

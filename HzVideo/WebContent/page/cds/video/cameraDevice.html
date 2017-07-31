@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title></title>
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+		 max-height: 200px;
+		  min-height: 150px;
+		  overflow: auto;
+		  z-index: 99;
+	}
+	.c_nav{width:16px;height:16px;margin-left:8px;display:inline-block;vertical-align: middle;margin-bottom:3px;}
+	.c_nav:hover{width:18px;height:18px;}
+</style>
+</head>
+<body>
+<div class="vbox box-con">
+<div class="hbox hz-col-1">
+	<div class="left-con vbox" style="width:280px">
+		<div class="input icon" >
+		  	<input v-model="searchTree" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+	    <div class="hz-col-1" style="overflow:auto">
+			<ul id="areaTree" class="ztree"></ul>	    	
+	    </div>
+	</div>
+	<div class="hz-col-1 right-con">
+		<form class="form-horizontal" role="form" >
+			<div class="row">
+			  <div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" for="formGroupInputLarge">摄像机名称<span class="required">*</span></label>
+				    <div class="col-xs-8">
+				      <input class="form-control" v-model="camera.name" type="text" placeholder="摄像机名称">
+				      <input type="hidden" v-model="camera.id"/>
+				    </div>
+				  </div>
+			  </div>
+			  <div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >摄像机品牌<span class="required">*</span></label>
+				    <div class="col-xs-8">
+					  		<hz-select 
+					  			tip="摄像机品牌"
+					  			code="CAMERA_BRAND" 
+					  			:id.sync="camera.cbd_brand"
+					  		/>
+				    </div>
+				  </div>
+			  </div>
+			</div>
+			<div class="row">
+				  <div class="col-xs-6">
+					  <div class="form-group">
+					    <label class="col-xs-4 control-label">摄像机类型</label>
+					    <div class="col-xs-8">
+						  		<hz-select 
+						  			tip="摄像机类型"
+						  			code="CAMERA_TYPE" 
+						  			:id.sync="camera.cbd_type"
+						  		/>
+					    </div>
+					  </div>
+				   </div>
+				  <div class="col-xs-6">
+					  <div class="form-group">
+					    <label class="col-xs-4 control-label" >厂商编号</label>
+					    <div class="col-xs-8">
+					      <input class="form-control" v-model="camera.cbd_other_id" type="text"  placeholder="厂商唯一编号">
+					    </div>
+					  </div>
+				  </div>
+			</div>
+			<div class="row">
+			  <div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >所属部门<span class="required">*</span></label>
+				    <div class="col-xs-8" >
+				    	<hz-treeselect 
+				    		tip="所属部门"
+				    		sqlid="select_org_dept"
+				    		whereid=0
+				    		:params=[camera.cbd_cus_number]
+				    		:id.sync="camera.cbd_dept_id"
+				    	/>
+				    </div>
+				  </div>
+			  </div>
+			  <div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >所在区域<span class="required">*</span></label>
+				    <div class="col-xs-8">
+				      <input class="form-control"  readonly v-model="camera.cbd_area_name" type="text"  placeholder="所在区域">
+				   	  <input type="hidden"  v-model="camera.cbd_area_id">
+				    </div>
+				  </div>
+			  </div>
+			</div>
+			<div class="row">
+			  <div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >摄像机IP</label>
+				    <div class="col-xs-8">
+				      <input class="form-control" v-model="camera.cbd_ip_addrs" type="text" placeholder="摄像机IP地址">
+				    </div>
+				  </div>
+			  </div>
+			  <div class="col-xs-6">
+					<div class="form-group">
+					    <label class="col-xs-4 control-label" >安装位置</label>
+					    <div class="col-xs-8">
+					      <input class="form-control" v-model="camera.cbd_dvc_addrs" type="text"  placeholder="安装位置">
+					    </div>
+				    </div>
+				</div>
+			</div>
+			
+			<div class="row">
+				  <div class="col-xs-6">
+					  <div class="form-group">
+					    <label class="col-xs-4 control-label" >摄像机状态</label>
+					    <div class="col-xs-8">
+						  		<hz-select 
+						  			tip="摄像机状态"
+						  			code="CAMERA_STATUS" 
+						  			:id.sync="camera.cbd_stts_indc"
+						  		/>
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-6">
+					  <div class="form-group">
+					    <label class="col-xs-4 control-label" >码流类型</label>
+					    <div class="col-xs-8">
+						  		<hz-select 
+						  			tip="码流类型"
+						  			code="STREAM_TYPE" 
+						  			:id.sync="camera.cbd_stream_type"
+						  		/>
+					    </div>
+					  </div>
+				   </div>
+			</div>
+			<div class="row">
+				<div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >监控处理<span class="required">*</span></label>
+				    <div class="col-xs-8">
+					  		<hz-select 
+					  			tip="监控处理方式"
+					  			code="PLAYNOW_TYPE" 
+					  			:id.sync="camera.cbd_playnow_type"
+					  		/>
+				    </div>
+				  </div>
+			   </div>
+			   <div class="col-xs-6">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label">录像处理<span class="required">*</span></label>
+				    <div class="col-xs-8">
+					  		<hz-select 
+					  			tip="录像处理方式"
+					  			code="PLAYBACK_TYPE" 
+					  			:id.sync="camera.cbd_playback_type"
+					  		/>
+				    </div>
+				  </div>
+			   </div>
+			</div>
+			<hr style="border:1px dashed #4077ae;margin-bottom:15px;">
+			<div id="devicecon">
+				<div style="padding:0 0 10px 10px"><a @click="copyAndAddDevice" class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>添加关联设备</span></a></div>
+				<div v-if="devices.length==0" class="empty"> 暂无关联设备 </div>
+				<div class="row" v-for="d in devices" >
+					<div class="col-xs-6">
+					  <div class="form-group">
+					    <label class="col-xs-4 control-label" ><a @click="delDevice(d)" class="hbtn btn_primary btn_mini"><i class="btn_icon icon_del"></i></a><span class="required">*</span></label>
+					    <div class="col-xs-8">
+						  		<hz-select 
+						  			tip="选择关联视频设备"
+						  			sqlid="select_video_tree"
+						  			:params=[camera.cbd_cus_number]
+						  			:id.sync="d.cvr_device_id"
+						  		/>
+					    </div>
+					  </div>
+				   </div>
+				   <div class="col-xs-6">
+					  <div class="form-group">
+					    <label class="col-xs-5 control-label">设备通道号</label>
+					    <div class="col-xs-7">
+						  	<input class="form-control"  v-model="d.cvr_chnnl_code" type="text"  placeholder="设备通道号">
+					    </div>
+					  </div>
+				   </div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<!-- 所属部门树形区 -->
+	<div id="deptCon" class="treeContent" style="display:none; position: absolute;">
+		<ul id="deptTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+	</div>
+</div>
+<div class="bottom">
+	<div class="buttons" >
+		<a @click="saveCamera()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		<a @click="delCamera()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		<a @click="reset()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+	</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/video/cameraDevice'])
+</script>
+</html>

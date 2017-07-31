@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>系统模拟测试主页</title>
+<style type="text/css">
+html, body {margin: 0 auto; padding: 0; width: 100%; height: 100%; border: 0 none; overflow: hidden; text-align: center;}
+
+#msgPanel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 99; }
+
+#msgPanel * {
+  box-sizing: border-box; }
+
+#msgPanel .msg-box {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  margin-left: -150px;
+  margin-top: -90px;
+  padding: 30px 5px 40px 15px;
+  width: 300px;
+  height: 180px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+  overflow: hidden; }
+
+#msgPanel .msg-box .title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  padding: 8px 0 0 35px;
+  background: url(images/alert.png) 1px center no-repeat;
+  text-align: left;
+  color: #2A2A2A; }
+
+#msgPanel .msg-box a.close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  background: url(images/close.png) center center no-repeat;
+  z-index: 99;
+  opacity: .6;
+  cursor: pointer;
+  transition: all .5s; }
+
+#msgPanel .msg-box a.close:hover {
+  opacity: 1; }
+
+#msgPanel .msg-box .content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: table; }
+
+#msgPanel .msg-box .content .msg {
+  display: table-cell;
+  vertical-align: middle;
+  padding-bottom: 23px;
+  text-align: center;
+  color: #3E3E3E;
+  font-size: 13px; }
+
+#msgPanel .msg-box .content .msg span.step-num {
+  margin: 0 5px;
+  font-size: 24px;
+  color: #ff0000; }
+
+#msgPanel .msg-box .content .msg span.step-names {
+  color: #ff0000; }
+
+#msgPanel .msg-box .btns {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 40px; }
+
+#msgPanel .msg-box .btns .btn {
+  float: left;
+  width: 50%;
+  height: 100%;
+  border: 0px none;
+  border-top: 1px solid #999;
+  outline: none;
+  color: #EEE;
+  cursor: pointer;
+  transition: all .5s; }
+
+#msgPanel .msg-box .btns .btn.cancel {
+  border-right: 1px solid #999;
+  color: #FF2200; }
+
+#msgPanel .msg-box .btns .btn.cancel:hover {
+  background-color: rgba(127, 127, 127, 0.8);
+  color: #EEE; }
+
+#msgPanel .msg-box .btns .btn.sure {
+  color: #0BB20C; }
+
+#msgPanel .msg-box .btns .btn.sure:hover {
+  background-color: rgba(11, 178, 12, 0.5);
+  color: #FFF; }
+
+#msgPanel .msg-box .btns .btn.close {
+  width: 100%;
+  color: #FF2200; }
+
+#msgPanel .msg-box .btns .btn.close:hover {
+  background-color: rgba(127, 127, 127, 0.8);
+  color: #EEE; }
+
+input.txt1 {padding: 7px 5px 5px 5px; width: 300px;}
+input.txt2 {padding: 7px 5px 5px 5px; width: 180px;}
+input.txt3 {padding: 7px 5px 5px 5px; width: 100px;}
+input.btn1 {padding: 5px 15px;}
+table.tab {
+	border: 1px solid #333;
+	border-left: 0px none;
+	border-bottom: 0px none;
+	margin: 0 auto;
+}
+table.tab tr {
+
+}
+table.tab tr td {
+	padding: 5px 10px;
+	border-left: 1px solid #333;
+	border-bottom: 1px solid #333;
+	text-align: left;
+	font-size: 12px;
+}
+</style>
+</head>
+<body>
+<div id="msgPanel" style="display: none;">
+	<div class="msg-box">
+		<a class="close"></a>
+		<div class="title">提示</div>
+		<div class="content">
+			<span class="msg">是否确认?</span>
+		</div>
+		<div class="btns">
+			<input type="button" class="btn close" value="关闭">
+			<input type="button" class="btn cancel" value="取消">
+			<input type="button" class="btn sure" value="确认">
+		</div>
+	</div>
+</div>
+<div style="padding-top: 100px; width: 100%;">
+	<table class="tab" cellspacing="0">
+		<tr><td>刷新SQL配置</td>
+			<td><input id="sqlBtn" class="btn1" type="button" onclick="refreshSql()" value="刷新配置"></td>
+			<td></td>
+			<td><span id="sqlMsg"></span></td>
+		</tr>
+		<tr><td>刷新缓存数据</td>
+			<td><input id="dataBtn" class="btn1" type="button" onclick="refreshData()" value="刷新缓存"></td>
+			<td><input id="dataTxt" class="txt1" type="text" placeholder="输入服务名称"></td>
+			<td><span id="dataMsg"></span></td>
+		</tr>
+		<tr><td rowspan="2">获取序列号</td>
+			<td><input id="seqBtn" class="btn1" type="button" onclick="getSequence(false)" value="同步获取"></td>
+			<td rowspan="2">
+				<input id="seqTableName" class="txt2" type="text" placeholder="表名" value="TEST_TABLE_NAME">
+				<input id="seqColumnName" class="txt3" type="text" placeholder="表字段" value="TEST_ID">
+				<input id="seqNumber" class="txt3" type="text" placeholder="数量" value="1"></td>
+			<td><span id="seqMsg1"></span></td>
+		</tr>
+		<tr><td><input id="seqBtn" class="btn1" type="button" onclick="getSequence(true)" value="异步获取"></td>
+			<td><span id="seqMsg2"></span></td>
+		</tr>
+	</table>	
+</div>
+</body>
+<script type="text/javascript" src="../../libs/jquery/jquery.js"></script>
+<script type="text/javascript">
+/*
+ * 消息提示对话框对象
+ */
+var msgPrompt = {
+	callback: null,
+
+	init: function () {
+		$('#msgPanel input.sure').on('click', function () {
+			msgPrompt.hide(true);
+		});
+
+		$('#msgPanel input.cancel').on('click', function () {
+			msgPrompt.hide(false);
+		});
+
+		$('#msgPanel input.close').on('click', function () {
+			msgPrompt.hide(false);
+		});
+
+		$('#msgPanel a.close').on('click', function () {
+			msgPrompt.hide(false);
+		});
+	},
+
+
+	/*
+	 * 显示消息提示
+	 */
+	show: function (msg, callback) {
+		if (this.callback = callback) {
+			$('input.btn').show();
+			$('input.btn.close').hide();
+		} else {
+			$('input.btn.close').show();
+		}
+
+		$('#msgPanel').fadeIn(200);
+		$('#msgPanel span.msg').html(msg);
+	},
+
+	/*
+	 * 隐藏消息
+	 */
+	hide: function (result) {
+		$('#msgPanel').fadeOut(200);
+		$('input.btn').hide();
+
+		if (this.callback) {
+			this.callback(result);
+			this.callback = null;
+		}
+	}
+};
+
+msgPrompt.init();
+
+/*
+ * 刷新SQL配置
+ */
+function refreshSql () {
+	msgPrompt.show('确定刷新SQL配置文件?', function (isSure) {
+		if (isSure) {
+			$('#sqlMsg').empty();
+			$('#sqlBtn').attr('disabled', 'disabled');
+
+			ajaxReq('sqlCtrl/reload', null,
+				function (response) {
+					$('#sqlMsg').html(
+						'刷新结果：' + (response.result ? '成功' : '失败') + ' | ' + 
+						'重复编号：' + (response.repeat ? response.repeat : '无') + ' | ' +
+						'刷新时间：' + response.refreshTime
+					);
+
+					(function waitEnabled (num) {
+						if(num > 0) {
+							$('#sqlBtn').val('刷新（' + num + '）');
+							setTimeout(waitEnabled, 1000, --num);
+						} else {
+							$('#sqlBtn').val('刷新').removeAttr('disabled');
+						}
+					})(3);
+				},
+				function () {
+					$('#sqlBtn').removeAttr('disabled');
+				},
+				true
+			);
+		}
+	});
+}
+
+
+/*
+ * 刷新缓存数据
+ */
+function refreshData () {
+	msgPrompt.show('确定刷新缓存数据?', function (isSure) {
+		if(isSure) {
+			$('#dataBtn').attr('disabled', 'disabled');
+			$('#dataMsg').empty();
+
+			ajaxReq('dbCtrl/reloadCache', {'serviceName': $('#dataTxt').val()},
+				function (response) {
+					$('#dataMsg').html(JSON.stringify(response));
+					$('#dataBtn').removeAttr('disabled');
+				},
+				function () {
+					$('#dataBtn').removeAttr('disabled');
+				},
+				true
+			);
+		}
+	});
+}
+
+
+/*
+ * 获取序列号
+ */
+function getSequence (async) {
+	var tableName = $('#seqTableName').val();
+	var columnName = $('#seqColumnName').val();
+	var number = $('#seqNumber').val() || '1';
+	var seq = '';
+
+	if (async) {
+		getSeq(tableName, columnName, number * 1, function (seq, msg) {
+			$('#seqMsg2').html('序列号：' + seq);
+		});
+	} else {
+		$('#seqMsg1').html('序列号：' + getSeq(tableName, columnName, number * 1));
+	}
+}
+
+/*
+ * 获取序列号
+ * @param tableName		表名
+ * @param columnName 	字段名
+ * @param callback 		回调函数（如果传入回调则异步请求，不传则同步）
+ */
+function getSeq (tableName, columnName, number, callback) {
+	var async = false;
+	var seq = null;
+	var url = 'seqCtrl/getSeq';
+	var params = {'tableName': tableName, 'columnName': columnName};
+	// 如果传了回调函数则默认异步
+	if (typeof callback == 'function') {
+		async = true;
+	}
+
+	if (number > 1) {
+		url = 'seqCtrl/getSeqList';
+		params.number = number;
+	}
+
+
+	ajaxReq(url, params, 
+		function (result) {
+			seq = result.seq || ('(' + result.seqList.length + ')' + JSON.stringify(result.seqList));
+			async && callback(seq, result.msg);
+		},
+		function (s, e) {
+			async && callback(null, e);
+		},
+	async);
+
+	return seq;
+}
+
+
+/*
+ * Ajax请求
+ */
+function ajaxReq (url, data, success, error, async) {
+	$.ajax({
+		'url': '../../' + url,
+		'data': data,
+		'timeout': 60 * 1000,
+		'type': 'POST',
+		'async': async,
+		'dataType': "json",
+		'contentType': "application/x-www-form-urlencoded; charset=utf-8",
+		'success': function (response) {
+			success(response);
+		},
+		'error': function (request, status, e) {
+			console.error('Ajax请求响应异常：request=' + JSON.stringify(request));
+			console.error('Ajax请求响应异常：status=' + JSON.stringify(status));
+			console.error('Ajax请求响应异常：e=' + JSON.stringify(e));
+			error && error();
+		}
+	});
+}
+</script>
+</html>

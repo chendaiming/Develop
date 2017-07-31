@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+
+    <item id="insert_map_model_group" desc="">
+    	<seq>map_model_group_manager@id</seq>
+		<sql>
+			INSERT INTO map_model_group_manager
+			  (mgm_cus_number,
+			   mgm_group_id,
+			   mgm_group_pid,
+			   mgm_group_name,
+			   mgm_group_type,
+			   mgm_model_name,
+			   mgm_order,
+			   mgm_create_uid,
+			   mgm_create_datetime,
+			   mgm_update_uid,
+			   mgm_update_datetime)
+			VALUES
+			  (:cus_number,
+			   :id,
+			   :pid,
+			   :name,
+			   :type,
+			   :model_name,
+			   :order,
+			   :create_uid,
+			   SYSDATE,
+			   :update_uid,
+			   SYSDATE)
+		</sql>
+    </item>
+
+    <item id="update_map_model_group" desc="">
+		<sql>
+			 UPDATE map_model_group_manager
+			    SET mgm_cus_number 		= :cus_number,
+			    	mgm_group_pid       = :pid,
+			        mgm_group_name      = :name,
+			        mgm_group_type      = :type,
+			        mgm_model_name      = :model_name,
+			        mgm_order           = :order,
+			        mgm_update_uid      = :update_uid,
+			        mgm_update_datetime = SYSDATE
+		</sql>
+		<where id="1">
+			  WHERE mgm_group_id = :id
+		</where>
+    </item>
+
+    <item id="delete_map_model_group" desc="">
+		<sql>
+			 DELETE FROM map_model_group_manager
+		</sql>
+		<where id="1">
+			  WHERE mgm_group_id = ?
+		</where>
+    </item>
+
+    <item id="select_map_model_group_list" desc="">
+		<sql>
+			 SELECT mgm_cus_number AS cus_number,
+			        mgm_group_id   AS id,
+			        DECODE(mgm_group_pid, NULL, mgm_cus_number, mgm_group_pid) AS pid,
+			        mgm_group_name AS name,
+			        mgm_order AS "order"
+			   FROM map_model_group_manager
+		</sql>
+		<where id="1">
+			  WHERE mgm_cus_number = ?
+		</where>
+		<order id="1">
+			  ORDER BY mgm_group_pid, mgm_order
+		</order>
+    </item>
+
+    <item id="select_map_model_group_detail" desc="">
+    	<const key="cus_number_cn">CUS_NUMBER</const>
+    	<const key="create_user" module="user"/>
+    	<const key="update_user" module="user"/>
+		<sql>
+			SELECT a.mgm_cus_number AS cus_number,
+			       a.mgm_cus_number AS cus_number_cn,
+			       a.mgm_group_pid AS pid,
+			       b.mgm_group_name AS pname,
+			       a.mgm_group_id AS id,
+			       a.mgm_group_name AS name,
+			       a.mgm_group_type AS type,
+			       a.mgm_model_name AS model_name,
+			       a.mgm_order AS "order",
+			       a.mgm_create_uid AS create_uid,
+			       a.mgm_create_uid AS create_user,
+			       TO_CHAR(a.mgm_create_datetime, 'YYYY-MM-DD HH24:MI:SS') AS create_datetime,
+			       a.mgm_update_uid AS update_uid,
+			       a.mgm_update_uid AS update_user,
+			       TO_CHAR(a.mgm_update_datetime, 'YYYY-MM-DD HH24:MI:SS') AS update_datetime
+			  FROM map_model_group_manager a
+			  LEFT JOIN map_model_group_manager b
+			    ON a.mgm_group_pid = b.mgm_group_id
+		</sql>
+		<where id="1">
+			 WHERE a.mgm_cus_number = ?
+			   AND a.mgm_group_id = ?
+		</where>
+    </item>
+</sqlItem>

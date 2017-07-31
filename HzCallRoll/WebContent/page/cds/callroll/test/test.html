@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>点名测试</title>
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style type="text/css">
+	* {font-size: 12px;}
+	input {
+		margin: 5px;
+	    padding-left: 5px;
+	    height: 21px;
+	    width: 160px;
+	}
+	button {
+		margin: 5px;
+	}
+	span.title {color: #000; margin: 0px 5px;}
+	.ztree li a {color: #333;}
+	
+	#cusNumberMsg {color: red;}
+</style>
+</head>
+<body>
+<div style="float: left; margin-left: 20px">
+	<span class="title">1.选择点名的部门</span>
+	<div id="dprtPanel" style="width: 255px;height: 600px; overflow: auto;">
+		<ul id="dprtTree" class="ztree"></ul>
+	</div>
+</div>
+
+<div style="float: left; margin-left: 20px">
+	<span class="title">2.选择点名的民警</span>
+	<div id="policePanel" style="width: 255px;height: 600px;  overflow: auto;">
+		<ul id="policeTree" class="ztree"></ul>
+	</div>
+	<span id="policeMsg"></span>
+</div>
+
+<div style="float: left; margin-left: 20px; padding-top: 20px;">
+	<span>机构编号：</span><input id="crm_cus_number" type="text" value="" placeholder="请输入机构号">*<span id="cusNumberMsg"></span><br>
+	<span>记录编号：</span><input id="crm_record_id" type="text" value=""><br>
+	<span>流水编号：</span><input id="crm_serial_code" type="text" value=""><br>
+	<span>批次编号：</span><input id="crm_batch_code" type="text" value=""><br>
+	<span>部门编号：</span><input id="crm_dprt_id" type="text" value="65" placeholder="*">*<br>
+	<span>部门名称：</span><input id="crm_dprt_name" type="text" value="一监区一分监区" placeholder="*">*<br>
+	<span>民警编号：</span><input id="crm_police_id" type="text" value="100651" placeholder="*">*<br>
+	<span>民警名称：</span><input id="crm_police_name" type="text" value="卢秀清" placeholder="*">*<br>
+	<span>预计人数：</span><input id="crm_predict_num" type="text" value="10"><br>
+	<span>实际点名：</span><input id="crm_fact_num" type="text" value="0"><br>
+	<span>开始时间：</span><input id="crm_begin_time" type="text" value=""><br>
+	<span>结束时间：</span><input id="crm_end_time" type="text" value=""><br>
+
+	<button onclick="callrollbegin()">-----------------------开始点名-----------------------</button><br>
+	<button onclick="callrollend()">-----------------------结束点名-----------------------</button><br>
+	<span id="msg1"></span><br><br><br>
+</div>
+
+<div style="float: left; margin-left: 20px">
+	<span class="title">3.选择被点名的罪犯</span>
+	<div id="prisonerPanel" style="width: 255px;height: 600px; overflow: auto;">
+		<ul id="prisonerTree" class="ztree"></ul>
+	</div>
+	<span id="prisonerMsg"></span>
+</div>
+
+<div style="float: left; margin-left: 20px; padding-top: 20px;">
+	<span>罪犯编号</span><input id="crd_prisoner_id" type="text" value="3302010925" placeholder="*">*<br>
+	<span>罪犯名称</span><input id="crd_prisoner_name" type="text" value="单升红" placeholder="*">*<br>
+	<span>监区编号</span><input id="crd_dprt_id" type="text" value="65" placeholder="*">*<br>
+	<span>监区名称</span><input id="crd_dprt_name" type="text" value="一监区一分监区"><br>
+	<span>民警编号</span><input id="crd_police_id" type="text" value="100651"><br>
+	<span>点名时间</span><input id="crd_time" type="text" value=""><br>
+	<button onclick="callrolling()">-----------------------点名-----------------------</button><br>
+	<span id="msg2"></span>
+</div>
+</body>
+
+<script type="text/javascript" src="../../../../libs/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../../../libs/ztree/js/jquery.ztree.all.min.js"></script>
+<script type="text/javascript">
+var batch = 1001;
+var callrollStatus = 0;
+
+function initDprtTree () {
+	// test_query_dprt_for_ztree
+	var setting = {
+		data: {
+			simpleData: {
+				enable: true,
+				idKey: 'id',
+				pIdKey: 'pid'
+			}
+		},
+		callback: {
+			onClick: function(event, treeId, treeNode) {
+				loadPrisoner(treeNode.id);
+				loadPolice(treeNode.id);
+				$('#crm_dprt_id').val(treeNode.id);
+				$('#crm_dprt_name').val(treeNode.name);
+			}
+		}
+	};
+
+	ajaxReq('dbCtrl/query', {args: JSON.stringify({sqlId: 'test_query_dprt_for_ztree'})}, function (result) {
+
+		for(var i = 0, len = result.data.length; i < len; i++) {
+			if (!result.data[i].pid) {
+				$('#crm_cus_number').val(result.data[i].id);
+				break;
+			}
+		}
+
+		$.fn.zTree.init($('#dprtTree'), setting, result.data);
+	});
+}
+
+function loadPrisoner (dprtId) {
+	$('#prisonerMsg').html('');
+	var cusNumber = getCusNumber();
+
+	var setting = {
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: 'id',
+					pIdKey: 'pid'
+				}
+			},
+			callback: {
+				onClick: function(event, treeId, treeNode) {
+					$('#crd_prisoner_id').val(treeNode.id);
+					$('#crd_prisoner_name').val(treeNode.name);
+				}
+			}
+		};
+
+		ajaxReq('dbCtrl/query', {args: JSON.stringify({
+			sqlId: 'test_query_prisoner_for_ztree',
+			params: [cusNumber, dprtId]
+		})}, function (result) {
+			$.fn.zTree.init($('#prisonerTree'), setting, result.data);
+			
+			if (result.data.length == 0) {
+				$('#prisonerMsg').html('机构编号为['+cusNumber+']的部门没有罪犯信息!');
+			}
+		});
+}
+
+function getCusNumber () {
+	var cusNumber = $('#crm_cus_number').val();
+	if (cusNumber) {
+		return cusNumber;
+	} else {
+		$('#crm_cus_number').focus();
+		$('#cusNumberMsg').html('请输入机构编号').delay(3000).fadeOut(500);
+		throw '请输入机构编号';
+	}
+}
+
+function loadPolice (dprtId) {
+	$('#policeMsg').html('');
+	var cusNumber = getCusNumber();
+	var setting = {
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: 'id',
+					pIdKey: 'pid'
+				}
+			},
+			callback: {
+				onClick: function(event, treeId, treeNode) {
+					$('#crm_police_id').val(treeNode.id);
+					$('#crm_police_name').val(treeNode.name);
+				}
+			}
+		};
+
+		ajaxReq('dbCtrl/query', {args: JSON.stringify({
+			sqlId: 'test_query_police_for_ztree',
+			params: [cusNumber, dprtId]
+		})}, function (result) {
+			$.fn.zTree.init($('#policeTree'), setting, result.data);
+
+			if (result.data.length == 0) {
+				$('#policeMsg').html('机构编号为['+cusNumber+']的部门没有民警信息');
+			}
+		});
+}
+
+
+initDprtTree();
+
+
+Date.prototype.Format = function(fmt) {   
+  var o = {   
+    "M+" : this.getMonth()+1,                 //月份   
+    "d+" : this.getDate(),                    //日   
+    "h+" : this.getHours(),                   //小时   
+    "m+" : this.getMinutes(),                 //分   
+    "s+" : this.getSeconds(),                 //秒   
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度   
+    "S"  : this.getMilliseconds()             //毫秒   
+  };
+
+  if(/(y+)/.test(fmt))   
+    fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+
+  for(var k in o)   
+    if(new RegExp("("+ k +")").test(fmt))   
+  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+  return fmt;   
+}
+
+
+function getTime () {
+	return (new Date()).Format("yyyy-MM-dd hh:mm:ss");
+}
+
+
+function callrollbegin () {
+	if (callrollStatus) {
+		alert('已经在点名中...'); return;
+	}
+	var time = getTime();
+	var serialNo = (new Date()).getTime();
+
+	var params = {
+		crm_cus_number: getCusNumber(),
+		crm_record_id: '',
+		crm_serial_code: serialNo,
+		crm_batch_code: batch++,
+		crm_dprt_id: $('#crm_dprt_id').val(),
+		crm_dprt_name: $('#crm_dprt_name').val(),
+		crm_police_id: $('#crm_police_id').val(),
+		crm_police_name: $('#crm_police_name').val(),
+		crm_predict_num: $('#crm_predict_num').val(),
+		crm_fact_num: 0,
+		crm_begin_time: time,
+		crm_end_time: ''
+	};
+
+	$('#crm_fact_num').val(0);
+	$('#crm_record_id').val();
+	$('#crm_serial_code').val(serialNo);
+	$('#crm_batch_code').val(batch)
+	$('#crm_begin_time').val(time);
+
+	callrollTest('BEGIN', params, function (data) {
+		$('#crm_record_id').val(data.crm_record_id);
+		$('#msg1').html('点名编号' + data.crm_record_id);
+		callrollStatus = true;
+	});
+}
+
+
+function callrolling () {
+	if (callrollStatus) {
+		var time = getTime();
+		var recordId = $('#crm_record_id').val();
+		var params = {
+				crd_cus_number: getCusNumber(),
+			   crd_record_id: recordId,
+			   crd_prisoner_id: $('#crd_prisoner_id').val(),
+			   crd_prisoner_name: $('#crd_prisoner_name').val(),
+			   crd_dprt_id: $('#crd_dprt_id').val(),
+			   crd_dprt_name: $('#crd_dprt_name').val(),
+			   crd_police_id: $('#crd_police_id').val(),
+			   crd_time: time,
+			   crd_status: 1,
+			   crd_update_time: time
+		};
+		
+		$('#crm_fact_num').val(parseInt($('#crm_fact_num').val()) + 1);
+
+		if (recordId) {
+			callrollTest('CALL', params, function () {
+				$('#msg2').html('点名成功');
+			});
+		} else {
+			alert('请先点击[开始点名]激活点名');
+		}
+	} else {
+		alert('请先点击[开始点名]激活点名');
+	}
+}
+
+
+function callrollend () {
+	if (callrollStatus) {
+		callrollStatus = false;
+		var time = getTime();
+		var params = {
+			crm_cus_number: getCusNumber(),
+			crm_record_id: $('#crm_record_id').val(),
+			crm_end_time: time,
+			crm_fact_num: $('#crm_fact_num').val()
+		};
+	
+		$('#crm_end_time').val(time);
+	
+		callrollTest('END', params, function () {
+			$('#msg1').html('点名结束');
+		});
+	} else {
+		alert('未点名');
+	}
+}
+
+function callrollTest (action, params, callback) {
+	ajaxReq('callrolltest/test', {action: action, params: JSON.stringify(params)}, callback);
+}
+
+function ajaxReq (url, data, callback) {
+	$.ajax({
+		'url': '../../../../' + url,
+		'data': data,
+		'timeout': 60 * 1000,
+		'type': 'POST',
+		'dataType': "json",
+		'contentType': "application/x-www-form-urlencoded; charset=utf-8",
+		'success': function (response) {
+			callback(response);
+		},
+		'error': function (request, status, e) {
+			console.error('Ajax请求响应异常：request=' + JSON.stringify(request));
+			console.error('Ajax请求响应异常：status=' + JSON.stringify(status));
+			console.error('Ajax请求响应异常：e=' + JSON.stringify(e));
+			error && error(status, e);
+		}
+	});
+}
+
+</script>
+</html>

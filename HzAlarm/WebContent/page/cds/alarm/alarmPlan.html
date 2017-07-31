@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<link rel="stylesheet" href="../../../css/frm/hz.mindmap.css">
+<link rel="stylesheet" href="../../../css/cds/alarm/alarmPlan.css">
+<link rel="stylesheet" href="../../../css/common.css" >
+
+<style>
+div.left-con {padding: 5px;margin: 0px;}
+div.input .search-txt {background-color: rgba(0,0,0,0.6);}
+div.level-handle {
+	padding: 20px 20px 5px 5px;
+	display: none;
+}
+div.layui-layer-content >div.level-handle {
+	display: block !important;
+}
+.expand-btn {display:inline-block; position:absolute;top:5px;right:5px;font-size:12px;color:#bdc71a;cursor: pointer;z-index: 1;}
+.device-types {padding:5px 0; position:relative; margin-top:5px; background:#272525;}
+.search-menu {position: absolute; left:0; top:34px; width:100px; z-index:100; background:rgba(21, 67, 82,1); padding:5px;}
+.search-menu p {padding:3px 5px;font-size:13px;color:#fff;}
+.search-menu p:hover {cursor: pointer;color:#bdc71a;}
+.date-input {margin-right: 15px;margin-left: 5px;}
+.col-xs-6 {padding-right: 0px;}
+.ztree .level0 >span.node_name {color: #00ceff;}
+
+.col-xs-9 .date-input {
+	margin: 0px !important;
+}
+.stree {
+    border: 1px solid #2a7cbf !important;
+    border-top: 0px none !important;
+    margin-top: 0px !important;
+    margin-left: 15px !important;
+    z-index: 99999 !important;
+}
+.stree a.level0 >span.node_name {color: #f2f2f2 !important;}
+.slt-box {
+	background: url(../../../css/icons/select.png) right 2px center no-repeat rgba(199,239,252,.2) !important;
+}
+
+</style>
+</head>
+<body>
+<div id="planMain" class="vbox box-con">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" style="width:270px">
+			<div class="input icon" >
+			  	<input class="search-txt" v-model="searchTree" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		    <div class="device-types">
+		    	<div class="col-xs-6">
+			    	<label class="checkbox-inline">
+					  <input type="checkbox" v-model="checkedStatus" :value="1">已设置
+					</label>	
+		    	</div>
+		    	<div class="col-xs-6">
+					<label class="checkbox-inline">
+					  <input type="checkbox" v-model="checkedStatus" :value="2">未设置
+					</label>	    	
+				</div>	
+		    </div>
+		    <div class="device-types">
+		    	<span class="expand-btn" @click="expand" v-text="isExpand ? '折叠' : '展开'"></span>
+		    	<div v-for="d in deviceTypes" v-if="$index < 4" class="col-xs-6" v-show="!d.disabled">
+			    	<label class="checkbox-inline" :title="d.tip">
+					  <input type="checkbox" v-model="zTreeShows[$index]" :value="true" :disabled="d.disabled"><span v-text="d.name"></span>
+					</label>		    		
+		    	</div>
+		    	<div v-for="d in deviceTypes" v-if="$index >= 4 && isExpand" class="col-xs-6" v-show="!d.disabled">
+			    	<label class="checkbox-inline" :title="d.tip">
+					  <input type="checkbox" v-model="zTreeShows[$index]" :value="true" :disabled="d.disabled"><span v-text="d.name"></span>
+					</label>		    		
+		    	</div>
+		    </div>
+
+		    <div class="hz-col-1" style="overflow:auto">
+				<ul v-for="T in deviceTypes" v-show="zTreeShows[$index]" :id="'alertorTree_' + T.id" class="ztree"></ul>
+		    </div>
+		</div>
+		<div class="hz-col-1 vbox" style="position: relative; overflow: hidden;">
+			<span class="msg-status"></span>
+			<div class="hz-mm-scene"></div>
+			<div class="link-panel hbox hz-col-1">
+				<div class="dvc-type-panel left-con vbox">
+					<div :class="selectedLinkType == d.id ? 'dvc-type-box selected' : 'dvc-type-box'" :id="'link_type_' + d.id" v-for="d in linkTypes"  @click="selectLinkType(d)"><div v-text="d.name"></div></div>   		
+				</div>
+				<div class="link-dvc-panel hz-col-1 vbox" :class="selectedLinkType ? 'active' : ''">
+					<div class="input icon" >
+					  	<input class="search-txt" v-model="searchDvc" placeholder="输入关键字搜索">
+					  	<span class="find"></span>
+				    </div>
+				    <div class="hz-col-1" style="overflow:auto">
+				    	<ul id="linkDvcTree" class="ztree"></ul>
+				    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+			<a v-show="!isHandle" @click="sureEdit" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>确定</span></a>
+			<a v-show="!isHandle" @click="cancelEdit" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>取消</span></a>
+
+			<a v-show="isHandle" @click="save" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a v-show="isHandle" @click="remove" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			<a v-show="isHandle" @click="reset" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/alarm/alarmPlan']);
+</script>
+</html>

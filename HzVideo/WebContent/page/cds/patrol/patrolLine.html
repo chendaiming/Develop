@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+	.btns{
+		padding:10px 0 0 0;
+		text-align:left;
+		border-top:1px solid #1f699e;
+	}
+	.block{
+		margin-bottom:10px;
+	}
+	.lineList{
+		background:url(image/line.png);
+		background-size:30px;
+		background-position:center 10px;
+		background-repeat:no-repeat;
+		min-height:70px;
+		border:1px solid #1f699e;
+		cursor: pointer;
+		text-align:center;
+		padding-top:44px;
+		border-radius:3px;
+		font-size:12px;
+	}
+	.selected{
+		background:#4077ae;
+		border-radius:3px;
+	}
+	.addpoint{
+		padding-left:20px;
+	}
+	.add{
+		background:#4077ae;
+		color:#fff;
+		border-radius:50%;
+		width:65px;
+		height:65px;
+		line-height:65px;
+		text-align:center;
+		cursor: pointer;
+		display:inline-block;
+		margin-left:20px;
+		margin-bottom:10px;
+	}
+	.addpoint .point{
+		background:#4077ae;
+		color:#1afa29;
+		border-radius:50%;
+		width: 84px;
+		height:65px;
+		line-height:65px;
+		text-align:center;
+		cursor: pointer;
+		display:inline-block;
+		overflow:hidden;
+	}
+	.addpoint .cap{
+		width:1px;
+		height:50px;
+		background-color:#4077ae;
+		margin-left: 42px;
+	}
+	.tag{
+		color:#bbb;
+		padding-left:15px;
+	}
+	.remark{
+		color:#bbb;
+		text-align:center;
+		margin-top:50px;
+	}
+	.bbb{
+		color:#bbb;
+	}
+	.yello{
+		color:#1afa29;
+	}
+</style>
+</head>
+<body>
+<div class="hbox box-con">
+	<div class="vbox" style="padding:12px;width:320px;border-right:1px solid #1f699e">
+		<div class="input icon" >
+		  	<input v-model="search" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>		
+	    <div class="hz-col-1" style="padding:10px 0;overflow:auto;">
+	    	<div class="remark" v-cloak v-if="lines.length==0">还没有添加巡更线路</div>
+	    	<div v-for="line in lines | filterBy search in 'pli_name'" @click="select(line)" class="col-xs-6 block">
+	    		<div v-bind:class="{'selected':line.selected=='true'}">
+		    		<div class="lineList" v-text="line.pli_name"></div>
+	    		</div>
+	    	</div>
+	    </div>
+	    <div class="btns">
+	    	<div>
+				<a @click="preview" v-bind:class="{'btn_disabled':isView}" class="hbtn btn_primary btn_large"><span>预览轨迹</span></a>
+				<a @click="pruseTrackPath" v-if="isView" class="hbtn btn_primary btn_large"><span v-text="!isPruse ? '暂停' :'继续' "></span></a>
+				<a @click="stopTrackPath" v-if="isView" class="hbtn btn_primary btn_large"><span>停止</span></a>	    	
+	    	</div>
+	    	<div style="margin-top:10px">
+				<a @click="delLine" v-bind:class="{'btn_disabled':!line.pli_id || isWatch || isView}"  class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+				<a @click="watch" class="hbtn btn_primary btn_large"><span v-text="watchTxt"></span></a>
+	    	</div>
+	    </div>	
+	</div>
+	<div class="hz-col-1 vbox" style="padding:15px 15px 10px 10px;overflow-y:hidden">
+		<div class="hz-col-1 vbox">
+			<form class="form-horizontal hz-col-1 vbox" role="form" >
+				<div class="row" v-if="!isWatch">
+					  <div class="col-xs-6">
+						  <div class="form-group">
+						    <label class="col-xs-4 control-label">线路名称</label>
+						    <div class="col-xs-8">
+						      <input class="form-control" v-model="line.pli_name" type="text" placeholder="线路名称">
+						    </div>
+						  </div>
+					  </div>
+					  <div class="col-xs-6">
+						  <div class="form-group">
+						    <label class="col-xs-4 control-label">浮动时间</label>
+						    <div class="col-xs-8">
+						      <input class="form-control" v-model="line.pli_float_time" type="number" min="0" title="鼠标滚动快速选择"  placeholder="巡更浮动时间(分钟)">
+						    </div>
+						  </div>
+					  </div>
+				</div>
+				<div class="addpoint hz-col-1" style="overflow-y:auto;overflow-x:hidden;">
+					<div class="remark" v-cloak v-if="points.length==0">还没有添加任何巡更点</div>
+					<div class="points" v-cloak v-if="points.length>0">
+						<div v-if="!isWatch" v-for="p in points" class="vbox chose-point">
+							<div class="hbox">
+								<div class="point" v-text="'巡更点'+($index+1)"></div>
+								<div class="hbox hz-col-1" style="padding:12px 10px 0 10px">
+									<div class="hz-col-1" style="margin-right:10px;">
+										<hz-treeselect 
+								  			tip="选择巡更点"
+								  			isleaf=true
+								  			sqlid="select_patrol_forselect" 
+								  			:params={cusNumber:p.plr_cus_number}
+								  			:id.sync="p.plr_point_id"
+								  		/>
+									</div>		
+									<div class="hz-col-1">
+										<hz-time 
+								  			tip="巡更时间"
+								  			format='H:i'
+								  			:val.sync="p.plr_plan_time"
+								  		/>
+									</div>												
+									<a @click="points.$remove(p)" style="margin-top:3px" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i></a>
+								</div>
+							</div>
+							<div v-if="$index != points.length-1" class="cap"></div>
+						</div>
+						<div  v-if="isWatch"  class="hbox">
+							<div class="hz-col-2">
+								<div v-for="p in points" class="vbox chose-point hz-col-1">
+									<div class="hbox">
+										<div class="point" :title="p.ppi_name" v-text="p.ppi_name"></div>
+										<div class="hbox hz-col-1" style="padding:12px 10px 0 10px">
+											<div class="hz-col-1" style="margin-right:10px;text-align:center">
+												<div style="color:#bbb">计划巡更时间</div>
+												<div style="color:#1afa29">{{p.plr_plan_time}}</div>
+											</div>		
+										</div>
+									</div>
+									<div v-if="$index != points.length-1" class="cap"></div>
+								</div>
+							</div>
+							<div class="hz-col-1">
+								<div v-for="r in records" style="margin-bottom:50px;">
+									<div  class="hz-col-1" style="border-left:1px solid #4077ae;padding-left:20px;">
+										<div class="bbb">{{'巡更人：'+r.pbd_police_name}}</div>
+										<div class="bbb">{{'巡更时间：'+r.real_time}}</div>
+										<div :class="{'bbb':r.prd_status == 0,'yello':r.prd_status == 1 || r.prd_status == 2}">{{'巡更状态：'+r.prd_status_name}}</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div v-if="!isWatch">
+					<span @click="addPoint" class="add">添加</span>
+					<span class="tag">点击添加巡更点</span>				
+				</div>
+			</form>
+		</div>
+		<div class="btns" style="text-align:right">
+	    	<a @click="save" v-bind:class="{'btn_disabled':isWatch}" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a @click="reset" v-bind:class="{'btn_disabled':isWatch}" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+	    </div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/patrol/patrolLine'])
+</script>
+</body>
+</html>

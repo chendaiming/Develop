@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_screen_base_info" desc="大屏基础信息新增">
+		<seq>screen_base_info@sbi_screen_id</seq>
+		<sql>
+			INSERT  INTO
+				screen_base_info
+				(	
+					sbi_cus_number,
+					sbi_screen_id,
+					sbi_other_idnty,
+					sbi_screen_name,
+					sbi_dept_id,
+					sbi_width,
+					sbi_height,
+					sbi_row_num,
+					sbi_column_num,
+					sbi_crte_time,
+					sbi_crte_user_id,
+					sbi_updt_time,
+	        		sbi_updt_user_id
+				)
+			values(
+					:sbi_cus_number,
+					:sbi_screen_id,
+					:sbi_other_idnty,
+					:sbi_screen_name,
+					:sbi_dept_id,
+					:sbi_width,
+					:sbi_height,
+					:sbi_row_num,
+					:sbi_column_num,
+	        		SYSDATE,
+	        		:sbi_crte_user_id,
+	        		SYSDATE,
+	        		:sbi_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="insert_screen_win_dtls" desc="拼接屏基础信息新增">
+		<sql>
+			INSERT  INTO
+				screen_win_dtls
+				(	
+					dcr_cus_number,
+					dcr_screen_id,
+					dcr_screen_win_id,
+					dcr_out_type,
+					dcr_signal_id,
+					dcr_decoder_id,
+					dcr_decoder_chl,
+					dcr_cut_seq,
+					dcr_width,
+					dcr_height,
+	        		dcr_screen_top,
+	        		dcr_screen_left,
+	        		dcr_crte_time,
+	        		dcr_crte_user_id,
+	        		dcr_updt_time,
+	        		dcr_updt_user_id
+				)
+			values(
+					:dcr_cus_number,
+					:dcr_screen_id,
+					:dcr_screen_win_id,
+					:dcr_out_type,
+					:dcr_signal_id,
+					:dcr_decoder_id,
+					:dcr_decoder_chl,
+					:dcr_cut_seq,
+					:dcr_width,
+					:dcr_height,
+					:dcr_screen_top,
+					:dcr_screen_left,
+	        		SYSDATE,
+	        		:dcr_crte_user_id,
+	        		SYSDATE,
+	        		:dcr_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="select_screen_base_info" desc="大屏基础信息查询">
+    	<sql>
+			SELECT sbi_screen_id,
+				   sbi_other_idnty,
+				   sbi_screen_name,
+				   sbi_dept_id,
+				   sbi_width,
+				   sbi_height,
+				   sbi_row_num,
+				   sbi_column_num
+			  FROM screen_base_info
+		</sql>
+		<where id="0">
+			WHERE sbi_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE sbi_cus_number = ? AND 
+				  sbi_screen_id = ?
+		</where>
+		<order id="0">
+			ORDER BY sbi_screen_id
+		</order>
+	</item>
+	
+	<item id="delete_screen_base_info" desc="大屏基础信息删除">
+    	<sql>
+			DELETE screen_base_info
+			 WHERE sbi_cus_number = :sbi_cus_number AND
+			 	   sbi_screen_id = :sbi_screen_id
+		</sql>
+	</item>
+	 
+	<item id="delete_screen_win_dtls" desc="拼接屏基础信息删除">
+    	<sql>
+			DELETE screen_win_dtls
+			 WHERE dcr_cus_number = :dcr_cus_number AND
+			 	   dcr_screen_id = :dcr_screen_id
+		</sql>
+	</item>
+	
+	<item id="delete_setScreen_screen_scene" desc="大屏布局信息删除">
+    	<sql>
+			DELETE screen_scene
+			 WHERE ssn_cus_number = :ssn_cus_number AND
+			 	   ssn_screen_id = :ssn_screen_id
+		</sql>
+	</item>
+	
+	<item id="delete_setScreen_screen_scene_layout" desc="大屏布局基础屏删除">
+    	<sql>
+			DELETE screen_scene_layout
+			 WHERE ssl_cus_number = :ssl_cus_number AND
+			 	   ssl_screen_id = :ssl_screen_id
+		</sql>
+	</item>
+	
+	<item id="select_screen_org_dept" desc="根据机构号查询所有部门">
+		<sql>
+			SELECT odd_id AS id,
+				   odd_name AS name,
+				   odd_parent_id  AS pid
+			  FROM sys_org_dept_dtls 
+		</sql>
+		<where id="0">
+			START WITH odd_id= ? and odd_use = 1 
+			CONNECT BY PRIOR odd_id=odd_parent_id
+		</where>
+		<order id="0">
+			ORDER BY odd_seq
+		</order>
+    </item>
+
+    <item id="update_screen_base_info" desc="大屏基础信息修改">
+    	<sql>
+			UPDATE screen_base_info SET
+				   sbi_other_idnty = :sbi_other_idnty,
+				   sbi_screen_name = :sbi_screen_name,
+				   sbi_dept_id = :sbi_dept_id,
+				   sbi_width = :sbi_width,
+				   sbi_height = :sbi_height,
+				   sbi_updt_time = SYSDATE,
+				   sbi_updt_user_id = :sbi_updt_user_id
+			 WHERE sbi_cus_number = :sbi_cus_number AND
+			 	   sbi_screen_id = :sbi_screen_id
+		</sql>
+	</item>
+    
+    <item id="update_screen_win_dtls" desc="拼接屏基础信息修改">
+    	<sql>
+			UPDATE screen_win_dtls SET
+				   dcr_out_type = :dcr_out_type,
+				   dcr_signal_id = :dcr_signal_id,
+				   dcr_decoder_id = :dcr_decoder_id,
+				   dcr_decoder_chl = :dcr_decoder_chl,
+				   dcr_cut_seq = :dcr_cut_seq,
+				   dcr_updt_time = SYSDATE,
+				   dcr_updt_user_id = :dcr_updt_user_id
+			 WHERE dcr_cus_number = :dcr_cus_number AND
+			 	   dcr_screen_id = :dcr_screen_id AND
+			 	   dcr_screen_win_id = :dcr_screen_win_id
+		</sql>
+	</item>
+</sqlItem>

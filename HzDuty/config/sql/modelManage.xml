@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_dty_mode_base_dtls" desc="值班模板基础信息新增">
+		<seq>mbd_relation_id@id</seq>
+		<sql>
+			INSERT  INTO
+				dty_mode_base_dtls
+				(	
+					mbd_cus_number,
+					mbd_relation_id,
+					mbd_mode_idnty,
+					mbd_mode_name,
+					mbd_category_id,
+					mbd_shift_id,
+					mbd_shift_name,
+					mbd_shift_start_time,
+					mbd_shift_end_time,
+					mbd_job_id,
+					mbd_job_name,
+					mbd_dept_id,
+					mbd_seq,
+					mbd_crte_time,
+					mbd_crte_user_id,
+					mbd_updt_time,
+					mbd_updt_user_id
+				)
+			values(
+					:mbd_cus_number,
+					:id,
+					:mbd_mode_idnty,
+					:mbd_mode_name,
+					:mbd_category_id,
+					:mbd_shift_id,
+					:mbd_shift_name,
+					:mbd_shift_start_time,
+					:mbd_shift_end_time,
+					:mbd_job_id,
+					:mbd_job_name,
+					:mbd_dept_id,
+					:mbd_seq,
+					SYSDATE,
+					:mbd_crte_user_id,
+					SYSDATE,
+					:mbd_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+	<item id="select_dty_category_mode_tree" desc="根据机构号查询所有类别模板树信息">
+		<sql>
+			SELECT 'c_' || cbd_id AS id,
+				   cbd_name AS name,
+				   null AS pid,
+				   null AS deptId,
+				   'category' AS type,
+				   0 AS seq
+			  FROM (SELECT * FROM dty_category_base_dtls WHERE cbd_cus_number = ? ORDER BY cbd_seq)
+			  UNION ALL
+			SELECT 'm_' || mbd_mode_idnty AS id,
+				   mbd_mode_name AS name,
+				   'c_' || mbd_category_id  AS pid,
+				   mbd_dept_id AS deptId,
+				   'mode' AS type,
+				   mbd_seq AS seq
+			  FROM (SELECT DISTINCT mbd_mode_idnty,
+			  	 					mbd_mode_name,
+			  	 					mbd_category_id,
+			  	 					mbd_dept_id,
+			  	 					mbd_seq
+			   		  FROM dty_mode_base_dtls 
+			   		 WHERE mbd_cus_number = ?
+			   		 ORDER BY mbd_seq)
+		</sql>
+    </item>
+    
+    <item id="select_dty_category_order_info" desc="查询值班班次信息">
+		<sql>
+			SELECT sbd_id,
+				   sbd_name,
+				   sbd_stime_flag,
+				   sbd_start_time,
+				   sbd_etime_flag,
+				   sbd_end_time,
+				   sbd_category_id
+			  FROM dty_shift_base_dtls
+		</sql>
+		<where id="0">
+			WHERE sbd_cus_number = ?
+		</where>
+		<order id="0">
+			ORDER BY sbd_seq
+		</order>
+    </item>
+    
+    <item id="select_dty_category_job_info" desc="查询值班岗位信息">
+		<sql>
+			SELECT jbd_id,
+				   jbd_name,
+				   jbd_category_id
+			  FROM dty_job_base_dtls
+		</sql>
+		<where id="0">
+			WHERE jbd_cus_number = ?
+		</where>
+		<order id="0">
+			ORDER BY jbd_seq
+		</order>
+    </item>
+    
+    <item id="select_dty_category_dept_select" desc="值班类别使用部门查询">
+    	<sql>
+			SELECT cdr_dept_id AS id,
+				   odd_name AS name
+			  FROM dty_category_dept_rltn
+			  LEFT JOIN sys_org_dept_dtls
+			  ON (cdr_cus_number = odd_parent_id AND
+			  	  cdr_dept_id = odd_id)
+		</sql>
+		<where id="0">
+			WHERE cdr_cus_number = ? AND
+				  cdr_category_id = ?
+		</where>
+	</item>
+    
+    <item id="select_dty_mode_base_dtls" desc="查询值班模板基础信息">
+		<sql>
+			SELECT mbd_relation_id,
+				   mbd_mode_idnty,
+				   mbd_mode_name,
+				   mbd_category_id,
+				   mbd_shift_id,
+				   mbd_shift_name,
+				   mbd_shift_start_time,
+				   mbd_shift_end_time,
+				   mbd_job_id,
+				   mbd_job_name,
+				   mbd_dept_id,
+				   mbd_crte_user_id,
+				   sbd_seq,
+				   sbd_stime_flag,
+				   sbd_etime_flag,
+				   jbd_seq
+			  FROM dty_mode_base_dtls
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (mbd_cus_number = sbd_cus_number AND
+			  	  mbd_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (mbd_cus_number = jbd_cus_number AND
+			  	  mbd_job_id = jbd_id)
+		</sql>
+		<where id="0">
+			WHERE mbd_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE mbd_cus_number = ? AND
+				  mbd_mode_idnty = ?
+		</where>
+		<order id="0">
+			ORDER BY mbd_seq,sbd_seq,jbd_seq
+		</order>
+    </item>
+    
+    <item id="update_dty_mode_base_orderId" desc="值班模板排序序号修改">
+    	<sql>
+			UPDATE dty_mode_base_dtls SET
+				   mbd_seq = :mbd_seq
+			 WHERE mbd_cus_number = :mbd_cus_number AND
+			 	   mbd_mode_idnty = :mbd_mode_idnty
+		</sql>
+	</item>
+    
+    <item id="delete_dty_mode_base_dtls" desc="值班模板基础信息删除">
+    	<sql>
+			DELETE dty_mode_base_dtls
+			 WHERE mbd_cus_number = :mbd_cus_number AND
+			 	   mbd_mode_idnty = :mbd_mode_idnty
+		</sql>
+	</item>
+</sqlItem>

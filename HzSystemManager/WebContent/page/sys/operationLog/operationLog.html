@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>操作日志统计</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style type="text/css">
+.query-line {
+	position: absolute;
+	top: 8px;
+    left: 5px;
+}
+.query-content >div {
+	display: inline-block;
+}
+.query-content {
+    margin-right: 5px; 
+}
+#table .ellipsis {
+	 /* width: 200px; */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.ellipsis {
+	    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.query-line a{
+	margin-top: 4px;
+    margin-left: 15px;
+}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="logContent">
+	<div class="hbox hz-col-1 query-line">
+		<div class="query-content">
+		    <input class="form-control" style="height: 36px;" v-model="search.uol_user_name" placeholder="请输入用户姓名搜索"> 
+		</div>
+		<div class="query-content">
+		    <input class="form-control" style="height: 36px;" v-model="search.uol_operated_desc" placeholder="请输入操作内容搜索"> 
+		</div>
+		<div class="query-content">
+		    
+		    <hz-select
+                tip="日志类型"
+                code="UOL_TYPE"
+                :id.sync="search.uol_type"
+                />
+		</div>
+		<div class="query-content">
+			<hz-date 
+	      		tip="选择开始时段" 
+	      		:val.sync="search.uol_startTime"
+	      		enablesecond = 1
+	      	 	enabletime = 1
+	      	/>
+		</div>
+		<div class="query-content">
+			<hz-date 
+	      		tip="选择结束时段" 
+	      		:val.sync="search.uol_endTime"
+	      	 	enablesecond = 1
+	      	 	enabletime = 1
+	      	/>
+		</div>
+		<a v-cloak class="hbtn btn_primary btn_large" @click="searchInfo"><span>查询</span></a>
+		<a v-cloak class="hbtn btn_primary btn_large" @click="resetSearch"><span>重置</span></a>
+	</div>
+	<div class="hbox hz-col-1">
+		<div id="tableDiv" style="width: 100%;height: 100%; padding: 5px;">
+	       	<table id="table"></table>
+       	</div> 
+	</div>
+<!-- 	<div class="bottom" >
+		<div class="buttons">
+			<a v-show="editFlag" class="hbtn btn_primary btn_large" @click="editTable"><i class="btn_icon icon_edit"></i><span>编辑</span></a>
+			
+			<a v-show="!editFlag" v-cloak class="hbtn btn_primary btn_large" @click="saveTable"><i class="btn_icon icon_del"></i><span>确定</span></a>
+			<a v-show="!editFlag" v-cloak class="hbtn btn_primary btn_large" @click="cancelTable"><i class="btn_icon icon_del"></i><span>取消</span></a>
+		</div>
+	</div>  -->
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/sys/operationLog/operationLog"]);
+</script>
+</html>

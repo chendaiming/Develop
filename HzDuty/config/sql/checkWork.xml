@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_ckw_clock_record" desc="添加考勤打卡记录">
+		<sql>
+			INSERT  INTO
+				ckw_clock_record
+				(	
+					ckr_cus_number,
+					ckr_relation_id,	
+					ckr_date,
+					ckr_dept_id,
+					ckr_dept_name,
+					ckr_shift_id,
+					ckr_job_id,
+					ckr_start_date,
+					ckr_end_date,
+					ckr_person_id,
+					ckr_person_name,
+					ckr_until_date,
+					ckr_until_status,
+					ckr_until_remark
+				)
+			values(
+					:ckr_cus_number,
+					:ckr_relation_id,
+					TO_DATE(:ckr_date,'YYYY-MM-DD'),
+					:ckr_dept_id,
+					:ckr_dept_name,
+					:ckr_shift_id,
+					:ckr_job_id,
+					TO_DATE(:ckr_start_date,'YYYY-MM-DD HH24:mi:ss'),
+					TO_DATE(:ckr_end_date,'YYYY-MM-DD HH24:mi:ss'),
+					:ckr_person_id,
+					:ckr_person_name,
+					SYSDATE,
+					:ckr_until_status,
+					:ckr_until_remark
+        		)
+		</sql>
+    </item>
+    
+    <item id="select_checkWork_dutyPeople_info" desc="查询值班人员信息">
+    	<sql>
+			SELECT ped_relation_id,
+				   TO_CHAR(ped_date,'YYYY-MM-DD') AS ped_date,
+				   sbd_id,
+				   sbd_name,
+				   sbd_stime_flag,
+				   scd_shift_start_time,
+				   sbd_etime_flag,
+			  	   scd_shift_end_time,
+			  	   jbd_id,
+			  	   jbd_name,
+			  	   odd_name,
+				   ped_name
+			  FROM dty_people_dtls
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ped_cus_number = sbd_cus_number AND
+			  	  ped_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (ped_cus_number = jbd_cus_number AND
+			  	  ped_job_id = jbd_id)
+			  LEFT JOIN sys_org_dept_dtls
+			  ON (ped_cus_number = odd_parent_id AND
+			  	  ped_dept_id = odd_id)
+			  LEFT JOIN dty_schedule_dtls
+			  ON (ped_cus_number = scd_cus_number AND
+			  	  ped_relation_id = scd_relation_id)
+		</sql>
+		<where id="0">
+			WHERE ped_cus_number = ? AND
+				  TRUNC(ped_date) = TRUNC(SYSDATE) AND
+    			  (sbd_stime_flag = sbd_etime_flag OR TO_DATE(TO_CHAR(ped_date,'YYYY-MM-DD') || ' ' || scd_shift_start_time,'YYYY-MM-DD hh24:mi:ss') #= SYSDATE) AND
+     			  (sbd_stime_flag = sbd_etime_flag OR TO_DATE(TO_CHAR(ped_date,'YYYY-MM-DD') || ' ' || scd_shift_end_time,'YYYY-MM-DD hh24:mi:ss')+1 >= SYSDATE) AND  
+      			  (sbd_stime_flag # sbd_etime_flag OR TO_DATE(TO_CHAR(ped_date,'YYYY-MM-DD') || ' ' || scd_shift_start_time,'YYYY-MM-DD hh24:mi:ss') #= SYSDATE) AND
+     		      (sbd_stime_flag # sbd_etime_flag OR TO_DATE(TO_CHAR(ped_date,'YYYY-MM-DD') || ' ' || scd_shift_end_time,'YYYY-MM-DD hh24:mi:ss') >= SYSDATE) AND
+				  ped_id = ?
+		</where>
+	</item>
+    
+	<item id="select_ckw_clock_record" desc="查询考勤打卡记录">
+    	<sql>
+			SELECT ckr_relation_id,
+				   TO_CHAR(ckr_date,'YYYY-MM-DD') AS ckr_date,
+				   TO_CHAR(ckr_end_date,'YYYY-MM-DD HH24:mi:ss') AS ckr_end_date,
+				   TO_CHAR(ckr_until_date,'YYYY-MM-DD HH24:mi:ss') AS ckr_until_date,
+				   ckr_until_status,
+				   ckr_until_remark,
+				   TO_CHAR(ckr_back_date,'YYYY-MM-DD HH24:mi:ss') AS ckr_back_date,
+				   ckr_back_status,
+				   ckr_back_remark
+			  FROM ckw_clock_record
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ckr_cus_number = sbd_cus_number AND
+			  	  ckr_shift_id = sbd_id)
+		</sql>
+		<where id="0">
+			WHERE ckr_cus_number = ? AND
+				  TRUNC(ckr_start_date) = TRUNC(SYSDATE) AND
+    			  (sbd_stime_flag = sbd_etime_flag OR ckr_start_date #= SYSDATE) AND
+     			  (sbd_stime_flag = sbd_etime_flag OR ckr_end_date+1 >= SYSDATE) AND  
+      			  (sbd_stime_flag # sbd_etime_flag OR ckr_start_date #= SYSDATE) AND
+     		      (sbd_stime_flag # sbd_etime_flag OR ckr_end_date >= SYSDATE) AND
+				  ckr_person_id = ?
+		</where>
+	</item>
+	
+	<item id="select_ckw_clock_record2" desc="查询考勤打卡记录">
+		<const key="ckr_until_status_ch">CKR_UNTIL_STATUS</const>
+		<const key="ckr_back_status_ch">CKR_BACK_STATUS</const>
+    	<sql>
+			SELECT TO_CHAR(ped_date,'YYYY-MM-DD') AS ped_date,
+				   ped_name,
+				   odd_name,
+				   sbd_name,
+				   jbd_name,
+				   scd_shift_start_time,
+			  	   scd_shift_end_time,
+				   TO_CHAR(ckr_until_date,'YYYY-MM-DD HH24:mi:ss') AS ckr_until_date,
+				   TO_CHAR(ckr_back_date,'YYYY-MM-DD HH24:mi:ss') AS ckr_back_date,
+				   ckr_until_status,
+				   ckr_until_status AS ckr_until_status_ch,
+				   ckr_back_status,
+				   ckr_back_status AS ckr_back_status_ch,
+				   ckr_until_remark,
+				   ckr_back_remark
+			  FROM dty_people_dtls
+			  LEFT JOIN ckw_clock_record
+			  ON (ped_cus_number = ckr_cus_number AND
+			  	  ped_relation_id = ckr_relation_id AND
+			  	  TRUNC(ped_date) = TRUNC(ckr_date) AND
+			  	  ped_id = ckr_person_id)
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ped_cus_number = sbd_cus_number AND
+			  	  ped_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (ped_cus_number = jbd_cus_number AND
+			  	  ped_job_id = jbd_id)
+			  LEFT JOIN sys_org_dept_dtls
+			  ON (ped_cus_number = odd_parent_id AND
+			  	  ped_dept_id = odd_id)
+			  LEFT JOIN dty_schedule_dtls
+			  ON (ped_cus_number = scd_cus_number AND
+			  	  ped_relation_id = scd_relation_id)
+		</sql>
+		<where id="0">
+			WHERE ped_cus_number = :ped_cus_number
+		</where>
+		<where id="1">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  TRUNC(ped_date) = TRUNC(SYSDATE)
+		</where>
+		<where id="10">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id)
+		</where>
+		<!-- 正常 -->
+		<where id="11">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id) AND
+				  ckr_until_status = 1 AND
+				  ckr_back_status = 1
+		</where>
+		<!-- 上班迟到 -->
+		<where id="12">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id) AND
+				  ckr_until_status = 2
+		</where>
+		<!-- 上班未打卡 -->
+		<where id="13">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id) AND
+				  ckr_until_status IS NULL
+		</where>
+		<!-- 下班早退 -->
+		<where id="14">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id) AND
+				  ckr_back_status = 2
+		</where>
+		<!-- 下班未打卡 -->
+		<where id="15">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id) AND
+				  ckr_back_status IS NULL
+		</where>
+		<!-- 未值班 -->
+		<where id="16">
+			WHERE ped_cus_number = :ped_cus_number AND
+				  (TRIM(:ped_sdate) IS NULL or TRUNC(ped_date) >= TO_DATE(:ped_sdate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_edate) IS NULL or TRUNC(ped_date) #= TO_DATE(:ped_edate,'YYYY-MM-DD')) AND
+				  (TRIM(:ped_dept_id) IS NULL or ped_dept_id = :ped_dept_id) AND
+				  (TRIM(:ped_shift_id) IS NULL or ped_shift_id = :ped_shift_id) AND
+				  (TRIM(:ped_job_id) IS NULL or ped_job_id = :ped_job_id) AND
+				  (TRIM(:ped_id) IS NULL or ped_id = :ped_id) AND
+				  ckr_until_status IS NULL AND
+				  ckr_back_status IS NULL
+		</where>
+		<order id="0">
+			ORDER BY ped_date,sbd_seq,jbd_seq
+		</order>
+	</item>
+	
+	<item id="update_ckw_clock_record" desc="修改考勤打卡记录">
+    	<sql>
+			UPDATE ckw_clock_record SET
+				   ckr_back_date = SYSDATE,
+				   ckr_back_status = :ckr_back_status,
+				   ckr_back_remark = :ckr_back_remark
+			 WHERE ckr_cus_number = :ckr_cus_number AND
+			 	   ckr_relation_id = :ckr_relation_id AND
+			 	   ckr_date = TO_DATE(:ckr_date,'YYYY-MM-DD') AND
+			 	   ckr_person_id = :ckr_person_id
+		</sql>
+	</item>
+	
+	 <item id="select_checkWork_dept_tree"  desc="查询部门树形数据">
+		<sql>
+			SELECT odd_id AS id,
+				   odd_name AS name,
+				   odd_parent_id  AS pid,
+				   '../../../libs/ztree/css/zTreeStyle/img/org.png' AS icon,
+				   'dept' AS type
+			  FROM (SELECT * FROM sys_org_dept_dtls	
+			  	    LEFT JOIN (SELECT cdr_cus_number,
+			  	    	  			  cdr_dept_id 
+			  	    	  		 FROM dty_category_dept_rltn 
+			  	    	  	 GROUP BY cdr_cus_number,cdr_dept_id)
+			  	    ON (odd_parent_id = cdr_cus_number AND 
+			  	    	odd_id = cdr_dept_id)		  
+                    START WITH odd_id = ? and odd_use = 1 
+			        CONNECT BY PRIOR odd_id = odd_parent_id AND cdr_dept_id is not null
+			        ORDER BY odd_seq)
+		</sql>
+	</item>
+	
+	<item id="select_checkWork_shift_base_dtls"  desc="查询班次信息">
+		<sql>
+			SELECT sbd_id AS id,
+				   sbd_name AS name  
+			  FROM dty_shift_base_dtls
+			  LEFT JOIN dty_category_dept_rltn
+			  ON (sbd_cus_number = cdr_cus_number AND
+			  	  sbd_category_id = cdr_category_id)
+		</sql>
+		<where id="0">
+			WHERE sbd_cus_number = ? AND
+				  (TRIM(?) IS NULL or cdr_dept_id = ?)
+		</where>
+		<order id="0">
+			ORDER BY sbd_seq
+		</order>
+	</item>
+	
+	<item id="select_checkWork_job_base_dtls"  desc="查询岗位信息">
+		<sql>
+			SELECT jbd_id AS id,
+				   jbd_name AS name  
+			  FROM dty_job_base_dtls
+			  LEFT JOIN dty_category_dept_rltn
+			  ON (jbd_cus_number = cdr_cus_number AND
+			  	  jbd_category_id = cdr_category_id)
+		</sql>
+		<where id="0">
+			WHERE jbd_cus_number = ? AND
+				  (TRIM(?) IS NULL or cdr_dept_id = ?)
+		</where>
+		<order id="0">
+			ORDER BY jbd_seq
+		</order>
+	</item>
+	
+	<item id="select_checkWork_drptmnt_police_tree"  desc="查询部门民警树形数据">
+		<sql>
+			SELECT 'd_' || odd_id AS id,
+				   odd_name AS name,
+				   'd_' || odd_parent_id  AS pid,
+				   'org.png' AS icon,
+				   'dept' AS type
+			  FROM (SELECT * FROM sys_org_dept_dtls	
+			  	    LEFT JOIN (SELECT pbd_cus_number,
+			  	    	  			  pbd_drptmnt_id 
+			  	    	  		 FROM plc_police_base_dtls 
+			  	    	  	 GROUP BY pbd_cus_number,pbd_drptmnt_id)
+			  	    ON (odd_parent_id = pbd_cus_number AND 
+			  	    	odd_id = pbd_drptmnt_id)		  
+                    START WITH odd_id = ? and odd_use = 1 
+			        CONNECT BY PRIOR odd_id = odd_parent_id AND pbd_drptmnt_id is not null
+			        ORDER BY odd_seq)
+		UNION ALL
+			SELECT 'p_' || pbd_user_id AS id,
+				   pbd_police_name AS name, 
+				   'd_' || pbd_drptmnt_id AS pid,
+				   'user.png' AS icon,
+				   'police' AS type
+			  FROM (SELECT * FROM plc_police_base_dtls
+			        WHERE pbd_cus_number = ?
+			        ORDER BY pbd_police_id)
+		</sql>
+	</item>
+</sqlItem>

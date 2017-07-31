@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_patrol_record">
+		<seq>ptl_patrol_record_dtls@recordId@prd_record_id</seq>
+		<sql>
+			INSERT INTO ptl_patrol_record_dtls
+			  (prd_cus_number,
+			   prd_record_id,
+			   prd_point_id,
+			   prd_police_id,
+			   prd_line_id,
+			   prd_real_time,
+			   prd_status)
+			VALUES
+			  (:cusNumber,
+			   :recordId,
+			   :patrolDevId,
+			   :policeId,
+			   :lineId,
+			   SYSDATE,
+			   :status)
+		</sql>
+	</item>
+	<item id="select_record_patrol" >
+		<const key="status">patrol_status</const>
+		<sql>
+			SELECT prd_point_id id,
+			       pbd_police_name plc,
+			       ppi_name address,
+			       TO_CHAR(prd_real_time, 'yyyy-mm-dd  hh24:mi:ss') rtime,
+			       TO_CHAR(plr_plan_time, 'yyyy-mm-dd  hh24:mi:ss') ptime,
+			       prd_status status
+			  FROM ptl_patrol_record_dtls
+			  LEFT JOIN plc_police_base_dtls
+			    ON prd_cus_number = prd_cus_number
+			   AND prd_police_id = pbd_user_id
+			  LEFT JOIN ptl_patrol_point_dtls
+			    ON prd_cus_number = ppi_cus_number
+			   AND prd_point_id = ppi_id
+			  LEFT JOIN ptl_patrol_line_rltn
+			    ON prd_cus_number = plr_cus_number
+			   AND prd_line_id = plr_point_id
+			 WHERE prd_cus_number = :cus
+			   AND prd_real_time BETWEEN
+			       TO_DATE(:day, 'yyyy-mm-dd') - numtodsinterval(1, 'second') AND
+			       TO_DATE(:day, 'yyyy-mm-dd') + 1
+		</sql>
+		<where id="0">
+			   AND (TRIM(:plc) IS NULL OR prd_police_id = :plc)
+			   AND (TRIM(:status) IS NULL OR prd_status = :status)
+		</where>
+		<order id="0">
+			 ORDER BY PLR_PLAN_TIME DESC
+		</order>
+	</item>
+</sqlItem>

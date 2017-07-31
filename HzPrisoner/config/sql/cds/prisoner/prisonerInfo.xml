@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	 <item id="select_prisoner_base_dtls_info"  desc="根据罪犯编号查询详细信息">
+	 <const key="pbd_sex_indc">pbd_sex</const>
+		 <sql>
+			SELECT a.pbd_cus_number,
+			       a.pbd_prsnr_id AS id,
+			       a.pbd_other_id AS prisonerid,
+			       a.pbd_prsnr_name AS name,
+			       a.pbd_prsn_area_id AS pid,
+			       odd_name AS pname,
+			       a.pbd_crtfcts_type,
+			       a.pbd_crtfcts_id,
+			       a.pbd_sex_indc AS pbd_sex_indc,
+			       TO_CHAR(a.pbd_birth_date, 'YYYY-MM-DD') AS pbd_birth_date,
+			       a.pbd_cltre_level,
+			       a.pbd_mrrge_stts,
+			       a.pbd_arrst_cmpny,
+			       a.pbd_nation,
+			       a.pbd_native_addrs,
+			       a.pbd_home_addrs,
+			       a.pbd_detain_type,
+			       a.pbd_charge_type,
+			       a.pbd_sprt_mnge,
+			       a.pbd_accstn,
+			       a.pbd_sntn_type,
+			       a.pbd_sntn_term,
+			       TO_CHAR(a.pbd_sntn_start_date, 'YYYY-MM-DD') AS pbd_sntn_start_date,
+			       TO_CHAR(a.pbd_sntn_end_date, 'YYYY-MM-DD') AS pbd_sntn_end_date,
+			       TO_CHAR(a.pbd_entry_prisoner_date, 'YYYY-MM-DD') AS pbd_entry_prisoner_date,
+			       a.pbd_serious_prsnr,
+			       a.pbd_type_indc,
+			       a.pbd_sntn_dprvtn_term,
+			       a.pbd_stts_indc,
+			       a.pbd_prsnr_stts,
+			       a.pbd_grp_name,
+			       a.pbd_grp_leader_indc,
+			       a.pbd_remark,
+			       b.pbd_photo_path AS img_url
+			  FROM psr_prisoner_base_dtls a
+			  LEFT JOIN sys_org_dept_dtls
+			    ON (odd_id = a.pbd_prsn_area_id)
+			  LEFT JOIN psr_photo_base_dtls b
+			         ON (a.pbd_prsnr_id = b.pbd_prsnr_id AND b.pbd_photo_type = 0) 	     
+		 </sql>
+		 <where id="0">
+		 	WHERE a.pbd_cus_number = ?
+			  AND a.pbd_prsnr_id = ?   
+		 </where>		 
+     </item>
+
+	<item id="select_point_info_by_id_and_type" desc="根据设备id和类型查询点位信息">
+		<sql>
+			SELECT 
+				mpi_point_id,
+				mpi_point_name,
+				mpi_view_id,
+				mpi_link_type,
+				mpi_link_id
+			FROM map_model_point_info
+		</sql>
+		<where id="0">
+			WHERE mpi_link_type = :type
+			  AND mpi_link_id = :id
+			  AND mpi_cus_number = :cusNumber
+		</where>			
+	</item>
+	
+	<item id="select_prisoner_info_by_otherid"  desc="根据罪犯标签查询信息">
+		 <sql>
+		   SELECT pbd_prsnr_id,
+		          pbd_other_id,
+		          pbd_prsn_area_id,
+		          pbd_prsnr_name
+		     FROM psr_prisoner_base_dtls
+		 </sql>
+		 <where id="0">
+		 	WHERE pbd_other_id = :pbd_other_id
+		 	  AND pbd_cus_number = :cusNumber
+ 		 </where>
+     </item> 
+     
+   	<item id="select_prisoner_ctrl_dev_by_dvcid"  desc="根据罪犯标签查询信息">
+		 <sql>
+	        SELECT pcd_prsnr_id,
+	               pcd_dvc_type,
+	               pbd_prsn_area_id,
+	               pbd_prsnr_name
+	          FROM psr_prisoner_base_dtls p
+	         INNER JOIN PSR_PRISONER_CTRL_DVC d
+	            ON p.pbd_prsnr_id = d.pcd_prsnr_id
+		 </sql>
+		 <where id="0">
+		 	WHERE pcd_dvc_id = :pcd_dvc_id
+		 	  AND pbd_cus_number = :cusNumber
+ 		 </where>
+     </item> 
+ 
+	 <item id="select_prisoner_info_tree"  desc="查询罪犯信息树">
+		 <sql>
+		   SELECT * FROM
+			   (SELECT pbd_prsnr_id   AS  id,
+					  pbd_other_id    AS  prisonerid,
+					  pbd_prsn_area_id  AS  pid,
+					  pbd_prsnr_name AS  name,
+					  'user.png'      AS  icon,
+					  1               AS  type,
+			 		  pbd_stts_indc AS status,
+					  PBD_ENTRY_PRISONER_DATE AS in_time,
+					  PBD_SNTN_END_DATE AS out_time
+				 FROM psr_prisoner_base_dtls
+				WHERE pbd_cus_number = :cusNumber
+				  AND pbd_stts_indc = :stts
+				UNION ALL
+			   SELECT DISTINCT odd_id          AS   id,
+					  ''              AS   prisonerid,
+					  odd_parent_id   AS   pid,
+					  odd_name        AS   name,
+					  'org.png'       AS   icon,
+					  0               AS   type,
+					  null,
+					  null,
+			   		  null
+				 FROM sys_org_dept_dtls
+			   INNER JOIN psr_prisoner_base_dtls
+					   ON (odd_id = pbd_prsn_area_id AND odd_parent_id = pbd_cus_number AND pbd_stts_indc = :stts)
+				UNION ALL
+				SELECT odd_id          AS   id,
+					  ''              AS   prisonerid,
+					  odd_parent_id   AS   pid,
+					  odd_name        AS   name,
+					  'prison.png'       AS   icon,
+					  0               AS   type,
+					  null,
+					  null,
+					  null
+					FROM sys_org_dept_dtls
+					WHERE odd_id = :cusNumber
+				ORDER BY prisonerid,id) f
+		 </sql>
+		 <where id="1">
+			 WHERE status = 1
+			 AND in_time BETWEEN
+			 TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD') || ' 00:00:00',
+			 'YYYY-MM-DD HH24:MI:SS') AND
+			 TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD') || ' 23:59:59',
+			 'YYYY-MM-DD HH24:MI:SS')
+		 </where>
+		 <where id="2">
+			 WHERE status = 0
+			 AND out_time BETWEEN
+			 TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD') || ' 00:00:00',
+			 'YYYY-MM-DD HH24:MI:SS') AND
+			 TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD') || ' 23:59:59',
+			 'YYYY-MM-DD HH24:MI:SS')
+		 </where>
+		 <where id="3">
+			 INNER JOIN dvc_rfid_label_people_bind r
+			 ON f.prisonerid = r.rpb_people_id
+			 WHERE pid = :deptId
+		 </where>
+     </item>
+
+
+	<item id="select_prisoner_info_tree_by_rfid" desc="根据RFID查询罪犯树">
+		<sql>
+			select
+				pbd_prsnr_id   AS  id,
+				pbd_other_id    AS  prisonerid,
+				pbd_prsn_area_id  AS  pid,
+				pbd_prsnr_name AS  name,
+				'user.png'      AS  icon,
+				1               AS  type
+			from psr_prisoner_base_dtls
+			where pbd_prsnr_id in (
+				select rmr_people_id from (
+					SELECT rmr_cus_number,
+						rmr_record_id,
+						rmr_rfid_id,
+						rmr_rfid_name,
+						rmr_dept_name,
+						rmr_before_rfid_name,
+						rmr_people_type,
+						rmr_people_id,
+						rmr_people_name,
+						rmr_monitor_time,
+						ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) as fn
+					FROM dvc_rfid_monitor_record t
+					WHERE rmr_monitor_flag = :rmr_monitor_flag
+						AND rmr_cus_number = :rmr_cus_number
+						AND (rmr_people_type = :rmr_people_type)
+						)
+				where fn = 1
+				AND (
+					rmr_rfid_id in (
+						select rbd_id from DVC_RFID_BASE_DTLS
+						where RBD_ROOM_ID = (
+							select RBD_ROOM_ID from DVC_RFID_BASE_DTLS where rbd_id = :rbd_id
+						)
+					)
+					or
+					rmr_rfid_id = :rbd_id
+				)
+			)
+		</sql>
+	</item>
+     
+      <item id="select_prison_area_info_tree"  desc="查询监区信息树">
+		 <sql>
+			      SELECT  DISTINCT 
+			              odd_id          AS   id,
+			              odd_parent_id   AS   pid,
+			              odd_name        AS   name,
+			              'org.png'       AS   icon,
+			              0               AS   type
+			         FROM sys_org_dept_dtls
+	           INNER JOIN psr_prisoner_base_dtls
+			           ON (odd_id = pbd_prsn_area_id 
+			          AND odd_parent_id = pbd_cus_number)
+			    UNION ALL
+			       SELECT odd_id          AS   id,
+						  odd_parent_id   AS   pid,
+						  odd_name        AS   name,
+						  'prison.png'    AS   icon,
+						   0               AS   type
+			         FROM sys_org_dept_dtls
+					WHERE odd_id = ?
+			     ORDER BY id      
+		 </sql>
+     </item> 
+ 
+ 	 <item id="select_prisoner_account_total_byid"  desc="查询罪犯账户余额">
+		 <sql>
+			SELECT pac_total_amnt AS total
+			  FROM psr_prisoner_account
+		 </sql>
+		 <where id="0">
+		 	WHERE pac_cus_number = ?
+			  AND pac_prsnr_id = ?   
+		 </where>
+     </item> 
+ 
+  	 <item id="select_prisoner_healthy_byid"  desc="查询罪犯账户余额">
+		 <sql>
+			SELECT phe_prsnr_id,
+				   phe_temperature      ,
+				   phe_breath           ,
+				   phe_pulse            ,
+				   phe_blood_pressure   ,
+				   phe_height           ,
+				   phe_weight           ,
+				   phe_develop          ,
+				   phe_nutrition        ,
+				   phe_sense            ,
+				   phe_mind             ,
+				   phe_face             ,
+				   phe_position         ,
+				   phe_base_summary     ,
+				   phe_base_sign        ,
+				   phe_in_heart         ,
+				   phe_in_lung          ,
+				   phe_in_stomach       ,
+				   phe_in_liver         ,
+				   phe_in_spleen        ,
+				   phe_in_other         ,
+				   phe_in_summary       ,
+				   phe_in_sign          ,
+				   phe_out_skin         ,
+				   phe_out_lymph_node   ,
+				   phe_out_head         ,
+				   phe_out_thyroid      ,
+				   phe_out_breast       ,
+				   phe_out_spine        ,
+				   phe_out_joint        ,
+				   phe_out_reproduction ,
+				   phe_out_other        ,
+				   phe_out_summary      ,
+				   phe_out_sign         ,
+				   '左:' || phe_left_vision || ',右:' || phe_right_vision   AS phe_vision,
+				   '左:' || phe_left_correct_vision || ',右:' || phe_right_correct_vision   AS phe_correct_vision,
+				   '左:' || phe_left_listem || ',右:' || phe_right_listem   AS phe_listem,
+				   phe_left_listem      ,
+				   phe_right_listem     ,
+				   phe_eye              ,
+				   phe_ear              ,
+				   phe_nose             ,
+				   phe_oral             ,
+				   phe_facial_summary   ,
+				   phe_facial_sign
+			  FROM psr_prisoner_healthy
+		 </sql>
+		 <where id="0">
+		 	WHERE phe_cus_number = ?
+			  AND phe_prsnr_id = ?   
+		 </where>
+     </item>  
+
+	 <item id="select_prisoner_income_pay_info"  desc="查询罪犯收支信息">
+		 <sql>
+			 SELECT  pin_prsnr_id  AS id,
+			         pin_type      AS type,
+			  		 pin_amnt      AS amnt,
+			         TO_CHAR(pin_date,'YYYY-MM-DD HH24:MI:SS')      AS odate,
+			         'in' 		   AS otype
+			    FROM psr_prisoner_income
+			   WHERE pin_cus_number = ?
+			     AND pin_prsnr_id   = ?
+		   UNION ALL
+			 SELECT  ppa_prsnr_id AS id,
+			         ppa_type     AS type,
+			         ppa_amnt     AS amnt,
+			         TO_CHAR(ppa_date,'YYYY-MM-DD HH24:MI:SS')      AS odate,
+			         'out'        AS otype
+			   FROM  psr_prisoner_pay    
+			  WHERE  ppa_cus_number = ?
+			    AND  ppa_prsnr_id   = ?   	     
+		 </sql>
+     </item>                 
+     
+      <item id="select_map_panel_point_linkId"  desc="查询MAP_面板罪犯点位信息">
+		 <sql>
+			SELECT ppi_link_id AS id
+			  FROM map_panel_point_info
+		 </sql>
+		 <where id="0">
+		 	WHERE ppi_cus_number = ? AND
+		 		  ppi_link_type = ?
+		 </where>
+     </item> 
+     
+     <item id="delete_map_panel_point_linkId"  desc="删除MAP_面板罪犯点位信息">
+		 <sql>
+			DELETE map_panel_point_info
+			 WHERE ppi_cus_number = :ppi_cus_number AND
+		 		   ppi_link_type = :ppi_link_type AND
+		 		   ppi_link_id = :ppi_link_id
+		 </sql>
+     </item> 
+     
+	 <item id="select_prisoner_base_dtls_cache"  desc="根据罪犯编号查询详细信息">
+		 <sql>
+			SELECT pbd_cus_number,
+			       pbd_prsnr_id,
+			       pbd_other_id,
+			       pbd_prsnr_name,
+			       pbd_prsn_area_id, 
+			       pbd_crtfcts_type,
+			       pbd_crtfcts_id,
+			       pbd_sex_indc, 
+			       TO_CHAR(pbd_birth_date, 'YYYY-MM-DD') AS pbd_birth_date,
+			       pbd_cltre_level,
+			       pbd_mrrge_stts,
+			       pbd_arrst_cmpny,
+			       pbd_nation,
+			       pbd_native_addrs,
+			       pbd_home_addrs,
+			       pbd_detain_type,
+			       pbd_charge_type,
+			       pbd_sprt_mnge,
+			       pbd_accstn,
+			       pbd_sntn_type,
+			       pbd_sntn_term,
+			       TO_CHAR(pbd_sntn_start_date, 'YYYY-MM-DD') AS pbd_sntn_start_date,
+			       TO_CHAR(pbd_sntn_end_date, 'YYYY-MM-DD') AS pbd_sntn_end_date,
+			       TO_CHAR(pbd_entry_prisoner_date, 'YYYY-MM-DD') AS pbd_entry_prisoner_date,
+			       pbd_serious_prsnr,
+			       pbd_type_indc,
+			       pbd_sntn_dprvtn_term,
+			       pbd_stts_indc,
+			       pbd_prsnr_stts,
+			       pbd_grp_name,
+			       pbd_grp_leader_indc,
+			       pbd_remark
+			  FROM psr_prisoner_base_dtls 
+		 </sql>
+		 <where id="1">
+		 	WHERE a.pbd_cus_number = ?
+			  AND a.pbd_other_id = ?   
+		 </where>		 
+     </item>
+     
+     <item id="select_prisoner_prisonArea_count"  desc="根据监区统计罪犯数量">
+		 <sql>
+			SELECT pbd_prsn_area_id,
+				   odd_name,
+				   count(pbd_prsnr_id) AS count
+			  FROM psr_prisoner_base_dtls
+			  LEFT JOIN sys_org_dept_dtls
+	          ON (pbd_cus_number = odd_parent_id AND
+	              pbd_prsn_area_id = odd_id)
+	          WHERE pbd_cus_number = ?
+	          GROUP BY pbd_prsn_area_id,odd_name
+              ORDER BY pbd_prsn_area_id
+		 </sql>	 
+     </item>
+
+
+    <item id="select_prisoner_ztree_for_map_point" desc="">
+    	<sql>
+			SELECT DISTINCT CONCAT('c_', odd_id) AS id,
+			                odd_seq as seq,
+			                odd_name AS name,
+			                CONCAT('c_', odd_parent_id) AS pid,
+			                null as deviceType,
+			                null AS icon
+			  FROM sys_org_dept_dtls
+			 START WITH odd_id IN (SELECT pbd_prsn_area_id
+			                         FROM psr_prisoner_base_dtls
+			                        WHERE pbd_cus_number = :cusNumber
+			                        GROUP BY pbd_prsn_area_id)
+			CONNECT BY PRIOR odd_parent_id = odd_id
+
+			UNION
+
+			SELECT CONCAT(pbd_prsnr_id, '') AS id,
+			       0 as seq,
+			       pbd_prsnr_name AS name,
+			       CONCAT('c_', pbd_prsn_area_id) AS pid,
+			       pbd_type_indc as deviceType,
+			       pbd_type_indc AS icon
+			  FROM psr_prisoner_base_dtls
+			 WHERE pbd_cus_number = :cusNumber
+    	</sql>
+    </item>
+   	<item id="query_prisonerType_info" desc="查询犯人信息,(门禁卡管理 ,rfid数据绑定)使用">
+		<sql>
+			SELECT pbd_prsnr_id as person_id,
+				   pbd_prsnr_name as person_name,
+				   pbd_other_id as number_id
+			FROM PSR_PRISONER_BASE_DTLS
+		</sql>
+		<where id="0">
+			WHERE pbd_prsnr_name like concat('%',concat(:pbd_prsnr_name,'%'))
+		</where>
+		<order id="0">
+			ORDER BY pbd_prsnr_id
+		</order>
+	</item>  
+</sqlItem>

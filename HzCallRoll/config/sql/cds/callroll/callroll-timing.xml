@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_all_timing_callroll_data"  desc="查询所有的定时点名的数据">
+		<sql>
+			SELECT tcm_cus_number AS cus_number,
+			       A.odd_name AS cus_name,
+			       tcm_id AS id,
+			       tcm_begin_time AS begin_time,
+			       tcm_max_time AS max_time,
+			       B.odd_id AS dptt_id,
+			       DECODE(B.odd_id, NULL, '全区', B.odd_name) AS dptt_name,
+			       abd_area_id AS area_id,
+			       abd_area_name AS area_name
+			  FROM cds_timing_call_roll_master
+			  INNER JOIN sys_org_dept_dtls A
+			    ON tcm_cus_number = A.odd_id
+			  LEFT JOIN sys_org_dept_dtls B
+			    ON tcm_dept_id = B.odd_id
+			  LEFT JOIN com_area_base_dtls
+			    ON tcm_cus_number = abd_cus_number
+			   AND tcm_area_id = abd_area_id
+		</sql>
+	</item>
+
+	<item id="select_all_bind_rfid_people_info_for_cache" desc="查询所有绑定RFID标签的人员信息存入缓存">
+		<sql>
+			SELECT rpb_cus_number  AS cus_number,
+			       rpb_label_id    AS label_id,
+			       rpb_label_type  AS label_type,
+			       rpb_people_type AS people_type,
+			       pbd_prsnr_id    AS people_id,
+			       pbd_other_id    AS other_id,
+			       pbd_prsnr_name  AS people_name,
+			       odd_id          AS dept_id,
+			       odd_name        AS dept_name
+			  FROM dvc_rfid_label_people_bind
+			 INNER JOIN psr_prisoner_base_dtls
+			    ON pbd_cus_number = rpb_cus_number
+			   AND pbd_prsnr_id = rpb_people_id
+			 INNER JOIN sys_org_dept_dtls
+			    ON pbd_prsn_area_id = odd_id
+			 WHERE rpb_people_type = 2
+			UNION
+			SELECT rpb_cus_number  AS cus_number,
+			       rpb_label_id    AS label_id,
+			       rpb_label_type  AS label_type,
+			       rpb_people_type AS people_type,
+			       pbd_user_id     AS people_id,
+			       pbd_police_id   AS other_id,
+			       pbd_police_name AS people_name,
+			       odd_id          AS dept_id,
+			       odd_name        AS dept_name
+			  FROM dvc_rfid_label_people_bind
+			 INNER JOIN plc_police_base_dtls
+			    ON pbd_cus_number = rpb_cus_number
+			   AND pbd_user_id = rpb_people_id
+			 INNER JOIN sys_org_dept_dtls
+			    ON pbd_drptmnt_id = odd_id
+			 WHERE rpb_people_type = 1
+		</sql>
+	</item>
+
+
+    <item id="insert_callroll_master_by_timing" desc="插入定时点名主表信息">
+    	<seq>cds_call_roll_record_master@recordId@crm_record_id</seq>
+		<sql>
+			INSERT INTO cds_call_roll_record_master
+			  (crm_cus_number,
+			   crm_record_id,
+			   crm_serial_code,
+			   crm_batch_code,
+			   crm_dprt_id,
+			   crm_dprt_name,
+			   crm_type,
+			   crm_predict_num,
+			   crm_begin_time)
+			VALUES
+			  (:cusNumber,
+			   :recordId,
+			   :serialCode,
+			   :batchCode,
+			   :dpttId,
+			   :dpttName,
+			   :type,
+			   (SELECT count(0)
+			      FROM psr_prisoner_base_dtls
+			     INNER JOIN dvc_rfid_label_people_bind
+			        ON rpb_cus_number = pbd_cus_number
+			       AND rpb_people_id = pbd_prsnr_id
+			       AND rpb_people_type = 2
+			     INNER JOIN sys_org_dept_dtls
+			        ON pbd_prsn_area_id = odd_id
+			     WHERE pbd_cus_number = :cusNumber
+			       AND (pbd_prsn_area_id = :dpttId OR TRIM(:dpttId) IS NULL)),
+			   TO_DATE(:beginTime, 'YYYY-MM-DD HH24:MI:SS'))
+		</sql>
+    </item>
+
+	<item id="insert_predict_callroll_prisoner_by_timing" desc="定时点名插入预计点名的罪犯信息">
+		<sql>
+			INSERT INTO cds_call_roll_record_dtls
+			  (crd_cus_number,
+			   crd_record_id,
+			   crd_prisoner_id,
+			   crd_prisoner_name,
+			   crd_dprt_id,
+			   crd_dprt_name,
+			   crd_status)
+			  SELECT pbd_cus_number,
+			         :recordId,
+			         pbd_prsnr_id,
+			         pbd_prsnr_name,
+			         odd_id,
+			         odd_name,
+			         :stts
+			    FROM psr_prisoner_base_dtls
+			   INNER JOIN dvc_rfid_label_people_bind
+			      ON rpb_cus_number = pbd_cus_number
+			     AND rpb_people_id = pbd_prsnr_id
+			     AND rpb_people_type = 2
+			   INNER JOIN sys_org_dept_dtls
+			      ON pbd_prsn_area_id = odd_id
+			   WHERE pbd_cus_number = :cusNumber
+			     AND (pbd_prsn_area_id = :dpttId OR TRIM(:dpttId) IS NULL)
+		</sql>
+	</item>
+
+
+	<item id="update_callroll_master_by_callroll_over" desc="点名结束时更新点名主表">
+		<sql>
+			UPDATE cds_call_roll_record_master
+			   SET crm_end_time = TO_DATE(:endTime, 'YYYY-MM-DD HH24:MI:SS'),
+			       crm_fact_num =
+			       (SELECT count(0)
+			          FROM cds_call_roll_record_dtls
+			         WHERE crd_cus_number = crm_cus_number
+			           AND crd_record_id = crm_record_id
+			           AND crd_status = 1
+			           AND crd_time IS NOT NULL)
+			 WHERE crm_cus_number = :cusNumber
+			   AND crm_record_id = :recordId
+		</sql>
+	</item>
+
+
+	<item id="update_callroll_people_stts" desc="更新点名人员的点名状态">
+		<sql>
+			UPDATE cds_call_roll_record_dtls
+			   SET crd_status = :stts, 
+			       crd_time = TO_DATE(:time, 'YYYY-MM-DD HH24:MI:SS'), 
+			       crd_update_time = SYSDATE
+		</sql>
+		<where id="0">
+			 WHERE crd_cus_number = :cusNumber
+			   AND crd_record_id = :recordId
+			   AND crd_prisoner_id = :peopleId
+			   AND crd_status = 0
+		</where>
+	</item>
+
+
+	<item id="select_rfid_prisoner_info_for_timingcallroll" desc="查询RFID标签绑定的罪犯用于定时点名">
+		<sql>
+			SELECT pbd_cus_number AS cus_number,
+			       pbd_prsnr_id   AS prsnr_id,
+			       pbd_prsnr_name AS prsnr_id,
+			       odd_id         AS dept_id,
+			       odd_name       AS dept_name
+			  FROM psr_prisoner_base_dtls
+			 INNER JOIN dvc_rfid_label_people_bind
+			    ON rpb_cus_number = pbd_cus_number
+			   AND rpb_people_id = pbd_prsnr_id
+			   AND rpb_people_type = 2
+			 INNER JOIN sys_org_dept_dtls
+			    ON pbd_prsn_area_id = odd_id
+		</sql>
+		<where id="0">
+			 WHERE pbd_cus_number = ?
+			   AND (pbd_prsn_area_id = ? OR TRIM(?) IS NULL)
+		</where>
+	</item>
+</sqlItem>

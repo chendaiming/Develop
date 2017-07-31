@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_sound_control_menu_id" desc="查询声控菜单视角id">
+		<sql>
+			SELECT vmi_id, vmi_name
+			  FROM map_view_menu_info t
+			 WHERE vmi_cus_number = :cusNumber
+			   AND vmi_status = 1
+			   AND vmi_name = :message
+		</sql>
+	</item>
+</sqlItem>

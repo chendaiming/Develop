@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<style>
+.top{
+	width: 100%;
+	height: 30px;
+	text-align: center;
+	margin-top: 40px;
+}
+.mid{
+	width: 86%;
+	height: 158px;
+	margin: 10px auto;
+}
+.mid .btns{
+	float: left;
+	margin-top: 50px;
+}
+.mid ul{
+	float: left;
+	text-align: center;
+}
+.btm{
+	width: 100%;
+	text-align: center;
+}
+</style>
+</head>
+<body>
+<div id="todayDtypManage">
+	<div v-cloak v-if="!curJob" class="empty" style="margin-top: 40%;">当前时段无值班信息</div>
+	<div v-cloak v-if="curJob" class="top">
+		<button @click="pageLeft(1)">
+			<img src="page/cds/dutyQuery/image/timg_1_left.png" style="width: 20px;height: 12px;">
+		</button>
+		<span v-text="curJob" style="font-weight: bold;"></span>
+		<button @click="pageRight(1)">
+			<img src="page/cds/dutyQuery/image/timg_1_right.png" style="width: 20px;height: 12px;">
+		</button>
+		<div style="margin-top: 5px;">
+			<span v-text="jobPage.pageNum"></span>/<span v-text="jobPage.pageCount"></span>
+		</div>
+	</div>
+	<div>
+		<div v-cloak v-if="curJob" class="mid" style="margin-top: 20px;">
+			<div id="div_box" style="height: 100%;margin: 0px auto">
+				<div class="btns" style="margin-right: 5px;">
+					<button @click="pageLeft(2)">
+						<img src="page/cds/dutyQuery/image/timg_1_left.png" style="width: 20px;height: 12px;">
+					</button>
+				</div>
+				<ul v-cloak v-if="curPeopleList.length>0" v-for="curPeople in curPeopleList" style="margin-left: 5px;">
+					<li><img width="95" height="120" src="{{curPeople.img}}" onerror="this.src='page/cds/dutyQuery/image/police.jpg'"></li>
+					<li style="height: 30px;line-height: 30px;">{{curPeople.name}}</li>
+					<li>{{curPeople.id}}</li>
+				</ul>
+				<div class="btns" style="margin-left: 10px;">
+					<button @click="pageRight(2)">
+						<img src="page/cds/dutyQuery/image/timg_1_right.png" style="width: 20px;height: 12px;">
+					</button>
+				</div>
+			</div>
+		</div>
+		<div v-cloak v-if="curJob" class="btm">
+			<span v-text="peoplePage.pageNum"></span>/<span v-text="peoplePage.pageCount"></span>
+		</div>
+	</div>
+</div>
+<script>
+requirejs(['vue', 'frm/hz.db', 'frm/loginUser', 'frm/hz.utils'], function (vue, db, loginUser, utils) {
+	var inter = null;
+	/**
+	 * 创建模型
+	 */
+	var model = new vue({
+		el:'#todayDtypManage',
+		data:{
+			peopleList:[],
+			jobList:[],
+			peopleList_2:[],
+			peopleList_3:[],
+			curJob:'',
+			curPeopleList:[],
+			jobPage:{
+				pageCount:0,
+				pageNum:1,
+				startNum:0
+			},
+			peoplePage:{
+				pageCount:0,
+				pageNum:1,
+				startNum:0,
+				endNum:2
+			}
+		},
+		methods:{
+			pageLeft:function(type){
+				clearInterval(inter);
+				pageLeft(type);
+			},
+			pageRight:function(type){
+				clearInterval(inter);
+				pageRight(type);
+			}
+		}
+	});
+	/**
+	 * 查询今日值班人员信息
+	 */
+	function queryTodayDtyPeople(){
+		db.query({
+			request:{
+				sqlId:'select_todayDtyp_people',
+				whereId: 0,
+				orderId: 0,
+				params:[loginUser.cusNumber,utils.formatterDate(new Date(),"yyyy-mm-dd"),loginUser.deptId]
+			},
+			success:function(data){
+				model.peopleList = data;
+				loadTodayDtyPeople();
+			}
+		});
+	}
+	queryTodayDtyPeople();
+	/**
+	 * 加载今日值班人员信息
+	 */
+	function loadTodayDtyPeople(){
+		model.jobList = [];
+		model.peopleList_2 = [];
+		model.peopleList_3 = [];
+		var list = model.peopleList;
+		var dateTime = utils.formatterDate(new Date(),"yyyy-mm-dd hh:mi:ss");
+		var jobSet = new Set();
+		for(var i=0;i<list.length;i++){
+			var startTime = list[i].scd_shift_start_time + ":00";
+			var endTime = list[i].scd_shift_end_time + ":00";
+			var s_date = list[i].ped_date;
+			var e_date = list[i].ped_date;
+			if(list[i].sbd_stime_flag > 1){
+				s_date = addDate(fmtStrDate(s_date));
+			}
+			if(list[i].sbd_etime_flag > 1){
+				e_date = addDate(fmtStrDate(e_date));
+			}
+			startTime = s_date + " " +  startTime;
+			endTime = e_date + " " +  endTime;
+			if(dateTime >= startTime && dateTime <= endTime){
+				var jobId = list[i].scd_job_id;
+				var jobName = list[i].scd_job_name;
+				jobSet.add(jobId + "_" + jobName);
+				model.peopleList_2.push(list[i]);
+			}
+		}
+		jobSet.forEach(function (item) {
+			item = item.toString().split("_");
+			model.jobList.push({'id': item[0], 'name': item[1]});
+		});
+		loadJob();
+		inter = setInterval(function(){
+			var j_pageNum = model.jobPage.pageNum;
+			var j_pageCount = model.jobPage.pageCount;
+			var p_pageNum = model.peoplePage.pageNum;
+			var p_pageCount = model.peoplePage.pageCount;
+			if(j_pageNum == j_pageCount){
+				if(p_pageNum < p_pageCount){
+					pageRight(2);
+				}else{
+					model.jobPage.startNum = 0;
+					model.peoplePage.pageNum = 1;
+					model.peoplePage.startNum = 0;
+					model.peoplePage.endNum = 2;
+					loadJob();
+				}
+			}else{
+				if(p_pageNum < p_pageCount){
+					pageRight(2);
+				}else{
+					pageRight(1);
+				}
+			}
+		},5000);
+	}
+	/**
+	 * 加载值班岗位信息
+	 */
+	function loadJob(){
+		model.jobPage.pageCount = model.jobList.length;
+		var startNum = model.jobPage.startNum;
+		model.jobPage.pageNum = (startNum+1);
+		model.curJob = model.jobList[startNum].name;
+		model.peopleList_3 = [];
+		var jobId = model.jobList[startNum].id;
+		var list = model.peopleList_2;
+		for(var i=0;i<list.length;i++){
+			if(jobId == list[i].scd_job_id){
+				model.peopleList_3.push(list[i]);
+			}
+		}
+		loadPeople();
+	}
+	/**
+	 * 加载值班人员信息
+	 */
+	function loadPeople(){
+		model.curPeopleList = [];
+		list = model.peopleList_3;
+		var startNum = model.peoplePage.startNum;
+		var endNum = list.length < 2 ? list.length : model.peoplePage.endNum;
+		model.peoplePage.pageCount = parseInt(Math.ceil(list.length/2));
+		for(var i=startNum;i<endNum;i++){
+			model.curPeopleList.push({'id': model.peopleList_3[i].pbd_police_id, 'name': model.peopleList_3[i].ped_name,
+									  'img': model.peopleList_3[i].pbd_img || "page/cds/dutyQuery/image/police.jpg"});
+		}
+		vue.nextTick(function () {
+			var len = list.length;
+			if(len > 1){
+				$("#div_box").width("auto");
+			}else{
+				$("#div_box").width(155);
+			}
+		})
+	}
+	/**
+	 * 向左翻页 type：1=岗位 2=值班人员
+	 */
+	function pageLeft(type){
+		if(type == 1){
+			var pageNum = model.jobPage.pageNum;
+			if(pageNum == 1){
+				return;
+			}
+			model.jobPage.startNum -= 1;
+			model.peoplePage.pageNum = 1;
+			model.peoplePage.startNum = 0;
+			model.peoplePage.endNum = 2;
+			loadJob();
+		}else{
+			var pageNum = model.peoplePage.pageNum;
+			if(pageNum == 1){
+				return;
+			}
+			model.peoplePage.pageNum -= 1;
+			model.peoplePage.startNum -= 2;
+			model.peoplePage.endNum -= 2;
+			loadPeople();
+		}
+	}
+	/**
+	 * 向右翻页 type：1=岗位 2=值班人员
+	 */
+	function pageRight(type){
+		if(type == 1){
+			var pageNum = model.jobPage.pageNum;
+			var pageCount = model.jobPage.pageCount;
+			if(pageNum == pageCount){
+				return;
+			}
+			model.jobPage.startNum += 1;
+			model.peoplePage.pageNum = 1;
+			model.peoplePage.startNum = 0;
+			model.peoplePage.endNum = 2;
+			loadJob();
+		}else{
+			var pageNum = model.peoplePage.pageNum;
+			var pageCount = model.peoplePage.pageCount;
+			if(pageNum == pageCount){
+				return;
+			}
+			model.peoplePage.pageNum += 1;
+			model.peoplePage.startNum = model.peoplePage.endNum;
+			model.peoplePage.endNum += 2;
+			loadPeople();
+		}
+	}
+	/**
+	 * 返回两个日期之间相差的天数
+	 */
+	function dateDiff(sDate1,sDate2){
+	    var aDate,oDate1,oDate2,iDays  
+	    aDate = sDate1.split("-")  
+	    oDate1 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]);
+	    aDate = sDate2.split("-")  
+	    oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]);
+	    iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 /24);
+	    return iDays;
+	}
+	/**
+	 * 字符串类型转Date类型
+	 */
+	function fmtStrDate(str){
+		str = str.replace(/-/g,"/");
+		var date = new Date(str);
+		return date;
+	}
+	/**
+	 * 日期天数加1
+	 */
+	function addDate(date) {
+		date = date.getTime() + 1 * 24 * 60 * 60 * 1000;
+	    var result = new Date(date);
+	    var month = (result.getMonth() + 1);
+	    if(month < 10){
+	    	month = "0" + month;
+	    }
+	    var day = result.getDate();
+	    if(day < 10){
+	    	day = "0" + day;
+	    }
+	    return result.getFullYear() + "-" + month + "-" + day;
+	}
+})
+</script>
+</body>
+</html>

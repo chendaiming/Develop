@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_videoplan_rltn">
+		<sql>
+			SELECT 
+				dgr.dgr_dvc_id AS id,
+				dgr.dgr_grp_id,
+				cbd.cbd_name AS name
+			FROM com_dvc_grp_rltn dgr
+			INNER JOIN cmr_camera_base_dtls cbd ON dgr.dgr_dvc_id = cbd.cbd_id
+			WHERE dgr.dgr_grp_id =:dgr_grp_id AND dgr.dgr_cus_number=:dgr_cus_number
+ 		</sql>
+	</item>
+	<item id="delete_videoplan_rltn">
+		<sql>
+			DELETE FROM com_dvc_grp_rltn
+ 		</sql>
+ 		<where id="0">
+			WHERE dgr_grp_id =:dgr_grp_id AND dgr_cus_number=:dgr_cus_number
+ 		</where>
+ 		<where id="1">
+			WHERE dgr_grp_id =:dgr_grp_id AND dgr_cus_number=:dgr_cus_number AND dgr_dvc_id =:dgr_dvc_id
+ 		</where>
+	</item>
+	<item id="insert_videoplan_rltn">
+		<sql>
+			INSERT INTO com_dvc_grp_rltn (
+				dgr_cus_number,
+				dgr_grp_id,
+				dgr_dvc_id,
+				dgr_seq,
+				dgr_crte_time,
+				dgr_crte_user_id,
+				dgr_updt_time,
+				dgr_updt_user_id
+			) VALUES (
+				:dgr_cus_number,
+				:dgr_grp_id,
+				:dgr_dvc_id,
+				:dgr_seq,
+				SYSDATE,
+				:dgr_crte_user_id,
+				SYSDATE,
+				:dgr_crte_user_id
+			)			
+		</sql>
+	</item>
+	<item id="select_plantype_tree" desc="查询预案类型">
+		<sql>
+			SELECT 
+				dgt_cus_number,
+				dgt_grp_type_id AS id,
+				dgt_grp_type_name AS name,
+				dgt_parent_id AS pid,
+				dgt_dvc_type,
+				dgt_seq,
+				dgt_crte_time,
+				dgt_crte_user_id,
+				dgt_updt_time,
+				dgt_updt_user_id,
+				'image/plantype.png' AS icon
+			FROM com_dvc_grp_type
+		</sql>
+		<where id="0">
+			WHERE dgt_cus_number =?
+		</where>
+	</item>
+	<item id="select_plan_tree_public" desc="查询视频预案树">
+		<sql>
+			SELECT 
+				dgm_cus_number,
+				dgm_grp_id AS id,
+				dgm_grp_name AS name,
+				dgm_grp_type_id AS pid,
+				dgm_use_range,
+				dgm_crte_time,
+				dgm_crte_user_id,
+				dgm_updt_time,
+				dgm_updt_user_id,
+				'image/video.png' AS icon
+			FROM com_dvc_grp_master
+		</sql>
+		<where id="0">
+			WHERE dgm_cus_number =? AND dgm_use_range=0
+		</where>
+	</item>
+	<item id="select_plan_tree_private" desc="查询视频预案树">
+		<sql>
+			SELECT 
+				dgm_cus_number,
+				dgm_grp_id AS id,
+				dgm_grp_name AS name,
+				dgm_grp_type_id,
+				dgm_use_range AS pid,
+				dgm_crte_time,
+				dgm_crte_user_id,
+				dgm_updt_time,
+				dgm_updt_user_id,
+				'image/video.png' AS icon
+			FROM com_dvc_grp_master
+		</sql>
+		<where id="0">
+			WHERE dgm_cus_number =? AND dgm_use_range=1 AND dgm_crte_user_id=?
+		</where>
+	</item>
+	<item id="select_videoplan" desc="查询视频预案">
+		<sql>
+			SELECT
+				dgm_cus_number,
+				dgm_grp_id AS id,
+				dgm_grp_name AS name,
+				dgm_grp_type_id AS plan_type,
+				dgm_use_range,
+				dgm_crte_time,
+				dgm_crte_user_id,
+				dgm_updt_time,
+				dgm_updt_user_id
+			FROM com_dvc_grp_master
+		</sql>
+		<where id="0">
+			WHERE dgm_cus_number=? AND (dgm_use_range=0 OR (dgm_use_range=1 AND dgm_crte_user_id = ?))
+		</where>
+		<where id="1">
+			WHERE dgm_use_range=0 OR (dgm_use_range=1 AND dgm_crte_user_id = ?)
+		</where>
+	</item>
+	<item id="insert_videoplan" desc="新增视频预案">
+		<seq>com_dvc_grp_master@id@dgm_grp_id</seq>
+		<sql>
+			INSERT INTO  com_dvc_grp_master (
+				dgm_cus_number,
+				dgm_grp_id,
+				dgm_grp_name,
+				dgm_grp_type_id,
+				dgm_use_range,
+				dgm_crte_time,
+				dgm_crte_user_id,
+				dgm_updt_time,
+				dgm_updt_user_id
+			) values(
+				:dgm_cus_number,
+				:id,
+				:name,
+				:plan_type,
+				:dgm_use_range,
+				SYSDATE,
+				:dgm_crte_user_id,
+				SYSDATE,
+				:dgm_updt_user_id
+			)
+		</sql>
+    </item>
+    <item id="update_videoplan" desc="修改视频预案">
+		<sql>
+			UPDATE  com_dvc_grp_master SET
+				dgm_grp_name=:name,
+				dgm_grp_type_id=:plan_type,
+				dgm_use_range=:dgm_use_range,
+				dgm_updt_time=SYSDATE,
+				dgm_updt_user_id=:dgm_updt_user_id
+			WHERE dgm_grp_id =:id AND  dgm_cus_number=:dgm_cus_number
+		</sql>
+    </item>
+    <item id="delete_videoplan" desc="删除视频预案">
+		<sql>
+			DELETE FROM  com_dvc_grp_master 
+			WHERE dgm_grp_id =:id AND dgm_cus_number=:dgm_cus_number
+		</sql>
+    </item>
+</sqlItem>

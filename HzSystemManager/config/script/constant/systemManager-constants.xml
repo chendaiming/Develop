@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<constants>
+	<constant id="UBI_PEOPLE_TYPE" name="人员类型" desc="">
+		<item key="1" value="警员"/>
+	</constant>
+</constants>

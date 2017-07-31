@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title></title>
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+	 	max-height: 200px;
+	  	min-height: 150px;
+	  	overflow: auto;
+	  	z-index: 99;
+	  	position:fixed;
+	  	width:218px;
+	}
+	.videos{
+		overflow-y:auto;
+		padding:5px 10px;
+	}
+	.plan_item{
+		padding-top:38px;
+		padding-bottom:8px;
+		font-size:12px;
+		color:#eee;
+		cursor:pointer;
+		text-align:center;
+		margin-top:15px;
+		border:1px solid #4077ae;
+		border-radius:6px;
+		height:86px;
+		background-image:url(image/plan.png);
+		background-size:25px;
+		background-repeat:no-repeat;
+		background-position:center 6px;
+	}
+	.video_item{
+		padding-top:38px;
+		padding-bottom:8px;
+		font-size:12px;
+		color:#eee;
+		cursor:pointer;
+		text-align:center;
+		margin-top:15px;
+		border:1px solid #fff;
+		border-radius:2px;
+		height:86px;
+	}
+	.video_item.camera_qj{
+		background-image:url(image/camera_qj.png);
+		background-size:25px;
+		background-repeat:no-repeat;
+		background-position:center 6px;
+	}
+	.video_item.camera_ball{
+		background-image:url(image/camera_ball.png);
+		background-size:25px;
+		background-repeat:no-repeat;
+		background-position:center 6px;
+	}
+	.video_item.camera_ban_ball{
+		background-image:url(image/camera_ban_ball.png);
+		background-size:25px;
+		background-repeat:no-repeat;
+		background-position:center 6px;
+	}
+	
+	.video_item.plan{
+		background-image:url(image/plan.png);
+		background-size:25px;
+		background-repeat:no-repeat;
+		background-position:center 6px;
+	}
+	
+	.video_item.selected{
+		background-color:#4077ae;
+	}
+	.video_item:hover{
+		background-color:#4077ae;
+	}
+	.video_item .status{
+		color:#11cd6e;
+		font-size:10px;
+	}
+	.plan_camera{
+		position:relative;
+		display:block;
+		padding:0 10px;
+		border:1px solid #bbb;
+		color:#bbb;
+		height:40px;
+		line-height:40px;
+	}
+	.plan_camera:hover{
+		color:#fff;
+		background-color:#4077ae;
+	}
+	.plan_camera.selected{
+		color:#fff;
+		background-color:#4077ae;
+	}
+	.plan_camera img{
+		position:absolute;
+		top:-10px;
+		right:-10px;
+		width:20px;
+		height:20px;
+		z-index:30;
+		display:none;
+	}
+	.plan_camera span{
+		line-height:normal
+	}
+	.plan_camera img:hover{
+		cursor: pointer;
+	}
+	[v-cloak]{
+		display:none
+	}
+	.layoutContent{
+		display:none;
+		position:absolute;
+		width:520px;
+		background-color:#0a2a46;
+	}
+	.layoutimg{
+		height:60px;
+		width:96px;
+	}
+	.layouttxt{
+		display:block;
+		text-align:center;
+		padding-top:6px;
+	}
+	.layoutitem:hover{
+		color:yellow;
+		cursor: pointer;
+	}
+	.layoutitem.selected{
+		color:yellow;
+	}
+	.c_nav{width:16px;height:16px;margin-left:8px;display:inline-block;vertical-align: middle;margin-bottom:3px;}
+	.c_nav:hover{width:18px;height:18px;}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="tabs">
+	<div class="top" >
+		<div class="tabs" style="margin-left:-20px;border-bottom:1px solid #4077ae">
+			  <div class="tab" v-bind:class="{'active':activeTab==1}" @click="setActiveTab(1)"><span>视频监控</span></div>
+			  <div class="tab" v-bind:class="{'active':activeTab==2}" @click="setActiveTab(2)"><span>视频预案</span></div>
+	  	</div>
+	</div>
+	<div id="jk" class="vbox hz-col-1" v-show="activeTab==1">
+		<div class="hbox hz-col-1">
+			<div class="left-con vbox" style="width:380px;">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="areaTree" class="ztree"></ul>
+			    </div>
+			</div>
+			<div class="hz-col-1 vbox right-con" style="overflow-y:hidden">
+				<div class="hz-col-1 vbox" style="border-bottom:1px solid #4077ae">
+					<div class="hbox">
+						<div class="radio hz-col-1" @click="radioCheck">
+						    <label>
+						      <input type="radio" name="chose" v-model="check"  value="area"><span>当前区域：</span><span v-text="selectAreaName"></span>
+						    </label>
+					  	</div>
+					  	<div class="input icon"  style="float:right">
+						  	<input v-model="searchSelect" placeholder="输入关键字搜索">
+						  	<span class="find"></span>
+					    </div>
+					</div>
+					<div class="videos hz-col-1">
+						  <div v-if="selectCameras.length==0" class="empty">当前区域没有摄像头</div>
+						  <div class="col-xs-4" v-cloak v-if="selectCameras.length>0" v-for="c in selectCameras | filterBy searchSelect in 'name'">
+						  	<div draggable="true" ondragstart="drag(event)" class="video_item cam" v-bind:cid="c.id" v-bind:cname="c.name"
+						  	 v-bind:class="{'camera_qj':c.cbd_type==0,'camera_ball':c.cbd_type==1,'camera_ban_ball':c.cbd_type==2,'selected':c.open}">
+								<span v-text="c.name"></span>
+								<span class="status" v-text="'（'+c.cbd_stts_indc_name+'）'"></span>
+							</div>
+						  </div>
+						  <script type="text/javascript">
+							  function drag(ev){
+							  	ev.dataTransfer.setData("Text",ev.target.id);
+							  } 
+						  </script>
+					</div>
+				</div>
+				<div id="plancon" class="vbox" style="height:180px;">
+					<div class="hbox plancameras">
+						<div class="radio hz-col-1" @click="radioCheck">
+						    <label>
+						      <input type="radio" name="chose" v-model="check" value="plan">视频预案
+						    </label>
+					  	</div>
+					  	<div style="padding-top:10px;">
+						    <div class="input icon" id="choseP" style="display:inline-block">
+					    		<input type="text" v-model="plan.name" readonly @click="openPlanTree" placeholder="视频预案">
+					    		<span class="drop" @click="openPlanTree" ></span>
+						    	<div class="treeContent" v-cloak v-show="showPlanTree" id="planCon">
+						  			<ul id="chosePlanTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+						  		</div>
+					    	</div>
+					  		<span>
+						  		<a @click="openAddPlan" class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>新增</span></a>
+					  			<a @click="openEditPlan" class="hbtn btn_primary btn_mini" v-bind:class="{'btn_disabled':!plan.id}"><i class="btn_icon icon_edit"></i><span>修改</span></a>
+					  			<a @click="delVideoPlan" class="hbtn btn_primary btn_mini" v-bind:class="{'btn_disabled':!plan.id}"><i class="btn_icon icon_del"></i><span>删除</span></a>
+					  		</span>
+					  	</div>
+					</div>
+					<div id="pcon" class="hz-col-1 hbox" style="padding:8px;text-align:center;overflow-y:auto;overflow-x:hidden" >
+						<div  class="row cameras hz-col-1">
+						  <div v-if="planCameras.length==0" class="empty">可将摄像机设备拖放至此处</div>
+						  <div v-cloak v-if="planCameras.length>0" v-for="n in planCameras" track-by="id" class="col-xs-4 pl" style="margin-top:10px;">
+						  		<a class="plan_camera" v-bind:class="{'selected':n.selected}">
+						  			<span class="cameraName" v-text="n.name"></span>
+						  			<img class="plan_img" src="image/closemin.png" @click="delPlan(n)"/>
+						  		</a>
+						  </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="bottom hbox">
+			<div class="hbox hz-col-1" >
+				<div style="text-align:left;width:320px;">
+					<a @click="homePage" class="hbtn btn_primary btn_large"><span>首页</span></a>
+		  			<a @click="prevPage" class="hbtn btn_primary btn_large"><span>上一页</span></a>
+		  			<a @click="nextPage" class="hbtn btn_primary btn_large"><span>下一页</span></a>
+		  			<a @click="endPage" class="hbtn btn_primary btn_large"><span>尾页</span></a>	
+				</div>
+				<div style="text-align:left;width:360px">
+					<span style="margin-right:15px;">轮巡时间：</span>
+					<a v-cloak @click="videoClient(10,'s10')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':curMTag && curMTag != 's10'}"><span v-text="s10+'秒'"></span></a>
+		  			<a v-cloak @click="videoClient(20,'s20')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':curMTag && curMTag != 's20'}"><span v-text="s20+'秒'"></span></a>
+		  			<a v-cloak @click="videoClient(30,'s30')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':curMTag && curMTag != 's30'}"><span v-text="s30+'秒'"></span></a>
+		  			<a v-cloak @click="videoClient(60,'s60')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':curMTag && curMTag != 's60'}"><span v-text="s60+'秒'"></span></a>					
+				</div>
+				<div class="hz-col-1" style="text-align:right">
+					<span style="margin-right:15px;" v-text="'当前布局：'+layout+'画面'"></span>
+					<a id="layoutBtn" @click="choseLayout" class="hbtn btn_primary btn_large"><span>画面布局</span></a>
+					<a @click="videoCut" class="hbtn btn_primary btn_large"><span>视频截图</span></a>
+					<a @click="videoRecord" class="hbtn btn_primary btn_large"><span>视频录像</span></a>
+					<div id="layout" class="layoutContent">
+						<div class="row" style="padding:10px;">
+							<div @click="setLayout(item)" class="col-xs-3 layoutitem" v-bind:class="{'selected':item == layout}" style="padding:10px;text-align:center" v-for="item in layouts">
+								<img class="layoutimg" v-bind:src="'image/layout-'+item+'.png'">
+								<span class="layouttxt" v-text="item+'画面'"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>		
+	</div>
+	<div id="plan" class="vbox hz-col-1" v-cloak v-show="activeTab==2">
+		<div class="hbox hz-col-1">
+			<div class="left-con vbox">
+				<div class="input icon" >
+				  	<input v-model="searchPlanTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="planTree" class="ztree"></ul>
+			    </div>
+			</div>
+			<div class="hz-col-1 right-con vbox">
+				<div class="hz-col-1 vbox">
+					<div class="hbox">
+						<div class="radio hz-col-1">
+						    <label>
+						      <span>当前预案分类：</span><span v-text="selectTypeName"></span>
+						    </label>
+					  	</div>
+					  	<div class="input icon"  style="float:right">
+						  	<input v-model="searchPlan" placeholder="输入关键字搜索">
+						  	<span class="find"></span>
+					    </div>
+				    </div>
+					<div class="videos hz-col-1">
+					   	  <div v-if="selectPlans.length==0" class="empty">当前分类无预案</div>
+						  <div class="col-xs-3" v-for="p in selectPlans | filterBy searchPlan in 'name'">
+						  	<div class="video_item plan" v-bind:id="p.id" v-bind:class="{'selected':p.open}">
+								<span v-text="p.name"></span>
+							</div>
+						  </div>
+				  	</div>					
+				</div>
+				<div style="height:180px;border-top:1px solid #4077ae">
+					 <div v-cloak v-if="selectPlanCameras.length>0" v-for="n in selectPlanCameras" track-by="id" class="col-xs-3 pl" style="margin-top:10px;">
+					  		<a class="plan_camera" v-bind:class="{'selected':n.selected}">
+					  			<span class="cameraName" v-text="n.name"></span>
+					  			<img src="image/closemin.png" />
+					  		</a>
+					  </div>
+				</div>
+		   </div>
+		</div>
+		<div class="bottom hbox">
+			<div class="hbox hz-col-1" >
+				<div class="hz-col-2" style="text-align:right">
+					<span style="margin-right:15px;" v-text="'当前布局：'+planLayout+'画面'"></span>
+					<a id="planLayoutBtn" @click="chosePlanLayout" class="hbtn btn_primary btn_large"><span>画面布局</span></a>
+					<div id="planLayout" class="layoutContent">
+						<div class="row" style="padding:10px;">
+							<div @click="setPlanLayout(item)" class="col-xs-3 layoutitem" v-bind:class="{'selected':item == planLayout}" style="padding:10px;text-align:center" v-for="item in layouts">
+								<img class="layoutimg" v-bind:src="'image/layout-'+item+'.png'">
+								<span class="layouttxt" v-text="item+'画面'"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="hz-col-1" style="text-align:right">
+					<a @click="planVideoClient(10,'ys10')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':ycurMTag && ycurMTag != 'ys10'}"><span v-text="ys10+'秒'"></span></a>
+		  			<a @click="planVideoClient(20,'ys20')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':ycurMTag && ycurMTag != 'ys20'}"><span v-text="ys20+'秒'"></span></a>
+		  			<a @click="planVideoClient(30,'ys30')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':ycurMTag && ycurMTag != 'ys30'}"><span v-text="ys30+'秒'"></span></a>
+		  			<a @click="planVideoClient(60,'ys60')" class="hbtn btn_primary btn_large" v-bind:class="{'btn_disabled':ycurMTag && ycurMTag != 'ys60'}"><span v-text="ys60+'秒'"></span></a>				
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="addPlan" class="vbox" style="display:none;">
+	<div class="vbox">
+		<form class="form-horizontal hz-col-1" role="form" style="padding:30px 20px">
+		  <div class="col-xs-12">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label">预案名称</label>
+			    <div class="col-xs-9">
+			       	<input class="form-control" v-model="plan.name" type="text" placeholder="预案名称">
+			    </div>
+			  </div>
+	   	  </div>
+	   	  <div class="col-xs-12">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label">预案类型</label>
+			    <div class="col-xs-9">
+			       	<hz-treeselect
+			       		tip="预案类型"
+			       		sqlid="select_device_type_drop",
+			       		:params=[plan.dgm_cus_number]
+			       		:id.sync="plan.plan_type"
+			       	/>
+			    </div>
+			  </div>
+	   	  </div>
+	  	</form>
+	  	<div class="bottom" style="margin-top:50px">
+	  		<div class="buttons">
+				 <a @click="savePrivatePlan" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存个人预案</span></a>
+				 <a @click="savePublicPlan" v-if="dataAuth != 2" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存公共预案</span></a>
+	  		</div>
+	  	</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/video/videoCtrl'])
+</script>
+</html>

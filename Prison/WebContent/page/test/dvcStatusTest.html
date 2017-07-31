@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>报警测试</title>
+<style type="text/css">
+	html, body {margin: 0 auto; padding: 0; width: 100%; height: 100%; border: 0 none; overflow: hidden;}
+
+	table {float: left;}
+	table tr td {padding: 5px 0px; font-size: 12px;}
+	table tr td.td-1 {width: 100px; text-align: right; }
+
+	input.txt-input {padding: 6px 5px; width: 168px; border: 1px solid #666; background-color: #FFF;}
+	input.txt-input[readonly] {background-color: #DDD;}
+
+	span.must-input {color: red; margin: 5px;}
+	select {padding: 5px; width: 180px; border: 1px solid #666;}
+</style>
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0">
+	<tr><td colspan="3" style="text-align: center;"><br>===============【MQ服务配置】===============</td></tr>
+	<tr>
+		<td class="td-1">连接地址：</td>
+		<td><input id="txtTcpUrl" class="txt-input" value="tcp://0.0.0.0:8001"><span class="must-input">*</span></td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">消息通道：</td>
+		<td><input id="txtQueueName" class="txt-input" value=""><span class="must-input">*</span></td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">机构编号：</td>
+		<td><input id="txtCusNumber" class="txt-input" value=""><span class="must-input">*</span></td>
+		<td><span id="msgCusNumber"></span></td>
+	</tr>
+
+	<tr><td colspan="3" style="text-align: center;"><br>=================【消息头】=================</td></tr>
+	<tr>
+		<td class="td-1">消息编号：</td>
+		<td><input id="txtMsgID" class="txt-input" value="" placeholder="msgID" readonly="readonly"></td>
+		<td><span>只读，自动生成</span></td>
+	</tr>
+	<tr>
+		<td class="td-1">消息类型：</td>
+		<td><input id="txtMsgType" class="txt-input" value="" placeholder="msgType"><span class="must-input">*</span></td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">消息长度：</td>
+		<td><input id="txtLength" class="txt-input" value="0" placeholder="length" readonly="readonly"></td>
+		<td><span>只读，自动计算</span></td>
+	</tr>
+	<tr>
+		<td class="td-1">发送者：</td>
+		<td><input id="txtSender" class="txt-input" value="TEST" placeholder="sender"><span class="must-input">*</span></td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">接收者：</td>
+		<td><input id="txtRecevier" class="txt-input" value="PRISON" placeholder="recevier"><span class="must-input">*</span></td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">发送时间：</td>
+		<td><input id="txtSendTime" class="txt-input" value="" placeholder="sendTime" readonly="readonly"></td>
+		<td><span>只读，自动生成</span></td>
+	</tr>
+
+	<tr><td colspan="3" style="text-align: center;"><br>=================【消息体】=================</td></tr>
+	<tr>
+		<td class="td-1">设备类型：</td>
+		<td><select id="sltDeviceType">
+				<option value="1">摄像机</option>
+				<option value="2">门禁</option>
+				<option value="3">对讲</option>
+				<option value="6">网络报警器</option>
+				<option value="7">高压电网</option>
+				<option value="8">周界红外</option>
+				<option value="9">周界光纤</option>
+				<option value="10">蛇腹网</option>
+				<option value="11">电子围栏</option>
+				<option value="12">消防报警器</option>
+				<option value="13">智能钥匙箱</option>
+				<option value="14">智能监舍</option>
+				<option value="15">RFID基站</option>
+				<option value="16">巡更刷卡器</option>
+				<option value="17">无线报警主机</option>
+				<option value="18">无线报警终端</option>
+				<option value="19">阻车器</option>
+			</select>
+		</td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">设备编号：</td>
+		<td><input id="txtDeviceID" class="txt-input" value="" placeholder="deviceID"><span class="must-input">*</span></td>
+		<td><span id="msgDeviceID"></span></td>
+	</tr>
+	<tr>
+		<td class="td-1">设备状态：</td>
+		<td><input id="txtStatus" class="txt-input" value="1" placeholder="status"><span class="must-input">*</span></td>
+		<td><span></span></td>
+	</tr>
+	<tr>
+		<td class="td-1"></td>
+		<td><input id="btnSend" type="button" class="btn-input" value=" 发送报警消息 " onclick="sendMsg()"></td>
+		<td>执行结果：<span id="sendResult"></span></td>
+	</tr>
+</table>
+</body>
+<script type="text/javascript" src="../../libs/jquery/jquery.js"></script>
+<script type="text/javascript">
+
+var msgId = null;
+var nowTime = null;
+
+$(function () {
+	$('#txtMsgID').val(msgId = (new Date()).getTime());
+	$('#txtQueueName').val('queue.fe.in');
+	$('#txtMsgType').val('DEV001');
+
+	(function getTime () {
+		nowTime = fmtDate();
+		$('#txtSendTime').val(nowTime);
+		setTimeout(getTime, 1000);
+	})();
+
+
+	// 查询机构部门数据并设置默认的机构号
+	dbQuery({
+		'sqlId': 'test_query_org_dept_dtls'
+	}, function (result) {
+		var data = result.data;
+		for(var i = 0, len = data.length; i < len; i++) {
+			if (!data[i].odd_parent_id) {
+				$('#txtCusNumber').val(data[i].odd_id);
+				$('#msgCusNumber').html(data[i].odd_name);
+				break;
+			}
+		}
+	});
+});
+
+
+
+/*
+ * 获取yyyy-mm-dd hh:mm:ss时间
+ */
+function fmtDate () {
+	var now = new Date();
+	var MM = now.getMonth() + 1;
+	var dd = now.getDate();
+	var hh = now.getHours();
+	var mm = now.getMinutes();
+	var ss = now.getSeconds();
+
+	return now.getFullYear() + '-'
+		+ fmtNum(MM) + '-'
+		+ fmtNum(dd) + ' '
+		+ fmtNum(hh) + ':'
+		+ fmtNum(mm) + ':'
+		+ fmtNum(ss);
+}
+
+/*
+ * 格式化数字
+ */
+function fmtNum (val) {
+	return val < 10 ? ('0' + val) : val;
+}
+
+
+/*
+ * 发送消息
+ */
+function sendMsg () {
+	var params = {
+		'cusNumber': $('#txtCusNumber').val(),
+		'queueName': $('#txtQueueName').val(),
+		'tcpUrl': $('#txtTcpUrl').val(),
+		'message': JSON.stringify({
+			'header': {
+				'msgID': $('#txtMsgID').val(),
+				'msgType': $('#txtMsgType').val(),
+				'length': '',
+				'sender': $('#txtSender').val(),
+				'recevier': $('#txtRecevier').val(),
+				'sendTime': $('#txtSendTime').val()
+			},
+			'body': JSON.stringify({
+				'deviceType': $('#sltDeviceType').val(),
+				'deviceID': $('#txtDeviceID').val(),
+				'status': $('#txtStatus').val()
+			})
+		})
+	};
+
+	ajaxReq('amqTestCtrl/send', {'args': JSON.stringify(params)}, function (result) {
+		$('#sendResult').html(JSON.stringify(result));
+		console.log('send result:', result);
+	});
+}
+
+
+
+function dbQuery (data, callback) {
+	ajaxReq('dbCtrl/query', {'args': JSON.stringify(data)}, callback)
+}
+
+
+function ajaxReq (url, data, callback) {
+	$.ajax({
+		'url': '../../' + url,
+		'data': data,
+		'timeout': 60 * 1000,
+		'type': 'POST',
+		'dataType': "json",
+		'contentType': "application/x-www-form-urlencoded; charset=utf-8",
+		'success': function (response) {
+			callback(response);
+		},
+		'error': function (request, status, e) {
+			console.error('Ajax请求响应异常：request=' + JSON.stringify(request));
+			console.error('Ajax请求响应异常：status=' + JSON.stringify(status));
+			console.error('Ajax请求响应异常：e=' + JSON.stringify(e));
+		}
+	});
+}
+</script>
+</html>

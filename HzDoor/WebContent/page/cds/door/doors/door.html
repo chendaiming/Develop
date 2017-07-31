@@ -1,0 +1,128 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class=" left-con vbox">
+				<div class="input icon" >
+				  	<input id="input" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				 <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+		
+		<div class="hz-col-6 right-con">
+			<form class="form-horizontal">
+			 	<div class="form-group ">
+			        <label class="col-sm-2 control-label">门禁区域<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled=true v-model="door['area']" placeholder="请选择门禁区域">
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-2 control-label">所属部门<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <div class="input-group">
+			            	<input type="text" class="form-control" id="dep" disabled=true v-model="door['dep']"  placeholder="请选择所属部门">
+							<div class="input-group-btn">
+								<button type="button"  class="btn btn-default" >所属部门<span class="caret"></span></button>
+							</div>
+						</div>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label"> 	控制器<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <div class="input-group">
+			            	<input type="text" class="form-control" id="control"  disabled=true v-model="door['control']"  placeholder="请选择门禁控制器">
+							<div class="input-group-btn">
+								<button type="button"  class="btn btn-default" >控制器<span class="caret"></span></button>
+							</div>
+						</div>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">门禁位置</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="door['dbd_dvc_addrs']" placeholder="请输入门禁位置">
+			        </div>
+			    </div>
+			    
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">门禁名称<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="door['name']" placeholder="请输入门禁名称">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">门禁类型<span class="required">*</span></label>
+			        <div class="col-sm-8">
+					  		<hz-select 
+					  			tip="门禁类型" 
+					  			code="door_type"
+					  			:id.sync="door.dbd_type"
+					  		/>
+					</div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">门禁品牌<span class="required">*</span></label>
+			        <div class="col-sm-8">
+					  		<hz-select 
+					  			tip="门禁品牌" 
+					  			code="dbd_brand"
+					  			:id.sync="door.dbd_brand"
+					  		/>
+					</div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">门禁状态<span class="required">*</span></label>
+			        <div class="col-sm-8">
+					  		<hz-select 
+					  			tip="门禁状态" 
+					  			code="dbd_stts_indc"
+					  			:id.sync="door.dbd_stts_indc"
+					  		/>
+					</div>
+			    </div>
+				<div class="form-group ">
+					<label class="col-sm-2 control-label">门禁设备状态<span class="required">*</span></label>
+					<div class="col-sm-8">
+						<hz-select
+								tip="门禁设备状态"
+								code="DBD_DVC_STTS"
+								:id.sync="door.dbd_dvc_stts"
+								/>
+					</div>
+				</div>
+			     <div class="form-group ">
+			        <label class="col-sm-2 control-label">通道编号<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="door['dbd_ctrl_chl']" placeholder="请输入通道编号">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">厂商唯一编号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="door['dbd_other_id']" placeholder="请输入厂商唯一编号">
+			        </div>
+			    </div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons" >
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/door/doors/door"]);
+</script>

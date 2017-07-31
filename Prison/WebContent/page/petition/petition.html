@@ -1,0 +1,249 @@
+
+<link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../css/common.css" charset="utf-8">
+<style>
+	@media screen and (min-width: 768px) {
+		label.col-sm-3{
+			font-size:1.16vw;
+			padding-right: 2%;
+			padding-left: 2%;
+		}
+		div.input.icon input{
+			padding-right:28px;
+		}
+		form.form-horizontal div.form-group{
+			float:left;
+			margin-left: 1.5%;
+		}
+		form.form-horizontal div.form-group:first-child{
+			width:100%;
+		}
+		form.form-horizontal div.form-group:first-child div{
+			width:55%;
+		}
+		form.form-horizontal div.form-group:nth-child(2),
+		form.form-horizontal div.form-group:nth-child(5),
+		form.form-horizontal div.form-group:nth-child(7),
+		form.form-horizontal div.form-group:nth-child(11){
+			width:40%;
+		}
+		form.form-horizontal div.form-group:nth-child(6),
+		form.form-horizontal div.form-group:nth-child(8),
+		form.form-horizontal div.form-group:nth-child(12){
+			width:60%;
+		}
+		form.form-horizontal div.form-group:nth-child(3){
+			width:24%;
+			margin-left:2%;
+		}
+		form.form-horizontal div.form-group:nth-child(3) label{
+			width:36%;
+		}
+		form.form-horizontal div.form-group:nth-child(3) > div{
+			width:58%;
+			padding-left: 20px;
+		}
+		form.form-horizontal div.form-group:nth-child(3) div div.input input,
+		form.form-horizontal div.form-group:nth-child(5) div div.input input{
+			height:32px;
+			line-height:32px;
+		}
+		form.form-horizontal div.form-group:nth-child(4){
+			width:35%;
+			margin-left:0;
+		}
+		form.form-horizontal div.form-group:nth-child(6) label,
+		form.form-horizontal div.form-group:nth-child(8) label{
+			width:17%;
+			padding-left:0;
+		}
+		form.form-horizontal div.form-group:nth-child(6),
+		form.form-horizontal div.form-group:nth-child(8){
+			margin-left:2%;
+		}
+		form.form-horizontal div.form-group:nth-child(6) div,
+		form.form-horizontal div.form-group:nth-child(8) div{
+			width:77.5%;
+		}
+		form.form-horizontal div.form-group label{
+			width:29%;
+		}
+		form.form-horizontal div.form-group > div > span{
+			margin-top:9px;
+		}
+		form.form-horizontal div.form-group.textarea{
+			width:100%;
+		}
+		form.form-horizontal div.form-group:first-child label,
+		form.form-horizontal div.form-group.textarea:nth-child(9) label{
+			width:11.5%;
+			padding-right: 1%;
+		}
+		form.form-horizontal div.form-group.textarea:nth-child(10) label{
+			width: 12.9%;
+			padding-left: 0;
+			padding-right: 1%;
+		}
+		form.form-horizontal div.form-group.textarea:nth-child(9) div,
+		form.form-horizontal div.form-group.textarea:nth-child(10) div{
+			width:84.4%;
+		}
+		form.form-horizontal div.form-group:first-child div{
+			width:27%;
+		}
+		form.form-horizontal div.form-group.textarea:nth-child(10){
+			margin-left:0.25%;
+		}
+		form.form-horizontal div.form-group.textarea label
+		form.form-horizontal div.form-group.textarea div{
+			width:79.5%;
+		}
+		.input.date-input input{
+			height:32px;
+		}
+	}
+	form.form-horizontal div.form-group.textarea div textarea{
+		width:100%;
+		height:40px;
+		border:1px solid #1f699e;
+		padding-top: 6px;
+		padding-left: 12px;
+	}
+	.fixed-table-container .fixed-table-body{
+		overflow-x:auto;
+	}
+	#infotd{
+		overflow-y:auto;
+	}
+	#back{
+		float:left;
+		margin-left:24px;
+		padding:0 18px;
+	}
+</style>
+<div class="vbox box-con" id="infolist">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-9 vbox">
+				<div class="hz-col-1" id="barshow"></div>
+				<div class="hz-col-1" id="pieshow"></div>
+			</div>
+		</div>
+
+		<div class="hz-col-9 right-con">
+			<table id="table" ></table>
+		</div>
+	</div>
+
+	<div class="bottom" >
+		<a class="hbtn btn_primary btn_large" id="back"><i class="btn_icon"></i><span>查看所有数据</span></a>
+		<div class="buttons" id="oprbutton">
+			<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>
+			<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div>
+
+	<div class="vbox hz-col-1" id="infotd" style="display:none;">
+		<div class="hz-col-3">
+			<form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">机构名称</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="infogroup['odd_name']" disabled="disabled">
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">姓名</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="infogroup['per_name']" maxlength="10" placeholder="请输入姓名">
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">性别</label>
+					<div class="col-sm-8">
+						<hz-select code="pbd_sex" :id.sync="infogroup['per_sex']" />
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">出生日期</label>
+					<div class="col-sm-8">
+						<hz-date tip="输入出生日期" :val.sync="infogroup['per_birthday']" format=Y-m-d />
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">证件类型</label>
+					<div class="col-sm-8">
+						<hz-select tip="选择证件类型" code="fpd_id_card_type" :id.sync="infogroup['per_cert_type']" />
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">证件号码</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="infogroup['per_cert_code']" placeholder="请输入证件号码">
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">上访时间</label>
+					<div class="col-sm-8">
+						<hz-date tip="输入上访时间" :val.sync="infogroup['per_petition_time']" format=Y-m-d />
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-sm-3 control-label">家庭住址</label>
+					<div class="col-sm-8">
+						<input type="text" class="form-control" v-model="infogroup['per_family_address']" maxlength="40" placeholder="请输入家庭住址">
+					</div>
+				</div>
+				<div class="form-group textarea">
+					<label class="col-sm-3 control-label">上访原因</label>
+					<div class="col-sm-8">
+						<textarea placeholder="最多可输入800字" maxlength="800" v-model="infogroup['per_petition_reason']"></textarea>
+					</div>
+				</div>
+				<div class="form-group textarea">
+					<label class="col-sm-3 control-label">上访处置情况</label>
+					<div class="col-sm-8">
+						<textarea placeholder="最多可输入800字" maxlength="800" v-model="infogroup['per_petition_content']"></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 control-label">创建人</label>
+					<div class="col-sm-8">
+						<span>{{infogroup['per_create_us']}}</span>
+					</div>
+				</div>
+				<div class="form-group wirtetime">
+					<label class="col-sm-3 control-label">填报时间</label>
+					<div class="col-sm-8">
+						<span></span>
+					</div>
+				</div>
+
+			</form>
+		</div>
+		<div class="hz-col-1">
+			<div class="hbtn btn_primary btn_mini pull-right" id="quit" style="margin-right:15px;margin-bottom:10px;padding:0 14px;"><span>取消</span></div>
+			<a class="hbtn btn_primary btn_mini pull-right" id="save" style="margin-right:15px;margin-bottom:10px;"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+
+</div>
+
+<script type="text/javascript" src="../../js/require.js"  data-main="../../js/config" ></script>
+<script>
+	require(["../js/src/petition/petition"]);
+	function showTime(){
+		var date=new Date();
+		var hh=date.getHours();
+		var mm=date.getMinutes();
+		var ss=date.getSeconds();
+		hh=hh<10?('0'+hh):hh;
+		mm=mm<10?('0'+mm):mm;
+		ss=ss<10?('0'+ss):ss;
+		document.querySelectorAll(".wirtetime div span")[0].innerHTML=hh+":"+mm+":"+ss;
+	}
+	setInterval("showTime()",100);
+</script>

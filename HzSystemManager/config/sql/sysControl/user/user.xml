@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+      <item id="query_user_org_byidb" desc="机构树和分类树">
+		<sql>
+			WITH t AS
+			 (SELECT odd_id, odd_group_id, odd_parent_id FROM sys_org_dept_dtls)
+			
+			SELECT id, pid, name, icon, ubd_pass, ubd_expre_date, ubd_use, flag, type,plc_id,plc_name,ubd_nick_name
+			  FROM (SELECT odd_id || agd_id id,
+			               '' || odd_id pid,
+			               odd_id || t.odd_group_id,
+			               agd_name name,
+			               'orgs.png' icon,
+			               null ubd_pass,
+			               null ubd_expre_date,
+			               null ubd_use,
+			               agd_key flag,
+			               '0' type,
+			                '' plc_id,
+			      		 null plc_name,
+			      		 null ubd_nick_name
+			          FROM t, sys_auth_group_dtls
+			         WHERE odd_group_id = agd_parent_id
+			           AND agd_type = 1)
+			
+			 INNER JOIN (SELECT DISTINCT odd_parent_id || (odd_group_id) zid from t) z
+			    ON z.zid = id
+			
+			UNION ALL
+			SELECT '' || odd_id id,
+			       odd_parent_id || odd_group_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       null flag,
+			       '2' type,
+			        '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_id
+			
+			UNION ALL
+			SELECT '' || agd_id id,
+			       '' pid,
+			       agd_name name,
+			       'orgs.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       agd_key flag,
+			       '0' type,
+			       '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_auth_group_dtls
+			 WHERE agd_parent_id = -1 AND agd_type = 1
+			UNION ALL
+			
+			SELECT '1-' || ubd_id id,
+			       '' || ubd_dept_id pid,
+			       ubd_name name,
+			       'user.png' icon,
+			       ubd_pass,
+			       TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+			       ubd_use,
+			       null flag,
+			       '1' type,
+			       ''||ubd_plc_id plc_id,
+			       pbd_police_name plc_name,
+			       ubd_nickname ubd_nick_name       
+			  FROM sys_user_base_dtls
+			  LEFT  JOIN
+			  	plc_police_base_dtls
+			  	ON
+			  pbd_user_id=ubd_plc_id
+		</sql>
+		<where id="0">
+			WHERE ubd_id!=?
+		</where>
+    </item>
+    
+     <item id="query_user_org_byid" desc="机构树和分类树">
+		<sql>
+			WITH t AS
+			 (SELECT odd_id, odd_group_id, CONNECT_BY_ISLEAF flag, odd_parent_id
+			    FROM sys_org_dept_dtls
+			   START WITH odd_id = ?
+			  CONNECT BY PRIOR odd_id = odd_parent_id)
+			SELECT id, pid, name, icon, ubd_pass, ubd_expre_date, ubd_use, flag, type,plc_id,plc_name,ubd_nick_name
+			  FROM (SELECT odd_id || agd_id id,
+			               '' || odd_id pid,
+			               odd_id || t.odd_group_id,
+			               agd_name name,
+			               'orgs.png' icon,
+			               null ubd_pass,
+			               null ubd_expre_date,
+			               null ubd_use,
+			               agd_key flag,
+			               '0' type,
+			        		'' plc_id,
+			       			null plc_name,
+			       			null ubd_nick_name
+			          FROM t, sys_auth_group_dtls
+			         WHERE odd_group_id = agd_parent_id
+			           AND agd_type = 1
+			           AND t.flag = 0)
+			 INNER JOIN (SELECT DISTINCT odd_parent_id || (odd_group_id) zid from t) z
+			    ON z.zid = id
+			UNION ALL
+			SELECT odd_parent_id || agd_id id,
+			       '' pid,
+			       agd_name name,
+			       'orgs.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       agd_key flag,
+			       '0' type,
+			       '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_auth_group_dtls
+			
+			 INNER JOIN sys_org_dept_dtls
+			
+			    ON odd_group_id = agd_id
+			 WHERE odd_id = ?
+			UNION ALL
+			SELECT '' || odd_id id,
+			       odd_parent_id || odd_group_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       null flag,
+			       '2' type,
+			       '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_id
+			 START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id = odd_parent_id
+			UNION ALL
+			SELECT '1-' || ubd_id id,
+			       '' || ubd_dept_id pid,
+			       ubd_name name,
+			       'user.png' icon,
+			       ubd_pass,
+			       TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+			       ubd_use,
+			       null flag,
+			       '1' type,
+			        ''||ubd_plc_id plc_id,
+			       pbd_police_name plc_name,
+			       ubd_nickname ubd_nick_name
+			  FROM sys_user_base_dtls
+			 INNER JOIN t
+			    ON ubd_cus_number = t.odd_id
+		     LEFT  JOIN
+			  	plc_police_base_dtls
+			  ON
+			  pbd_user_id=ubd_plc_id
+ 			WHERE  ubd_id!=?
+		</sql>
+    </item>
+    
+    <item id="insert_user_sql" desc="用户新增">
+    	<seq>sys_user_base_dtls@id@ubd_id</seq>
+		<sql>
+			INSERT INTO
+				sys_user_base_dtls
+				(	
+					ubd_cus_number,
+					ubd_id,
+					ubd_name,
+					ubd_pass,
+					ubd_expre_date,
+					ubd_dept_id,
+					ubd_use,
+					ubd_admin,
+					ubd_seq,
+					ubd_crte_user_id,
+					ubd_crte_time,
+					ubd_plc_id
+				)
+			VALUES
+				(
+					:ubd_cus_number,
+					:id,
+					:name,
+					:ubd_pass,
+					TO_TIMESTAMP(:ubd_expre_date,'yyyy-mm-dd'),
+					:pid,
+					:ubd_use,
+					:ubd_admin,
+					:id,
+					:ubd_crte_user_id,
+					sysdate,
+					:plc_id
+				)
+		</sql>
+	</item>
+  	<item id="update_user_sql" desc="用户修改">
+  		<sql>
+  			UPDATE 
+  				sys_user_base_dtls
+  			SET	
+  				ubd_cus_number=:ubd_cus_number,
+				ubd_name    =:name,
+				ubd_pass	=:ubd_pass,
+				ubd_expre_date =TO_TIMESTAMP(:ubd_expre_date,'yyyy-mm-dd'),
+				ubd_dept_id	   =:pid,
+				ubd_use		   =:ubd_use,
+				ubd_admin      =:ubd_admin,
+				ubd_updt_user_id  =:ubd_updt_user_id,
+				ubd_updt_time     =sysdate,
+				ubd_nickname   =:ubd_nick_name
+			WHERE
+				ubd_id=:id
+  		</sql>
+  	</item>
+  	
+  	<item  id="select_user_plc_bind">
+		<sql>
+			SELECT
+				pbd_user_id id,
+				pbd_police_id code,
+				pbd_police_name name
+			FROM
+				plc_police_base_dtls
+		</sql>  
+		<where id="0">
+			WHERE
+				(:name IS  NOT NULL OR  pbd_police_name  LIKE CONCAT(CONCAT('%',:name),'%'))
+		</where>
+		<where id="1">
+			WHERE
+				(:code IS  NOT NULL OR  pbd_police_id  LIKE CONCAT(CONCAT('%',:code),'%'))
+		</where>
+  	</item>
+  	<item id="query_user_role" desc="角色树和分类树">
+		<sql>
+			   WITH t AS
+			   (SELECT DISTINCT '' || (agd_id) id,
+			                    agd_name name,
+			                    agd_parent_id pid,
+			                    'true' nocheck,
+			                    agd_key flag,
+			                    '0' type,
+			                    'roles.png' icon
+			      FROM sys_auth_group_dtls
+			     WHERE agd_type = 2
+			  	<where id="0">
+			  	 AND agd_key  !=?
+			  	</where>
+			  	<where id="1">
+			  	 START WITH agd_id =
+			                (SELECT  (agd_id) FROM sys_auth_group_dtls WHERE  agd_key  =?)
+			    CONNECT BY PRIOR agd_id =  agd_parent_id)
+			  	</where>
+			  	<where id="2">
+			  	START WITH agd_id IN
+			                (SELECT DISTINCT (rbd_group_id) FROM sys_role_base_dtls)
+			    CONNECT BY agd_id = PRIOR agd_parent_id)
+			  	</where>
+			  	<order id="0">
+			  SELECT '1-' || rbd_id id,
+			         rbd_name name,
+			         rbd_group_id pid,
+			         null nocheck,
+			         null flag,
+			         '1' type,
+			         'role.png' icon
+			    FROM sys_role_base_dtls
+			  
+			   INNER JOIN t
+			  
+			      ON rbd_group_id = t.id
+			  
+			  UNION ALL
+			  SELECT 
+					id,
+                    name,
+                    pid,
+                    nocheck,
+                    flag,
+                    type,
+                    icon
+			  	FROM t
+			  	</order>
+		</sql>
+    </item>
+    <item id="insert_user_role">
+    	<sql>
+		INSERT INTO sys_user_role_rltn
+		  (urr_cus_number,urr_user_id, urr_role_id)
+		VALUES
+		  (:urr_cus_number,:urr_user_id, :urr_role_id)
+
+    	</sql>
+    </item>
+    <item id="delete_user_user">
+    	<sql>
+    		DELETE FROM 
+    			sys_user_base_dtls
+    		WHERE
+    			ubd_id=:id
+    	</sql>
+    </item>
+    <item id="delete_user_role">
+    	<sql>
+    		DELETE FROM 
+    			sys_user_role_rltn
+    		WHERE
+    			urr_user_id=:id
+    	</sql>
+    </item>
+    <item id="query_user_role_role">
+    	<sql>
+    		SELECT 
+    			urr_role_id id
+    		FROM
+    			sys_user_role_rltn
+    		WHERE
+    			urr_user_id=:id
+    	</sql>
+    </item>
+   
+    <item id="query_user_name">
+	    <sql>
+	    	SELECT COUNT(UBD_ID)num FROM SYS_USER_BASE_DTLS WHERE  ubd_name=?
+	    </sql>
+    </item>
+    <item id="query_user_info_by_id"	desc="根据id查询用户信息">
+	    <sql>
+	    	SELECT ubd_id AS userid,ubd_name AS username 
+	    	FROM sys_user_base_dtls 
+	    </sql>
+	    <where id="0">
+	    	WHERE ubd_cus_number = ? AND ubd_id = ?
+	    </where>
+    </item>
+    
+    <item id="query_user_bind_info_byuid" desc="根据用户id查询用户绑定信息">
+    	<sql>
+    		SELECT s.ubi_people_type,p.pbd_police_name 
+    		FROM sys_user_bind_info s  
+    		INNER JOIN plc_police_base_dtls p
+			ON s.ubi_people_id = p.pbd_user_id 
+			AND s.ubi_uid=:ubi_uid
+    	</sql>
+    </item>
+    
+    <item id="delete_user_bind_info_byuid" desc="根据用户id删除用户绑定信息">
+    	<sql>
+    		DELETE FROM 
+    			sys_user_bind_info 
+    		WHERE 
+    			ubi_uid=:ubi_uid
+    	</sql>
+    </item>
+    
+    <item id="insert_user_bind_info" desc="新增绑定信息">
+    	<sql>
+    		INSERT INTO 
+    			sys_user_bind_info
+    			(
+    				ubi_uid,
+    				ubi_people_type,
+    				ubi_people_id,
+    				ubi_crte_uid,
+    				ubi_crte_time,
+    				ubi_updt_uid,
+    				ubi_updt_time
+    			)
+    		VALUES
+    			(
+    				:uid,
+    				:peopleType,
+    				:peopleId,
+    				:crteUid,
+    				sysdate,
+    				:updtUid,
+    				sysdate
+    			)
+    	</sql>
+    	
+    </item>
+</sqlItem>

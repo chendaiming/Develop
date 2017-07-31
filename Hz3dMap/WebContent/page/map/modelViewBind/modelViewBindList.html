@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>模型视角绑定新增</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css">
+<style type="text/css">
+.query-line {
+	position: absolute;
+	top: 8px;
+    left: 5px;
+}
+.query-content >div {
+	display: inline-block;
+}
+.query-content {
+    margin-right: 5px; 
+}
+#table .ellipsis {
+	 /* width: 200px; */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.ellipsis {
+	    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.query-line a{
+	margin-top: 4px;
+    margin-left: 15px;
+}
+.right-menus {
+	position: absolute;
+    padding: 5px 0px;
+    left: 100px;
+    top: 130px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px #1a1a1a;
+    background: rgba(245, 245, 245, 0.95);
+    color: #282828;
+    z-index: 999;
+}
+.right-menus >ul {}
+.right-menus >ul >li {
+	padding: 3px 25px;
+	cursor: default;
+}
+.right-menus >ul >li:hover {
+    text-shadow: 1px 1px 1px #333;
+	background: #789abd;
+}
+</style>
+
+</head>
+<body>
+<!-- 右键菜单 -->
+<div class="right-menus" style="display: none;">
+	<ul>
+		<li @click="rmEdit"><span>编辑</span></li>
+		<li @click="rmDel"><span>删除</span></li>
+	</ul>
+</div>
+<div class="vbox box-con" id="mvb_list_con">
+	<div class="hbox hz-col-1 query-line">	
+		<div class="query-content">
+		    <input class="form-control" style="height: 36px;" v-model="search.mvb_model_id" placeholder="请输入模型编号"> 
+		</div>
+		<div class="query-content">
+		    <input class="form-control" style="height: 36px;" v-model="search.mvb_model_name" placeholder="请输入模型名称"> 
+		</div>
+		<a v-cloak class="hbtn btn_primary btn_large" @click="resetSearch"><span>重置</span></a>
+	</div>
+	<div class="hbox hz-col-1">
+		<div id="tableDiv" style="width: 100%;height: 100%; padding: 5px;" oncontextmenu="return false;">
+	       	<table id="table"></table>
+       	</div>
+	</div>
+	<div class="bottom" >
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large" id="btnDel" @click="deleteInfo"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div>
+	
+<!-- 	<div class="vbox hz-col-1" id="editPanel" style="display: none;">
+		<form class="form-horizontal  hz-col-4" style="margin-top: 20px;">	   
+			<div class="col-xs-12">	
+				<div class="form-group ">
+					 <label class="col-xs-3 control-label">模型编号</label>
+					 <div class="col-xs-8">
+						 <input class="form-control" v-model="main.mvb_model_id" readonly="readonly" />
+					 </div>
+				</div>
+			</div>			
+			<div class="col-xs-12">		
+				<div class="form-group ">
+					 <label class="col-xs-3 control-label">模型名称</label>
+					 <div class="col-xs-8">
+						 <input class="form-control" v-model="main.mvb_model_name" />
+					 </div>
+				</div>
+			</div>		
+		</form>
+		<div class="bottom" >
+			<div class="buttons">
+				<a class="hbtn btn_primary btn_large" @click="saveModel"><i class="btn_icon icon_add"></i><span>保存</span></a>
+			</div>
+		</div> 
+	</div> -->
+
+
+	
+
+</div>
+	 
+ 	
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/map/modelViewBind/modelViewBindList"]);
+</script>
+</html>

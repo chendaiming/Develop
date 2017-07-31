@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>   
+	<item id="select_police_inout_count"  desc="根据警号在监信息情况查询">
+		<sql>
+			 SELECT COUNT(pbd_user_id) AS count, 
+			 	        pbd_in_prison  AS flag
+			   FROM plc_police_base_dtls
+			  WHERE pbd_cus_number = ?
+           GROUP BY pbd_in_prison
+		</sql>
+	</item>
+
+	<item id="select_police_base_info"  desc="警员监内数据统计页面查询">
+		<const key="pbd_pstn_name">pbd_pstn_name</const>
+		<sql>
+			SELECT pbd_user_id,   
+		           pbd_police_id,    
+		           pbd_drptmnt_id, 
+		           pbd_police_name, 
+		           pbd_pstn_name,
+		           pbd_phone,
+		           pbd_talk_num,
+		           pbd_img,
+		           pbd_in_prison,
+		           odd_name
+		      FROM plc_police_base_dtls 
+	     LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id)    	                           
+		</sql>
+		<where id="0" remark="根据在监状态查询">
+			WHERE pbd_cus_number = ?
+			  AND pbd_in_prison = ?
+		</where>
+		<where id="1" remark="查询全监狱">
+			WHERE pbd_cus_number = ?
+		</where>
+	    <where id="2" remark="按部门查询">
+			WHERE pbd_cus_number = ?
+			  AND pbd_drptmnt_id = ?
+		</where>
+	    <where id="3" remark="按部门和在监标识查询">
+			WHERE pbd_cus_number = ?
+			  AND pbd_drptmnt_id = ?
+			  AND pbd_in_prison = ?
+		</where>		
+		<order id="0">
+		  ORDER BY  pbd_police_id
+		</order> 		
+	</item> 
+
+	<item id="select_police_drptmnt_count"  desc="各部门警员分布数量查询">
+		<sql>
+			SELECT COUNT(pbd_user_id) AS count, 
+				   pbd_drptmnt_id,
+				   odd_name
+			  FROM plc_police_base_dtls
+		 LEFT JOIN sys_org_dept_dtls
+			    ON (odd_id = pbd_drptmnt_id)
+		</sql>
+		<where id="0">
+			WHERE pbd_cus_number = ?
+		 GROUP BY pbd_drptmnt_id,odd_name 	
+		</where>
+	</item>	
+
+	<item id="select_police_inout_drptmnt_count"  desc="各部门警员监内外分布情况统计">
+		<sql>
+	       SELECT COUNT(pbd_user_id) AS count, 
+	              pbd_in_prison  AS flag,
+	              pbd_drptmnt_id,
+	              odd_name
+	         FROM plc_police_base_dtls
+	    LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id) 
+		</sql>
+		<where id="0">
+            WHERE pbd_cus_number = :cusNumber
+         GROUP BY pbd_in_prison,pbd_drptmnt_id,odd_name
+		</where>
+		<order id="0">
+		 ORDER BY pbd_drptmnt_id
+		</order>
+	</item>
+	
+	<item id="select_police_inout_time_count"  desc="各时段警员进出数量统计">
+		<sql>
+		SELECT TO_CHAR(PIR_BSNS_TIME,'HH24') AS time,
+			   pir_inout_flag,
+		       COUNT(pir_police_id) AS count
+		  FROM plc_police_inout_record
+		</sql>
+		<where id="0">
+			WHERE pir_cus_number = :cusNumber
+			  AND TO_CHAR(pir_bsns_time,'YYYY-MM-DD')   = :date
+			  AND pir_user_id IS NOT NULL
+		 GROUP BY TO_CHAR(PIR_BSNS_TIME,'HH24'),pir_inout_flag	
+		</where>
+		<order id="0">
+		 ORDER BY  TO_NUMBER(TO_CHAR(PIR_BSNS_TIME,'HH24'))
+		</order> 		
+	</item>	
+
+	<item id="select_inout_police_info"  desc="时段内进出监区的警员信息">
+		<const key="pbd_pstn_name">pbd_pstn_name</const>
+		<const key="pir_inout_flag">pir_inout_flag</const>
+		<sql>
+			SELECT pbd_user_id,   
+		           pbd_police_id,    
+		           pbd_drptmnt_id, 
+		           pbd_police_name, 
+		           pbd_pstn_name,
+		           pbd_phone,
+		           pbd_talk_num,
+		           pbd_img,
+		           odd_name,
+		           pir_inout_flag,
+		           TO_CHAR(pir_bsns_time,'YYYY-MM-DD HH24:MI:SS') pir_bsns_time
+		      FROM plc_police_base_dtls
+	     LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id)  
+	     LEFT JOIN plc_police_inout_record
+               ON (pir_police_id = pbd_police_id)        	                           
+		</sql>
+		<where id="0" remark="查询指定时段内进出警员信息">
+			WHERE pbd_cus_number = :cusNumber
+			  AND TO_CHAR(pir_bsns_time,'YYYY-MM-DD HH24') = :time
+		</where>
+		<where id="1" remark="查询指定时段内进警员信息">
+			WHERE pbd_cus_number = :cusNumber
+			  AND TO_CHAR(pir_bsns_time,'YYYY-MM-DD HH24') = :time
+			  AND pir_inout_flag = :flag
+		</where>
+		<order id="0">
+		  ORDER BY  pir_bsns_time desc
+		</order> 		
+	</item>
+			 
+</sqlItem>

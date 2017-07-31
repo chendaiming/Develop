@@ -1,0 +1,332 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<style>
+.form-content {
+	margin: 2% auto 5px;
+    background: rgba(251, 251, 251, 1);
+    color: #000;
+    width: 90%;
+    padding: 0 20px;
+    overflow: auto;
+    padding-bottom: 20px; 
+}
+.form-write {
+	width: 50px;
+    padding-left: 10px;
+    border-bottom: 1px solid #000;
+}
+#dailyReceipt .table td {
+	vertical-align: middle !important;
+	font-size:14px !important;
+	border:1px solid #000 !important;
+}
+#dailyReceipt .table {
+	margin-bottom:5px;
+	color:#000;
+}
+.table-bordered {
+	border:1px solid #000;
+}
+#dailyReceipt .col-xs-2 {
+	text-align:center;
+}
+.form-title {
+	text-align: center;
+    font-size: 20px;
+    padding: 20px;
+}
+.form-write:focus {
+	outline: none;
+	
+}
+
+#edit-table td {
+	padding:2px;
+	text-align:center;
+}
+.model-title {
+	color: #000;
+    line-height: 30px;
+}
+.model-input input{
+	height:30px;
+	color:#000;
+} 
+.modal-body>div {
+	margin-bottom:15px;
+}
+#dailyReceipt {
+	    position: absolute;
+    background: rgba(0,0,0,.8);
+    height: 92%;
+    top: 0;
+    width: 100%;
+    z-index:99;
+}
+
+/* 关闭按钮样式 */
+.close {
+  	position: absolute;
+    width: 27px;
+    height: 50px;
+    overflow: hidden;
+    right: 6%;
+}
+.close:hover::before, .close:hover::after {
+  background: #f10303;
+}
+.close::before, .close::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  margin-top: -1px;
+  background: #000; 
+}
+.close::before {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.close::after {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.close.thick::before, .close.thick::after {
+  height: 4px;
+  margin-top: -2px;
+}
+#dailyReceipt .btn_primary {
+	border: 1px solid #040404;
+    color: #0a0a0a;
+}
+#dailyReceipt .btn_primary:focus,#dailyReceipt .btn_primary:hover {
+    background-color: #b9b5b5;
+    border-color: #9d9fa0;
+    color: #fff;
+}
+#dailyReceipt input,#dailyReceipt textarea{
+	color: #1f56af;
+	outline: none;
+}
+
+.form-creatInfo {
+	text-align: right;
+    margin: 10px;
+}
+.form-creatInfo span {
+	margin-right:15px;
+}
+.chooseVideoBtn {
+	    display: inline-block;
+    padding: 10px;
+    border: 1px solid #1f57b2;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.chooseVideoBtn:hover {
+	background: #c3d2ec;
+    color: #fff;
+}
+
+.playVideoBtn {
+	width: 40px;
+	    height: 40px;
+	    position: absolute;
+	    left: 44%;
+    top: 42%;
+	    cursor: pointer;
+}
+
+
+</style>
+<div id="app">
+<div class="vbox box-con" id="dailyReceiptTable">
+	<div class="hbox hz-col-1">
+		<div class="hz-col-9 right-con">
+	       	<table id="table"></table>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+				<a v-show="saveFlag" @click="showFormTable" class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>新增</span></a>
+				
+				<a v-show="!saveFlag && isPushCanShow" @click="saveItem(2)" class="hbtn btn_primary btn_large isPush"><i class="btn_icon icon_save"></i><span>保存并推送</span></a>
+				<a v-show="!saveFlag && isPushCanShow" @click="saveItem(1)" class="hbtn btn_primary btn_large isPush"><i class="btn_icon icon_save"></i><span>保存</span></a>
+				 
+				 
+				<a @click="delMainData" v-show="saveFlag" class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div>
+	
+
+</div>
+<div class="hbox box-con" id="dailyReceipt" style="display:none;">
+	
+	<form class="form-horizontal form-content">
+		<input type="hidden" v-model="main.drm_id"/>
+		<span @click='hideFormTable' class="close thick"></span>
+		<div class="form-title"><input type="text" style="width:190px;" v-model="main.vsm_title" v-bind:disabled="!isPushCanShow" placeholder="请输入标题" class="form-write"></div>
+		<div class="form-creatInfo">
+			<span>创建人：{{main.ubd_name}}</span>
+			<span>创建时间：<span id="clock"></span></span>
+		</div>
+		<div style="padding: 2px;border: 1px solid #000;overflow-y: scroll;">
+			<div style="padding: 2px;border: 3px solid #000;">
+			 
+			
+		<div class="form-part" v-show="isPushCanShow" >
+			<table class="table table-bordered" v-if="isPushAlreadyFlag">
+				<tr>
+					<td rowspan="2" class="col-xs-2">推送</td>
+					<td>
+						<label class="radio-inline">
+							<input type="radio" name="thingType" v-model="main.vsm_push_range" value="1">公开推送
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="thingType" v-model="main.vsm_push_range" @click='openPushDialog' value="2">指定推送
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span v-for="item in pushNameList">{{item}}、</span>
+					</td>
+				</tr>
+			</table>
+			
+			<table class="table table-bordered" v-else v-lock>
+				<tr>
+					<td rowspan="1" class="col-xs-2">推送</td>
+					<td>
+						<span v-show="main.vsm_push_range==1">公开推送</span>
+						<span v-show="main.vsm_push_range==2"><span v-for="item in pushNameList">{{item}}、</span></span>
+					</td>
+				</tr>
+			</table>
+			
+		</div>
+		<div class="form-part">
+			<table class="table table-bordered">
+				<tr>
+					<td class="col-xs-2">截图或录像记录</td>
+					<td>
+						<div>
+							<span class="chooseVideoBtn" @click="openVideoDialog" v-show="isPushCanShow && isPushAlreadyFlag">请选择录像、截图记录</span>
+						</div>
+						<div>
+							<table class="table table-bordered" border="0" v-for="item in videoList">
+									<tr>
+										<td rowspan="4" class="col-xs-5" style="position:relative">
+											<img :src="'截图地址' + item.vrd_img_name" alt="暂无截图 "  />
+											<img @click="playVideo(item)" class="playVideoBtn" v-bind:src="playVideoPng" @mouseover="hoverPng" @mouseleave="leavePng"/>
+										</td>
+										<td>标题：{{item.vrd_title}}</td>
+									</tr>
+									<tr>
+										<td>内容：{{item.vrd_remark}}</td>
+									</tr>
+									<tr>
+										<td>时间：{{item.vrd_start_time}}</td>
+									</tr>
+									<tr>
+										<td>地点：{{item.vrd_place}}</td> 
+									</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="form-part">
+			<table class="table table-bordered">
+				<tr>
+					<td class="col-xs-2">通报内容</td>
+					<td>
+						<textarea rows="4" v-bind:disabled="!isPushCanShow" style="width:100%;resize:none;" v-model="main.vsm_remark" placeholder="请输入通报内容"></textarea>
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		</div>
+	</div>
+	</form>
+
+</div>
+	<!-- 推送对象选择弹框 -->
+	<div class="vbox hz-col-1" id="openPushList" style="display:none;">
+		<div class="hz-col-9">
+			<div class="panel"  style="height:80%;overflow-y:scroll;border:0;"> 
+				<ul id="roleopr" class="ztree"></ul>
+			</div>
+		</div>
+		
+		<div class="bottom">
+			<div class="buttons">
+				<a @click="saveTreeNodes" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>确定</span></a>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 录像、截图记录选择弹框 -->
+	<div class="vbox hz-col-1" id="openVideoList" style="display:none;">
+		<div class="hz-col-9">
+			<div class="vbox box-con" id="tabs" style="height: 86%;">
+				<div class="top" >
+					<div class="tabs" style="margin-left:-20px;border-bottom:1px solid #4077ae">
+						  <div class="tab" v-bind:class="{'active':activeTab==1}" @click="setActiveTab(1)"><span>视频记录</span></div>
+						  <!-- <div class="tab" v-bind:class="{'active':activeTab==2}" @click="setActiveTab(2)"><span>截图记录</span></div> -->
+				  	</div>
+				</div> 
+				<div class="vbox hz-col-1" v-show="activeTab==1">
+					<div class="vbox hz-col-1">
+						<div class="videoTable-content">
+							<!-- <label v-for="item in videoList">
+							    <input type="checkbox" value="">{{item.vrd_title}}
+							  </label> -->
+							 <div class="panel"  style="height:80%;overflow-y:scroll;border:0;"> 
+								<ul id="roleoprVideo" class="ztree"></ul>
+							 </div>
+							  
+						</div>
+					</div>
+				</div>
+				<div class="vbox hz-col-1" v-show="activeTab==2">
+					<div class="vbox hz-col-1">
+						
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		<div class="bottom">
+			<div class="buttons">
+				<a @click="saveVideoTreeNodes" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>确定</span></a>
+			</div>
+		</div>
+		
+	</div>
+	
+	
+
+</div>
+
+
+
+
+
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/video/notificationInfo"]);
+</script>

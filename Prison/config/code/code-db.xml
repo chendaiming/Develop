@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codes>
+	<!-- 业务模块-默认 -->
+	<module id="default">
+		<!-- 
+			节点说明：
+				1.third：第三方错误转码映射本地错误码；
+					1.code：映射的本地错误码；
+					2.indexof：第三方错误描述的关键信息或编码；
+				2.local：本地错误码转码描述；
+					1.code：本地错误码；
+					2.desc：本地错误码描述；
+
+			注意：third节点只需要在default模块配置，其他模块不需要配置
+		 -->
+		<third code="1002" indexof="ORA-00001"/>
+		<third code="1004" indexof="ORA-00942"/>
+		<third code="1005" indexof="ORA-00904"/>
+
+		<!-- 系统通用错误码 -->
+		<local code="0000" desc="处理成功"/>
+		<local code="0001" desc="处理失败"/>
+		<local code="0002" desc="内部处理错误"/>
+		<local code="0003" desc="请求参数不匹配"/>
+		<local code="0004" desc="请求参数类型不匹配"/>
+		<local code="0005" desc="请求参数格式错误"/>
+		<local code="0006" desc="获取序列号失败"/>
+
+		<!-- 编号以1开头的4位编码是Oracle数据库错误转码 -->
+		<local code="1001" desc="无效的SQL执行语句"/>
+		<local code="1002" desc="违反唯一约束条件"/>
+		<local code="1003" desc="查询结果为NULL"/>
+		<local code="1004" desc="表或视图不存在"/>
+		<local code="1005" desc="标识符无效"/>
+	</module>
+
+	<module id="test">
+		<!-- 编号以1开头的4位编码是Oracle数据库错误转码 -->
+		<local code="1002" desc="测试ID重复"/>
+	</module>
+	<!-- 区域维护 -->
+	<module id="areamng">
+		<local code="1002" desc="保存失败，区域编号重复"/>
+	</module>
+</codes>

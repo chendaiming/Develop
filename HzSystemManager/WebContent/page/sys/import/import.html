@@ -1,0 +1,210 @@
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+
+  p,h5,td,th{
+  	color:white;
+  }  
+  div.importType{
+	  	position:relative;
+	  	width:100%;
+	  	color:white;
+  }
+  div.importType> span{
+	  	position:relative;
+	  	width:40%;
+	  	text-align:center;
+  }
+  div.importType> div{
+	  	width:55%;
+	    border-radius:15px;
+		display:inline-block;
+  }
+  div.input.icon> input {
+  		border-radius:15px;
+  }
+  ul.datakey{
+  		list-style: none;
+	    position: absolute;
+	    top: 18px;
+	    bottom: 10px;
+	    overflow-y: auto;
+	    overflow-x: hidden;
+	    right: -1px;
+	    left: 2px;
+  }
+  ul.datakey li{
+	    margin: 0 -10px;
+	    padding: 0 10px;
+	    margin-top:5px;
+	    position: relative;
+	    cursor:pointer;
+	    color:white;
+        font-family: monospace;
+  }
+  ul.datakey >li >span {
+	  	width:46%;
+	  	min-height:30px;
+	  	line-height:30px;
+	  	background:rgba(49, 122, 214, 0.32);
+	  	border-radius:10px;
+	    text-align: center;
+	    position: relative;
+  }
+  ul.datakey >li > span:last-child{
+  		margin-left:4%;
+  }
+  ul.datakey >li > span:last-child::after{
+	    content: '';
+	    width: 0;
+	    height: 0;
+	    border-width: 6px 6px 0px 6px;
+	    border-style: solid;
+	    border-color: rgb(237, 245, 240) rgba(244, 67, 54, 0) transparent transparent;
+	    position: absolute;
+	    right: 4px;
+	    top: 50%;
+	    margin-top: -4px;
+  }
+  ul.datakey >li::before{
+		content: '';
+	    position: absolute;
+	    width: 4%;
+	    border: 1px solid rgb(255, 0, 0);
+	    top: 50%;
+	    left: 46%;
+  }
+  div.fileRe >p{
+	    position: absolute;
+	    width:95%;
+	    left:5%;
+  }
+  p  input{
+  	    height: 30px;
+    	outline: none;
+    	border-radius: 10px;
+	    border: 1px solid rgb(90, 156, 235);
+	    width:50%;
+        padding: 0 10px;
+        color: #F44336;
+  }
+  div.table{
+  	    overflow: auto;
+	    position: absolute;
+	    top: 90px;
+	    bottom: 10px;
+	    width: 100%;
+        right: -4px;
+        border-bottom: 1px solid #2a505f;
+  }
+  table {
+  		width:100%;
+  }
+  div.table>table tr{
+  		margin:10px;
+  }
+  td{
+  		margin:10px 0;
+  		border:1px solid #2a505f;
+  		height:30px;
+  		text-align:center;
+  		min-width:100px;
+	    font-family: monospace;
+  }
+  td:first-child{
+  		max-width:30px;
+  }
+  #headerKey{
+  		display:none;
+	    position: absolute;
+	    color: rgb(255, 255, 0);
+	    transition: height .5s;
+	    background: rgb(21, 67, 82);
+	    text-align: center;
+	    max-height: 200px;
+	    overflow: auto;
+  }
+  #headerKey li{
+  		margin-top:10px;
+  		cursor:pointer;
+  }
+  div.tableheader{
+	    top: 50px;
+	    height: 40px;
+	    position: absolute;
+	    left: 4px;
+	    right: 0px;
+  }
+  div.tableheader table{
+	    table-layout: fixed;
+  }
+  div.tableheader th{
+  		border:1px solid #2a505f;
+  		height:40px;
+  		background:rgb(27, 61, 114);
+  }
+</style>
+<div class="vbox box-con" id="import" >
+	<div class="hbox hz-col-1" >
+		<div class="left-con hz-col-2 vbox">
+			<div class="hz-col-1">
+				<div class="importType" v-cloak>
+					<span>导入类型 ：</span>
+					<hz-select 
+				  			tip="数据类型" 
+				  			sqlid="import_data_type"
+				  			:id.sync="dataType.type"
+				  			/>
+				</div>
+			</div>
+			<div class="hz-col-9" style="margin:-10px;position:relative;">
+				<h5>标题映射</h5>
+				<ul class="datakey" v-cloak>
+					<li v-for="item in dataType.keywords">
+						<span>{{item.name}}</span><span @click.self="slideDown($event,$index);">{{dataType.mappingKey[$index]['key']}}</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="hz-col-6" style="position:relative;margin:0 10px;overflow:hidden;">
+			<div class="fileRe" style="margin-top:10px;">
+				<p ><label>文件名称:</label> <input @click.self="choice($event)" v-model="file.rfile"   placeholder="请选择文件"/><input id="upfile" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" "  v-model="file.hfile" type="file" style="display:none;"/></p>
+			</div>
+			<div  class="tableheader">
+				<table v-if="header.length!=0" v-cloak>
+					<thead id="thead">
+						<tr>
+							<th style="width:30;"><input type="checkbox" checked="checked"  v-model="checkall"/></th>
+							<th  v-for="item in header" style="width:{{col[$index]}}"  >{{item}}</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="table" v-if="tbody.length!=0" v-cloak>
+				<table>
+					<tbody id="headd">
+						<tr v-for="row in tbody">
+							<td ><input  checked="checked"  type="checkbox" data-index="{{$index}}"/></td>
+							<td  v-for="td in row" rowspan="{{td.rowspan}}" >{{td[header[$index+(header.length-row.length)]]}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+					
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons"  >
+				<a  class="hbtn btn_primary btn_large" @click="import()"><i class="btn_icon icon_del"></i><span>录入</span></a>	
+		</div>
+	</div>
+	<div id="headerKey" class="combox_panel">
+		<ul>
+			<li v-for="item in header" @click.self="selectKey(item)">{{item}}</li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript" >
+require(["hz/sys/import/import"]);
+</script>

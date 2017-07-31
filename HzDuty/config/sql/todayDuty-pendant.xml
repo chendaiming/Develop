@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_todayDtyp_people" desc="查询值班人员信息">
+		<sql>
+			SELECT scd_shift_id,
+				   scd_shift_name,
+				   scd_shift_start_time,
+				   scd_shift_end_time,
+				   sbd_stime_flag,
+				   sbd_etime_flag,
+				   scd_job_id,
+			  	   scd_job_name,
+			  	   TO_CHAR(ped_date,'YYYY-MM-DD') AS ped_date,
+				   ped_id,
+				   ped_name, 
+				   pbd_police_id,
+				   pbd_img
+			  FROM dty_people_dtls
+			  LEFT JOIN dty_schedule_dtls
+			  ON (ped_cus_number = scd_cus_number AND
+			  	  ped_relation_id = scd_relation_id)
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ped_cus_number = sbd_cus_number AND
+			  	  ped_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (ped_cus_number = jbd_cus_number AND
+			  	  ped_job_id = jbd_id)
+			  LEFT JOIN plc_police_base_dtls
+			  ON (ped_cus_number = pbd_cus_number AND
+			  	  ped_id = pbd_user_id)
+		</sql>
+		<where id="0">
+			WHERE ped_cus_number = ? AND
+				  TRUNC(ped_date) = TO_DATE(?,'YYYY-MM-DD') AND
+				  scd_dept_id = ?
+		</where>
+		<where id="1">
+			WHERE ped_cus_number = ? AND
+				  TRUNC(ped_date) = TO_DATE(?,'YYYY-MM-DD')
+		</where>
+		<order id="0">
+			ORDER BY sbd_seq,jbd_seq,ped_seq
+		</order>
+	</item>
+</sqlItem>

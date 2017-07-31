@@ -1,0 +1,158 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<style>
+.table-bordered tbody tr td{
+    border: 1px solid #1f699e;
+    font-size:14px;
+}
+#title{
+	width: 100%;
+	height: 25px;
+}
+#title tr td{
+	text-align: center;
+	background-color: #21609a;
+	font-weight: bold;
+	font-size: 15px;
+}
+#content{
+	width: 100%;
+}
+#content tr td{
+	text-align: left;
+    padding-left: 10px;
+    font-size: 15px;
+   	padding-top: 12px;
+   	padding-bottom: 12px;
+}
+#content tr td span{
+	color: #ff7200;
+}
+.input input{
+	height: 25px;
+}
+.datetime{
+	top: 0px;
+}
+.btn_mini{
+	height: 27px;
+	line-height: 25px;
+}
+</style>
+<div class="vbox box-con" id="prisonDaily">
+	<div class="hbox hz-col-1">
+		<div style="width: 100%;height: 100%;padding: 10px;">
+			<div style="width: 100%;height: 7%;text-align: center;font-size: 22px;font-weight: bold;font-family: '仿宋'">
+				<span v-text="prisonName"></span>信息日报
+			</div>
+			<div style="width: 100%;height: 7%;">
+	   			<div style="float: left;padding-top: 5px;">
+	   				当前时间：<span v-text="dateTime"></span>
+	   				<a href="javascript:void(0)" @click="search(1)" style="color: rgb(4,181,113);text-decoration: underline;">刷新</a>
+	   			</div>
+	   			<div style="float: right;">
+	   				<div style="width: 200px;float: left;">
+	   					<hz-date tip="日期" :val.sync="date"/>
+	   				</div>
+	   				<div style="float: left;">
+	   					<a class="hbtn btn_primary btn_mini pull-left" @click="search()"  style="margin-bottom:10px"><i class="btn_icon icon_search"></i><span>查询</span></a>
+	   				</div>
+	   			</div>
+			</div>
+			<div style="width: 100%;height: 80%;">
+				<table class="table-bordered" id="title">
+					<tr>
+	       				<td width="30%">主要汇报内容</td>
+	       				<td width="70%">当日情况</td>
+	       			</tr>
+				</table>
+				<div style="width: 100%;overflow: auto;">
+		       		<table class="table-bordered" id="content">
+		       			<tr>
+		       				<td width="30%">1、押犯基本情况</td>
+		       				<td width="70%">
+		       					今日在册罪犯 <span v-text="daily.pad_regtr_prsner">0</span> 人，
+		       					在押罪犯 <span v-text="daily.pad_custody_prsner">0</span> 人，
+		       					在逃罪犯 <span v-text="daily.pad_large_prsner">0</span> 人，
+		       					解回再审 <span v-text="daily.pad_back_rtal_prsner">0</span> 人，
+		       					监外执行 <span v-text="daily.pad_probation_prsner">0</span> 人，
+		       					新收押 <span v-text="daily.pad_new_custody_prsner">0</span> 人，
+		       					刑满释放 <span v-text="daily.pad_released_prsner">0</span> 人，
+		       					罪犯死亡 <span v-text="daily.pad_death_prsner">0</span> 人。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>2、罪犯违规情况</td>
+		       				<td>
+		       					今日监狱发生罪犯违规 <span>0</span> 起、
+		       					其中重大、重要狱情 <span>0</span> 起。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>3、罪犯惩处、高危管控情况</td>
+		       				<td>
+		       					今日加戴戒具 <span>0</span> 人，
+		       					禁闭 <span>0</span> 人，
+		       					隔离审查 <span>0</span> 人，
+		       					立案侦查 <span>0</span> 人，
+		       					高危管控罪犯 <span>0</span> 人。
+		       				</td> 
+		       			</tr>
+		       			<tr>
+		       				<td>4、罪犯监内就医情况</td>
+		       				<td>
+		       					今日监内就诊 <span>0</span> 人，
+		       					监内住院  <span>0</span> 人。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>5、罪犯外出情况</td>
+		       				<td>
+		       					今日监外就诊 <span>0</span> 人(已回监 <span>0</span> 人)，
+		       					监外住院 <span>0</span> 人(已回监 <span>0</span> 人)，
+		       					离监探亲 <span>0</span> 人，
+		       					特许离监探亲 <span>0</span> 人，
+		       					其他外出 <span>0</span> 人。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>6、外来车辆进出情况</td>
+		       				<td>
+		       					今日进监车辆 <span>0</span> 辆，
+		       					涉及 <span>0</span> 个监区，
+		       					其中，进出最多的监区是 <span></span>，
+		       					共进出 <span>0</span> 辆次。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>7、外来人员进出情况</td>
+		       				<td>
+		       					今日进监人员 <span>0</span> 人，
+		       					涉及 <span>0</span> 个监区，
+		       					其中，进出人数最多的监区是 <span></span>，
+		       					共进出 <span>0</span> 人次。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>8、网络技防运行情况</td>
+		       				<td>
+		       					今日技防设备故障 <span>0</span> 个。
+		       				</td>
+		       			</tr>
+		       			<tr>
+		       				<td>9、报警情况</td>
+		       				<td>
+		       					今日发生报警 <span>0</span> 起。
+		       				</td>
+		       			</tr>
+		       		</table>
+		       	</div>
+	       	</div>
+       	</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"  data-main="../../../js/config" ></script>
+<script>
+require(["../js/src/cds/prisonDaily/gather"]);
+</script>

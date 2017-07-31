@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+
+    <item id="insert_map_model_file" desc="">
+    	<seq>map_model_file_info@id@mfi_file_id</seq>
+		<sql>
+			INSERT INTO map_model_file_info
+			  (mfi_cus_number ,
+			   mfi_file_id    ,
+			   mfi_file_pid   ,
+			   mfi_file_name  ,
+			   mfi_file_type  ,
+			   mfi_file_title ,
+			   mfi_file_order ,
+			   mfi_file_path  ,
+			   mfi_file_flag  ,
+			   mfi_file_attr  ,
+			   mfi_create_uid ,
+			   mfi_create_datetime,
+			   mfi_update_uid ,
+			   mfi_update_datetime)
+			VALUES
+			  (:cus_number,
+			   :id        ,
+			   :pid       ,
+			   :name      ,
+			   :mfi_file_type ,
+			   :mfi_file_title,
+			   :mfi_file_order,
+			   :mfi_file_path ,
+			   :mfi_file_flag ,
+			   :mfi_file_attr ,
+			   :create_uid    ,
+			   SYSDATE        ,
+			   :update_uid    ,
+			   SYSDATE)
+		</sql>
+    </item>
+
+    <item id="update_map_model_file" desc="">
+		<sql>
+			 UPDATE map_model_file_info
+			    SET mfi_cus_number  = :cus_number,
+			        mfi_file_pid    = :pid,
+			        mfi_file_id     = :id,
+			        mfi_file_name   = :name,
+			        mfi_file_type   = :mfi_file_type,
+			        mfi_file_title  = :mfi_file_title,
+			        mfi_file_order  = :mfi_file_order,
+			        mfi_file_path   = :mfi_file_path,
+			        mfi_file_flag   = :mfi_file_flag,
+			        mfi_file_attr   = :mfi_file_attr,
+			        mfi_dept_id     = :mfi_dept_id,
+			        mfi_load_flag   = :mfi_load_flag,
+			        mfi_update_uid  = :update_uid,
+			        mfi_update_datetime = SYSDATE
+		</sql>
+		<where id="1">
+			  WHERE mfi_file_id = :id
+		</where>
+    </item>
+
+    <item id="delete_map_model_file" desc="">
+		<sql>
+			 DELETE FROM map_model_file_info
+		</sql>
+		<where id="1">
+			  WHERE mfi_file_id IN 
+					(SELECT mfi_file_id
+			  		   FROM map_model_file_info
+			 		  START WITH mfi_file_id = ?
+					CONNECT BY mfi_file_pid = PRIOR mfi_file_id)
+		</where>
+    </item>
+
+    <item id="select_map_model_file_list" desc="">
+		<sql>
+			 SELECT mfi_cus_number AS cus_number,
+			 		mfi_file_pid   AS pid,
+			        mfi_file_id   AS id,
+			        mfi_file_title ,
+			        mfi_file_name AS name,
+			        mfi_file_order
+			   FROM map_model_file_info
+		</sql>
+		<where id="1">
+			  WHERE mfi_cus_number = ?
+		</where>
+		<order id="1">
+			  ORDER BY  mfi_file_order
+		</order>
+    </item>
+
+    <item id="select_map_file_detail" desc="">
+		<sql>
+			SELECT a.mfi_cus_number AS cus_number,
+			       a.mfi_file_pid AS pid,
+			       b.mfi_file_name AS pname,
+			       a.mfi_file_id AS id,
+			       a.mfi_file_name AS name,
+			       a.mfi_file_type,
+			       a.mfi_file_title,
+			       a.mfi_file_order,
+			       a.mfi_file_path,
+			       a.mfi_file_flag,
+			       a.mfi_file_attr,
+			       a.mfi_dept_id,
+			       a.mfi_load_flag,
+			       a.mfi_create_uid AS create_uid,
+			       a.mfi_create_uid AS create_user,
+			       TO_CHAR(a.mfi_create_datetime, 'YYYY-MM-DD HH24:MI:SS') AS create_datetime,
+			       a.mfi_update_uid AS update_uid,
+			       a.mfi_update_uid AS update_user,
+			       TO_CHAR(a.mfi_update_datetime, 'YYYY-MM-DD HH24:MI:SS') AS update_datetime
+			  FROM map_model_file_info a
+			  LEFT JOIN map_model_file_info b
+			    ON a.mfi_file_pid = b.mfi_file_id
+		</sql>
+		<where id="1">
+			 WHERE a.mfi_cus_number = ?
+			   AND a.mfi_file_id = ?
+		</where>
+    </item>
+    
+  
+      <item id="select_map_file_for_dept" desc="">
+		<sql>
+			SELECT mfi_file_name
+			  FROM map_model_file_info 
+		</sql>
+		<where id="1" desc="查询所有模型文件">
+			 WHERE mfi_cus_number = :cusNumber
+			   AND mfi_file_type  = 2
+			   AND mfi_load_flag  = 1
+		</where>
+		<where id="2" desc="查询部门所属模型文件">
+			 WHERE mfi_cus_number = :cusNumber
+			   AND mfi_file_type  = 2
+			   AND mfi_load_flag  = 1
+			   AND :dept_id IN (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(mfi_dept_id,','))) 
+		</where>		
+    </item>  
+</sqlItem>

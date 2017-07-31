@@ -1,0 +1,21 @@
+
+/* *************************************** */
+添加时间：2017-06-30
+添加用户：xie.yh
+功能列表：
+    设备联动关联 - page/sys/device/deviceLink.html;
+
+添加时间：2017-07-12
+添加用户：xiasj
+功能列表：
+    操作日志统计 - page\sys\operationLog\operationLog.html;
+    
+    
+系统常量：
+    CAI_WORK_STTS - 设备状态：0.正常、1.故障
+    CAI_USE_STTS -设备使用状态：2.已打开、3.已关闭
+
+
+
+
+

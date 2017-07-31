@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="log.format" value="%date||%5level||%logger{0} - %message%n" />
+	<property name="log.format.1" value="%date||%5level||%message%n" />
+    <property name="log.path" value="logs" />
+    <property name="application.name" value="prison" />
+	<jmxConfigurator />
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<!--<charset>UTF-8</charset>-->
+		</encoder>
+	</appender>
+	<appender name="activemq"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+		<append>true</append>
+		<file>${log.path}/activemq/${application.name}-activemq.log</file>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/activemq/${application.name}-activemq-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+	<appender name="frontMsg"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
+		<append>true</append>
+		<file>${log.path}/frontMsg/${application.name}-msg.log</file>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/frontMsg/${application.name}-msg-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+	<appender name="prisonlog"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.path}/${application.name}.log</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/${application.name}-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+	<appender name="error"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.path}/${application.name}-error.log</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/${application.name}-error-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<appender name="warn"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.path}/${application.name}-warn.log</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/${application.name}-warn-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<appender name="info"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.path}/${application.name}-info.log</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/${application.name}-info-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+	<appender name="debug"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${log.path}/${application.name}-debug.log</File>
+		<Append>true</Append>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/${application.name}-debug-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 打印前置机收到的报警消息 -->
+	<appender name="alarmMsg"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>${log.path}/alarmMsg/alarm-msg.log</file>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/alarmMsg/alarm-msg-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 打印前置机收到的一卡通消息 -->
+	<appender name="cardMsg"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>${log.path}/cardMsg/card-msg.log</file>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/cardMsg/card-msg-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 打印前置机收到的门消息 -->
+	<appender name="doorMsg"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>${log.path}/doorMsg/door-msg.log</file>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/doorMsg/door-msg-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 打印前置机收到的通用消息 -->
+	<appender name="commonMsg"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>${log.path}/commonMsg/common-msg.log</file>
+		<encoder>
+			<pattern>${log.format}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>
+				${log.path}/commonMsg/common-msg-%d{yyyyMMdd}-%i.log
+			</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 系统管理平台同步消息日志 -->
+	<appender name="authsystem" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<append>true</append>
+		<file>${log.path}/authsystem/sync.log</file>
+		<encoder>
+			<pattern>${log.format.1}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${log.path}/authsystem/sync-%d{yyyyMMdd}-%i.log</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>30Mb</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+	</appender>
+
+	<!-- 前置机消息日志配置 -->
+	<logger name="com.hz.fm.handle.alarm" additivity="false" level="DEBUG">
+		<appender-ref ref="alarmMsg" />
+	</logger>
+	<logger name="com.hz.fm.handle.card" additivity="false" level="DEBUG">
+		<appender-ref ref="cardMsg" />
+	</logger>
+	<logger name="com.hz.fm.handle.door" additivity="false" level="DEBUG">
+		<appender-ref ref="doorMsg" />
+	</logger>
+	<logger name="com.hz.fm.handle.common" additivity="false" level="DEBUG">
+		<appender-ref ref="commonMsg" />
+	</logger>
+
+	<!-- 系统管理平台同步消息日志 -->
+	<logger name="com.hz.log.autosys" additivity="false" level="DEBUG">
+		<appender-ref ref="authsystem" />
+	</logger>
+
+	<logger name="org.eclipse.jetty" level="WARN" />
+	<logger name="org.springframework" level="WARN" />
+	<logger name="org.apache.xbean" level="WARN" />
+	<logger name="org.apache.activemq" additivity="false" level="WARN">
+		<appender-ref ref="activemq" />
+	</logger>
+	<logger name="com.hz.frm.net" level="WARN" >
+		<appender-ref ref="frontMsg" />
+	</logger>
+	<logger name="com.hz" additivity="false" level="DEBUG">
+	    <appender-ref ref="debug"/>
+		<appender-ref ref="info"/>
+		<appender-ref ref="warn"/>
+		<appender-ref ref="error"/>
+		<appender-ref ref="CONSOLE" />
+	</logger>
+	
+ 	<root level="DEBUG">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="prisonlog"/>
+	</root>
+</configuration>

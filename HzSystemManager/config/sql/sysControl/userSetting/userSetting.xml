@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+	<item id="insert_user_setting" desc="插入用户设定信息">
+		<seq>sys_user_system_setting@sus_record_id</seq>
+		<sql>
+   			INSERT INTO sys_user_system_setting 
+   						(sus_cus_number,
+   						 sus_record_id,
+   						 sus_type,
+   						 sus_value,
+   						 sus_user_id,
+   						 sus_crte_user_id,
+   						 sus_crte_time, 
+   						 sus_updt_user_id,
+   						 sus_updt_time)
+   					VALUES
+   						(
+   						 :sus_cus_number,
+   						 :sus_record_id,
+   						 :sus_type,
+   						 :sus_value,
+   						 :sus_user_id,
+   						 :userId,
+   						 SYSDATE,
+    					 :userId,
+   						 SYSDATE  						 
+   						)	 
+		</sql>
+    </item>  
+
+	<item id="update_user_setting" desc="更新用户设定信息">
+		<sql>
+			UPDATE sys_user_system_setting 
+			   SET sus_type = :sus_type,
+   				   sus_value = :sus_value,
+   				   sus_user_id = :sus_user_id,
+   				   sus_updt_user_id =:userId,
+   				   sus_updt_time = SYSDATE
+			 WHERE sus_cus_number    = :sus_cus_number
+			   AND sus_record_id     = :sus_record_id
+		</sql>
+    </item> 
+
+	<item id="select_user_setting" desc="更新用户设定信息">
+		<sql>
+			SELECT sus_cus_number,
+			       sus_record_id,
+			       sus_type,
+			       sus_value,
+			       sus_user_id,
+			       sus_crte_user_id,
+			       sus_crte_time,
+			       sus_updt_user_id,
+			       sus_updt_time
+              FROM sys_user_system_setting
+		</sql>
+		<where id='0'>
+			WHERE sus_cus_number = :cusNumber
+		</where>
+		<where id='1'>
+			WHERE sus_cus_number = :cusNumber
+			  AND sus_user_id =:userId
+		</where>		
+		<where id='2'>
+			WHERE sus_cus_number = :cusNumber
+			  AND sus_user_id =:userId
+			  AND sus_type =:type
+		</where>		
+    </item>   	        
+</sqlItem>

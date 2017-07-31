@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_cmr_evidence_info" desc="查询证据信息">
+		<sql>
+			SELECT ein_evidence_sqno  AS id,
+			       ein_title          AS name,
+			       ein_content_desc,
+			       ein_file_type_indc AS type,
+			       ein_addrs,
+			       ein_file_name,
+			       ein_file_path,
+			       ein_problem,
+			       ein_stts_indc      AS status,
+			       TO_CHAR(ein_crte_time, 'YYYY-MM-DD HH24:MI:SS') AS time
+			  FROM cmr_evidence_info
+		</sql>
+		<where id="0" desc="查询监督检查证据信息">
+			 WHERE (TRIM(:cusNumber) IS NULL OR EIN_CUS_NUMBER = :cusNumber)
+			   AND EIN_CONTENT_TYPE_INDC = 1
+		</where>
+		<order id="0">
+			 ORDER BY ein_crte_time DESC
+		</order>
+	</item>
+	<item id="select_cmr_monitor_doc_info" desc="查询监督单信息">
+		<sql>
+			SELECT  mdo_cus_number AS cusNumber,
+					mdo_monitor_sqno AS id,
+					mdo_monitor_name AS name,
+					TO_CHAR(mdo_time,'YYYY-MM-DD HH24:MI:SS') time,
+					mdo_addr AS address,
+					mdo_problem AS problem,
+					mdo_evidence_relation AS relation,
+					mod_stts_indc AS status,
+					mdo_remark AS remark,
+				    mdo_crte_time,
+				    mdo_crte_user_id userId,
+				    mdo_updt_time,
+				    mdo_updt_user_id
+			  FROM  cmr_monitor_doc		    					
+		</sql>
+		<where id="0" desc="指挥长角色可以查看所有的监督单">
+		      WHERE mdo_cus_number  = :mdo_cus_number
+		</where>
+		<where id="1" desc="其他角色可以查看已公开和自己创建的监督单">
+		      WHERE mdo_cus_number  = :mdo_cus_number
+		        AND (mdo_crte_user_id =:user OR mod_stts_indc = 1)
+		</where>
+		<where id="2" desc="指挥长角色可以查看所有的监督单">
+		      WHERE mdo_cus_number  = :mdo_cus_number
+		        AND mdo_monitor_name LIKE CONCAT('%',CONCAT(:mdo_monitor_name,'%'))
+		</where>				
+		<order id="0">
+		   ORDER BY mdo_updt_time DESC  
+		</order>
+	</item>
+ 	<item id="insert_cmr_monitor_doc_info" desc="创建监督单">
+   		<seq>cmr_monitor_doc@id</seq>
+    	<sql>
+    		INSERT INTO 
+    			cmr_monitor_doc
+    			(
+				   mdo_cus_number,
+				   mdo_monitor_sqno,
+				   mdo_monitor_name,
+				   mdo_time,
+				   mdo_addr,
+				   mdo_problem,
+				   mdo_evidence_relation,
+				   mod_stts_indc,
+				   mdo_remark,
+				   mdo_crte_time,
+				   mdo_crte_user_id,
+				   mdo_updt_time,
+				   mdo_updt_user_id
+    			)
+    		values(
+    			   :cusNumber,
+    			   :id,
+    			   :name,
+    			   SYSDATE,
+    			   :address,
+    			   :problem,
+    			   :relation,
+    			   0,
+    			   :remark,
+    			   SYSDATE,
+    			   :userId,
+    			   SYSDATE,
+    			   :userId
+    		)
+    	</sql>
+    </item>
+
+    <item id="delete_monitor_info_byid" desc="删除监督单信息">
+		<sql>
+			DELETE FROM cmr_monitor_doc
+		</sql>
+		<where id="0">
+			WHERE mdo_cus_number =:cusNumber
+			  AND mdo_monitor_sqno = :id
+		</where>
+    </item>
+ 
+     <item id="update_monitor_status" desc="更新监督单状态">
+		<sql>
+			UPDATE cmr_monitor_doc
+			   SET mod_stts_indc = :status,
+			       mdo_updt_user_id = :userId,
+			       mdo_updt_time = SYSDATE
+		</sql>
+		<where id="0">
+			WHERE mdo_cus_number =:cusNumber
+			  AND mdo_monitor_sqno = :id
+		</where>
+    </item> 
+
+     <item id="select_user_role_name" desc="查询用户是否为指挥长角色">
+		<sql>
+         	SELECT rbd_id 
+           	  FROM sys_role_base_dtls
+         LEFT JOIN sys_user_role_rltn
+                ON (rbd_id = urr_role_id)
+		</sql>
+		<where id="0">
+             WHERE  urr_user_id = :userId
+               AND  rbd_name LIKE :roleName  
+		</where>
+    </item>      	    		
+</sqlItem>

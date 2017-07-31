@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	 <item id="insert_prisoner_rfid_record"  desc="插入记录">
+		 <seq>dvc_rfid_monitor_record@recordId@rmr_record_id</seq>
+	     <sql>
+		     INSERT INTO dvc_rfid_monitor_record
+			  (rmr_cus_number,
+			   rmr_record_id,
+			   rmr_rfid_id,
+			   rmr_rfid_name,
+			   rmr_dept_id,
+			   rmr_dept_name,
+			   rmr_area_id,
+			   rmr_area_name,
+			   rmr_before_rfid_id,
+			   rmr_before_rfid_name,
+			   rmr_label_type,
+			   rmr_label_code,
+			   rmr_people_type,
+			   rmr_people_id,
+			   rmr_people_name,
+			   rmr_monitor_time,
+			   rmr_monitor_flag,
+			   rmr_record_time,
+			   rmr_remark)
+			VALUES
+			  (:cusNumber,
+			   :recordId,
+			   :rfidId,
+			   :rfidName,
+			   :rfidDeptId,
+			   :rfidDeptName,
+			   :areaId,
+			   :areaName,
+			   :beforeRfidId,
+			   :beforeRfidName,
+			   :labelType,
+			   :labelCode,
+			   :peopleType,
+			   :peopleId,
+			   :peopleName,
+			    TO_TIMESTAMP(:monitorTime, 'yyyy-MM-dd hh24:mi:ss'),
+			   :monitorFlag,
+			    SYSDATE,
+			   :remark)
+		 </sql>  	 
+     </item>
+     <item id="insert_prisoner_rfid_record_from_cache"  desc="从缓存中提取记录插入数据库">
+	     <sql>
+		     INSERT INTO dvc_rfid_monitor_record
+			  (rmr_cus_number,
+			   rmr_record_id,
+			   rmr_rfid_id,
+			   rmr_rfid_name,
+			   rmr_dept_id,
+			   rmr_dept_name,
+			   rmr_area_id,
+			   rmr_area_name,
+			   rmr_before_rfid_id,
+			   rmr_before_rfid_name,
+			   rmr_label_type,
+			   rmr_label_code,
+			   rmr_people_type,
+			   rmr_people_id,
+			   rmr_people_name,
+			   rmr_monitor_time,
+			   rmr_monitor_flag,
+			   rmr_record_time,
+			   rmr_remark)
+			VALUES
+			  (:cusNumber,
+			   :recordId,
+			   :rfidId,
+			   :rfidName,
+			   :rfidDeptId,
+			   :rfidDeptName,
+			   :areaId,
+			   :areaName,
+			   :beforeRfidId,
+			   :beforeRfidName,
+			   :labelType,
+			   :labelCode,
+			   :peopleType,
+			   :peopleId,
+			   :peopleName,
+			    TO_TIMESTAMP(:monitorTime, 'yyyy-MM-dd hh24:mi:ss'),
+			   :monitorFlag,
+			   	TO_TIMESTAMP(:recordTime, 'yyyy-MM-dd hh24:mi:ss'),
+			   :remark)
+		 </sql>  	 
+     </item>
+      <item id="select_prisoner_rfid_record"  desc="查询rfid记录">
+	     <sql>
+			SELECT TO_CHAR(rmr_monitor_time,'yyyy-MM-dd hh24:mi:ss') AS time,
+			       rmr_area_id AS area,
+			       rmr_area_name AS areaname,
+			       rmr_people_id AS prisonerid,
+			       rmr_rfid_id AS rfid,
+			       rmr_rfid_name AS rfidname,
+			       rmr_monitor_flag AS inout
+			  FROM DVC_RFID_MONITOR_RECORD
+		 </sql>  	 
+		 <where id="0">
+		 	 WHERE rmr_people_id = :peopleId
+		 	   AND rmr_monitor_time BETWEEN
+		       TO_TIMESTAMP(CONCAT(:monitorTime,'00:00:00'),'yyyy-MM-dd hh24:mi:ss') 
+		       AND
+		       TO_TIMESTAMP(CONCAT(:monitorTime,'23:59:59'),'yyyy-MM-dd hh24:mi:ss')
+		 </where>
+	  	 <where id="1">
+			 WHERE rmr_people_id = :peopleId
+			   AND rmr_monitor_time # TO_TIMESTAMP(:monitorTime,'yyyy-MM-dd hh24:mi:ss')
+		 </where>
+		 <order id="0">
+		 	 ORDER BY rmr_monitor_time
+		 </order>
+		 <order id="1">
+		 	 ORDER BY rmr_monitor_time DESC
+		 </order>
+     </item>
+
+	<item id="select_rfid_link_dvcid_for_playback" desc="">
+		<sql>
+			SELECT dlm_link_purpose,
+			       dlm_dvc_type,
+			       dlm_dvc_id,
+			       dlm_dvc_name,
+			       dld_dvc_type,
+			       dld_dvc_id,
+			       dld_dvc_name,
+			       dld_link_act
+			  FROM com_dvc_link_mian
+			 INNER join com_dvc_link_dtls
+			    ON dld_cus_number = dlm_cus_number
+			   AND dld_link_id = dlm_link_id
+		</sql>
+		<where id="0">
+			 WHERE dlm_cus_number = ?
+			   AND dlm_dvc_type = ?
+			   AND dlm_dvc_id in (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(?, ',')))
+		</where>
+		<order id="0">
+			 ORDER BY dlm_seq, dld_seq
+		</order>
+	</item>
+</sqlItem>

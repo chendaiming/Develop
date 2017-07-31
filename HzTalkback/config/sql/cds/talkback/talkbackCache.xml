@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_talkback_base_dtls" desc="查询对讲设备信息">
+		<sql>
+			SELECT     tbd_cus_number,
+					   tbd_id,
+					   tbd_other_id,
+					   tbd_name,
+					   tbd_brand,
+					   tbd_mian_id,
+					   tbd_child_id,
+					   tbd_ip,
+					   tbd_port,
+					   tbd_dept_id,
+					   tbd_area_id,
+					   tbd_room_id,
+					   tbd_dvc_addrs,
+					   tbd_dvc_stts,
+					   tbd_use_stts,
+					   tbd_seq              
+			FROM       tbk_talkback_base_dtls 
+		</sql>
+		<where id="1">
+			 WHERE tbd_cus_number = ?
+			   AND tbd_id = ?
+		</where>		
+	</item>	
+
+	<item id="select_talkback_otherid_name" desc="查询对讲设备第三方编号和名称">
+		<sql>
+			SELECT     tbd_other_id AS id,
+					   tbd_name AS name
+			FROM       tbk_talkback_base_dtls 
+		</sql>
+		<where id="0">
+			 WHERE tbd_cus_number = ?
+		</where>
+		<where id="1" desc="查询对讲主机">
+			 WHERE tbd_cus_number = ?
+			   AND tbd_type = 1
+		</where>				
+	</item>	
+	
+		<item id="select_talkback_info_for_cache">
+		<sql>
+			SELECT tbd_cus_number AS cus_number,
+			       tbd_id         AS id,
+			       tbd_name       AS name,
+			       tbd_dept_id    AS dept_id,
+			       tbd_dvc_addrs  AS addrs
+			  FROM tbk_talkback_base_dtls
+		</sql>
+		<where id="0">
+			 WHERE tbd_cus_number = ?
+		</where>
+	</item>
+					
+</sqlItem>

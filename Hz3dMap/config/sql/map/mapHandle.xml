@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+    <item id="select_view_menu_for_map_handle" desc="">
+		<sql>
+			SELECT DISTINCT
+			       vmi_cus_number      AS cus_number,
+			       vmi_pid             AS pid,
+			       vmi_id              AS id,
+			       vmi_name            AS name,
+			       vmi_type            AS type,
+			       vmi_icon_url        AS icon_url,
+			       vmi_host_key        AS host_key,
+			       vmi_status          AS status,
+			       vmi_order           AS "order",
+			       vmi_is_default      AS is_default,
+			       vmi_model_group_id  AS model_group_id,
+			       vmi_pos_x           AS pos_x,
+			       vmi_pos_y           AS pos_y,
+			       vmi_pos_z           AS pos_z,
+			       vmi_rot_x           AS rot_x,
+			       vmi_rot_y           AS rot_y,
+			       vmi_rot_z           AS rot_z,
+			       vmi_tar_x           AS tar_x,
+			       vmi_tar_y           AS tar_y,
+			       vmi_tar_z           AS tar_z,
+			       vmi_area_id		   AS area_id
+			  FROM map_view_menu_info
+		</sql>
+		<where id="0">
+			 WHERE vmi_cus_number = ?
+			   AND vmi_is_default = 1
+		</where>
+		<where id="1">
+			 WHERE vmi_cus_number = ?
+		</where>
+		<where id="2">
+			 WHERE vmi_cus_number = ?
+			   AND vmi_area_id IN (SELECT oar_area_id
+			                         FROM com_org_area_rltn
+			                        WHERE oar_cus_number = ?
+			                          AND oar_dept_id = ?)
+		</where>
+		<where id="3">
+			 START WITH vmi_cus_number = ?
+			        AND vmi_area_id IN (SELECT oar_area_id
+			                              FROM com_org_area_rltn
+			                             WHERE oar_cus_number = ?
+			                               AND oar_dept_id = ?)
+			CONNECT BY PRIOR vmi_id = vmi_pid
+		</where>
+		<where id="4">
+			 START WITH vmi_cus_number = ?
+			        AND vmi_area_id IN (SELECT oar_area_id
+										  FROM com_org_area_rltn
+										 INNER JOIN TABLE(dvc_pkg_permission.getdep(?, ?, ?))
+										    ON oar_dept_id = odd_id)
+			CONNECT BY PRIOR vmi_id = vmi_pid
+		</where>
+		<order id="1">
+			 ORDER BY vmi_pid, vmi_order
+		</order>
+    </item>
+
+    <item id="select_model_group_for_map_handle" desc="">
+		<sql>
+			SELECT mfi_cus_number AS cus_number,
+			       mfi_file_id    AS id,
+			       mfi_file_pid   AS pid,
+			       mfi_file_title AS name,
+			       mfi_file_flag  AS type,
+			       mfi_file_name  AS model_name,
+			       mfi_file_order AS "order"
+			  FROM map_model_file_info
+		</sql>
+		<where id="0">
+			 WHERE mfi_cus_number = ?
+		</where>
+		<order id="0">
+			 ORDER BY mfi_file_order
+		</order>
+    </item>
+
+    <item id="select_model_point_for_map_handle" desc="">
+		<sql>
+			SELECT mpi_cus_number,
+			       mpi_point_id,
+			       mpi_point_name,
+			       mpi_view_id,
+			       mpi_link_type,
+			       mpi_link_id,
+			       mpi_model_type,
+			       mpi_pos_x,
+			       mpi_pos_y,
+			       mpi_pos_z,
+			       mpi_rot_x,
+			       mpi_rot_y,
+			       mpi_rot_z,
+			       mpi_point_flag,
+			       mpi_show_type,
+			       mpi_distance_min,
+			       mpi_distance_max,
+			       mpi_line_height,
+			       mpi_icon_url,
+			       mpi_text_font,
+			       mpi_text_color,
+			       mpi_text_bgcolor,
+			       mpi_view_pos_x,
+			       mpi_view_pos_y,
+			       mpi_view_pos_z,
+			       mpi_view_rot_x,
+			       mpi_view_rot_y,
+			       mpi_view_rot_z,
+			       mpi_view_tar_x,
+			       mpi_view_tar_y,
+			       mpi_view_tar_z,
+			       mpi_rltn_model_name
+			  FROM map_model_point_info
+		</sql>
+		<where id="0">
+			 WHERE mpi_cus_number = ?
+			   AND mpi_point_flag = ?
+			   AND mpi_show_type #> 4
+		</where>
+		<where id="1">
+			 WHERE mpi_cus_number = ?
+			   AND mpi_view_id = ?
+			   AND mpi_point_flag = ?
+			   AND mpi_show_type #> 4
+		</where>
+		<where id="2">
+			 WHERE mpi_cus_number = ?
+			   AND mpi_link_type = ?
+			   AND mpi_link_id = ?
+		</where>
+		<order id="1">
+			  ORDER BY mpi_point_id
+		</order>
+    </item>
+
+    <item id="select_model_point_for_map_handle_by_auth" desc="根据用户授权查询地图模型点位">
+		<sql>
+			SELECT mpi_cus_number,
+			       mpi_point_id,
+			       mpi_point_name,
+			       mpi_view_id,
+			       mpi_link_type,
+			       mpi_link_id,
+			       mpi_model_type,
+			       mpi_pos_x,
+			       mpi_pos_y,
+			       mpi_pos_z,
+			       mpi_rot_x,
+			       mpi_rot_y,
+			       mpi_rot_z,
+			       mpi_point_flag,
+			       mpi_show_type,
+			       mpi_distance_min,
+			       mpi_distance_max,
+			       mpi_line_height,
+			       mpi_icon_url,
+			       mpi_text_font,
+			       mpi_text_color,
+			       mpi_text_bgcolor,
+			       mpi_view_pos_x,
+			       mpi_view_pos_y,
+			       mpi_view_pos_z,
+			       mpi_view_rot_x,
+			       mpi_view_rot_y,
+			       mpi_view_rot_z,
+			       mpi_view_tar_x,
+			       mpi_view_tar_y,
+			       mpi_view_tar_z,
+			       mpi_rltn_model_name
+			  FROM map_model_point_info
+			 WHERE ((NOT EXISTS
+			        (SELECT 1
+			            FROM (SELECT das_cus_number, das_dvc_type, das_dvc_id
+			                    FROM com_dvc_auth_set
+			                   WHERE das_user_id = :userId
+			                     AND das_dvc_type #> 2)
+			           WHERE das_cus_number = mpi_cus_number
+			             AND das_dvc_id = mpi_link_id
+			             AND das_dvc_type = mpi_link_type) AND mpi_link_type #> 2) OR
+			       (((SELECT COUNT(0)
+			             FROM com_dvc_auth_set
+			            WHERE das_cus_number = :cusNumber
+			              AND das_dvc_type = 2
+			              AND das_user_id = :userId) = 0 OR EXISTS
+			        (SELECT 1
+			             FROM (SELECT das_cus_number, das_dvc_type, das_dvc_id
+			                     FROM com_dvc_auth_set
+			                    WHERE das_user_id = :userId
+			                      AND das_dvc_type = 2)
+			            WHERE das_cus_number = mpi_cus_number
+			              AND das_dvc_id = mpi_link_id
+			              AND das_dvc_type = mpi_link_type)) AND mpi_link_type = 2))
+		</sql>
+		<where id="0">
+			   AND mpi_cus_number = :cusNumber
+			   AND mpi_point_flag = :pointFlag
+			   AND mpi_show_type #> 4
+		</where>
+		<where id="1">
+			   AND mpi_cus_number = :cusNumber
+			   AND mpi_point_flag = :pointFlag
+			   AND mpi_view_id = :viewId
+			   AND mpi_show_type #> 4
+		</where>
+		<where id="2">
+			   AND mpi_cus_number = :cusNumber
+			   AND mpi_link_type = :linkType
+			   AND mpi_link_id = :linkId
+		</where>
+		<where id="3" desc="根据三维巡视路线配置点位查询">
+			   AND (EXISTS (SELECT 1
+			                  FROM map_route_device_link
+			                 WHERE rdl_cus_number = :cusNumber
+			                   AND rdl_route_id = :routeId
+			                   AND rdl_dvc_type = mpi_link_type
+			                   AND rdl_dvc_id = mpi_link_id))
+		</where>
+		<order id="1">
+			  ORDER BY mpi_point_id
+		</order>
+    </item>
+
+    <item id="select_power_grid_for_map_handle" desc="">
+		<sql>
+			SELECT pgg_power_grid_id     AS power_grid_id,
+			       pgg_line_color        AS line_color,
+			       pgg_line_width        AS line_width,
+			       pgg_electricity_color AS electron_color,
+			       pgg_show_elect		 AS show_elect
+			  FROM map_power_grid_geom
+		</sql>
+		<where id="0">
+			 WHERE pgg_cus_number = ?
+		</where>
+    </item>
+
+    <item id="select_power_grid_points_for_map_handle" desc="">
+		<sql>
+			SELECT pgp_power_grid_id AS power_grid_id,
+			       pgp_pos_x         AS pos_x,
+			       pgp_pos_y         AS pos_y,
+			       pgp_pos_z         AS pos_z
+			  FROM map_power_grid_points
+		</sql>
+		<where id="0">
+			 WHERE pgp_cus_number = ?
+		</where>
+		<order id="0">
+			 ORDER BY pgp_power_grid_id, pgp_seq
+		</order>
+    </item>
+
+    <item id="select_model_component_for_map_handle" desc="">
+		<sql>
+			SELECT mcl_cus_number AS cus_number,
+			       mcl_load_id    AS load_id,
+			       mcl_load_mode  AS load_mode,
+			       mcl_view_id    AS view_id,
+			       mcl_pos_x      AS pos_x,
+			       mcl_pos_y      AS pos_y,
+			       mcl_pos_z      AS pos_z,
+			       mcl_rot_x      AS rot_x,
+			       mcl_rot_y      AS rot_y,
+			       mcl_rot_z      AS rot_z,
+			       mcl_mci_id     AS mci_id,
+			       mci_class      AS class_flag,
+			       mci_type       AS type_flag
+			  FROM map_model_component_load
+			 INNER JOIN map_model_component_info
+			    ON mci_cus_number = mcl_cus_number
+			   AND mci_id = mcl_mci_id
+			 WHERE mcl_cus_number = ?
+		</sql>
+		<where id="0">
+			   AND mcl_load_mode = ?
+		</where>
+		<where id="1">
+			   AND mcl_load_mode = ?
+			   AND mcl_view_id = ?
+		</where>
+		<order id="0">
+			 ORDER BY mcl_order
+		</order>
+    </item>
+
+    <item id="select_robit_move_master_for_map_handle" desc="">
+		<sql>
+			SELECT omg_id,
+			       omg_origin_name      AS a_name,
+			       omg_destination_name AS b_name,
+			       omr_a_dvc_id         AS a_dvc_id,
+			       omr_a_dvc_type       AS a_dvc_type,
+			       omr_b_dvc_id         AS b_dvc_id,
+			       omr_b_dvc_type       AS b_dvc_type
+			  FROM map_orbit_move_master
+			  LEFT JOIN map_orbit_move_rltn
+			    ON omg_cus_number = omr_cus_number
+			   AND omg_id = omr_omg_id
+			 WHERE omg_cus_number = :cusNumber
+		</sql>
+		<where id="0">
+			   AND ((omg_origin_name = :aName AND omg_destination_name = :bName) OR
+			       (omg_destination_name = :aName AND omg_origin_name = :bName))
+		</where>
+		<where id="1">
+			   AND ((omr_a_dvc_type = :aDvcType 
+			   AND omr_a_dvc_id = :aDvcId
+			   AND omr_b_dvc_type = :bDvcType
+			   AND omr_b_dvc_id = :bDvcId) 
+			   OR (omr_b_dvc_type = :aDvcType 
+			   AND omr_b_dvc_id = :aDvcId
+			   AND omr_a_dvc_type = :bDvcType
+			   AND omr_a_dvc_id = :bDvcId))
+		</where>
+    </item>
+
+    <item id="select_robit_move_point_for_map_handle" desc="">
+		<sql>
+			SELECT omp_cus_number, 
+			       omp_omg_id, 
+			       omp_pos_x, 
+			       omp_pos_y, 
+			       omp_pos_z, 
+			       omp_seq
+			  FROM map_orbit_move_points
+			 WHERE omp_cus_number = ?
+		</sql>
+		<where id="0">
+			   AND omp_omg_id = ?
+		</where>
+		<where id="1">
+			   AND omp_omg_id IN (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(?,',')))
+		</where>
+		<order id="0">
+			 ORDER BY omp_omg_id, omp_seq
+		</order>
+    </item>
+
+
+    <item id="select_prisoner_panel_for_map_handle" desc="">
+		<sql>
+			SELECT ppi_cus_number          AS cus_number,
+			       ppi_point_id            AS point_id,
+			       ppi_view_id             AS view_id,
+			       ppi_panel_width         AS panel_width,
+			       ppi_panel_height        AS panel_height,
+			       ppi_link_type           AS link_type,
+			       ppi_link_id             AS link_id,
+			       ppi_pos_x               AS pos_x,
+			       ppi_pos_y               AS pos_y,
+			       ppi_pos_z               AS pos_z,
+			       ppi_point_flag          AS point_flag,
+			       ppi_distance_min        AS dis_min,
+			       ppi_distance_max        AS dis_max,
+			       prisoner.pbd_other_id   AS prsnr_code,
+			       prisoner.pbd_prsnr_name AS prsnr_name,
+			       photo.pbd_photo_path    AS photo_path,
+			       abi_bed_code            AS bed_code,
+			       abi_bed_name            AS bed_name
+			  FROM map_panel_point_info
+			 INNER JOIN psr_prisoner_base_dtls prisoner
+			    ON prisoner.pbd_cus_number = ppi_cus_number
+			   AND prisoner.pbd_prsnr_id = ppi_link_id
+			   AND ppi_link_type = 98
+			  LEFT JOIN psr_photo_base_dtls photo
+			    ON photo.pbd_cus_number = prisoner.pbd_cus_number
+			   AND photo.pbd_prsnr_id = prisoner.pbd_prsnr_id
+			   AND photo.pbd_photo_type = 0
+			  LEFT JOIN psr_bed_base_dtls
+			    ON bbd_cus_number = prisoner.pbd_cus_number
+			   AND bbd_prsnr_id = prisoner.pbd_prsnr_id
+			  LEFT JOIN com_area_bed_info
+			    ON bbd_cus_number = abi_cus_number
+			   AND bbd_bed_id = abi_bed_id
+		</sql>
+		<where id="0">
+			 WHERE ppi_cus_number = ?
+			   AND ppi_view_id = ?
+		</where>
+    </item>
+
+
+    <item id="select_label_points_for_map_handle" desc="">
+		<sql>
+			SELECT lpi_cus_number,
+			       lpi_point_id,
+			       lpi_link_type,
+			       lpi_link_id,
+			       lpi_show_text,
+			       lpi_show_icon,
+			       lpi_line_height,
+			       lpi_dis_min,
+			       lpi_dis_max,
+			       lpi_pos_x,
+			       lpi_pos_y,
+			       lpi_pos_z,
+			       lpi_point_type,
+			       lpi_view_id,
+			       lpi_bind_model,
+			       lpi_view_pos_x,
+			       lpi_view_pos_y,
+			       lpi_view_pos_z,
+			       lpi_view_rot_x,
+			       lpi_view_rot_y,
+			       lpi_view_rot_z,
+			       lpi_view_tar_x,
+			       lpi_view_tar_y,
+			       lpi_view_tar_z
+			  FROM map_label_point_info
+		</sql>
+		<where id="0">
+			 WHERE lpi_cus_number = ?
+		</where>
+		<where id="1">
+			 WHERE lpi_cus_number = ?
+			   AND lpi_view_id = ?
+			   AND lpi_point_type = ?
+		</where>
+    </item>
+</sqlItem>

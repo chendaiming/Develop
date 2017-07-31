@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:c="http://www.springframework.org/schema/c" xmlns:cache="http://www.springframework.org/schema/cache" xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee" xmlns:lang="http://www.springframework.org/schema/lang" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p" xmlns:task="http://www.springframework.org/schema/task" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<!-- 自动扫描bean -->
+	<context:component-scan base-package="com.hz"/>
+	<task:annotation-driven scheduler="qbScheduler" mode="proxy" />
+	<task:scheduler id="qbScheduler" pool-size="10" />
+
+	<!-- 引入项目配置文件 -->
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:system-config.properties</value>
+				<value>classpath:socket-config.properties</value>
+				<value>classpath:amq/jms-destination-name.properties</value>
+				<value>classpath:superAmin.properties</value>
+				<value>classpath:audio/audio.properties</value>
+				<value>classpath:ftp/ftp.properties</value>
+				<value>classpath:talkback/talkback-config.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="applicationContextUtil" class="com.hz.frm.util.ApplicationContextUtil"></bean>
+
+<!-- 	
+	<bean id="nettyConfig" class="com.hz.frm.net.netty.bean.NettyConfig">
+		<property name="ssl" value="${ssl}" />
+		<property name="sslPort" value="${sslPort}" />
+		<property name="port" value="${port}" />
+		<property name="communicationMode" value="${communicationMode}" />
+		<property name="netWorkerNum" value="${netWorkerNum}" />
+		<property name="msgComsumerNum" value="${msgComsumerNum}" />
+		<property name="msgServicePackage" value="com.hz.frm.net.netty.service.impl." />
+	</bean>
+	<bean id="nettySocketServer" class="com.hz.frm.net.netty.NettySocketServer" init-method='start'>
+		<property name="nettyConfig" ref="nettyConfig" />
+	</bean>
+-->
+
+
+	<!-- 定时运行的类 -->
+<!-- 	
+	<bean id="talkbackTask" class="com.hz.cds.talkback.task.TalkbackTask"/>
+ -->
+
+	<!-- 定义定时执行prisonerInfoScheduledTask类中  的startRun()方法  -->
+<!-- 
+	<bean id="talkbackTaskScheduledTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+	    <property name="targetObject">
+	        <ref bean="talkbackTask" />
+	    </property>
+	    <property name="targetMethod">
+	        <value>startRun</value>
+	    </property>
+	</bean>
+ -->
+
+	<!-- 触发器的bean的设置，在这里我们设置了我们要触发的jobDetail是哪个。  -->
+	<!-- 这里我们定义了要触发的jobDetail，即触发器去触发哪个bean..并且我们还定义了触发的时间  -->
+<!-- 
+	<bean id="talkbackTaskCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+	        <ref bean="talkbackTaskScheduledTask" />
+	    </property>
+	    <property name="cronExpression">
+	      	   秒 分 时  日 月 年 
+	        <value>0 0/10 * * * ?</value>  
+	          每10分钟运行一次
+	    </property>
+	</bean>
+ -->
+ 
+	<!-- 管理触发器的总设置,可以放置多个触发器。  -->
+<!-- 
+	<bean autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="talkbackTaskCronTrigger" />
+			</list>
+		</property>
+	</bean>
+ -->
+</beans>

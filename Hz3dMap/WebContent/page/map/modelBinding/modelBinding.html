@@ -1,0 +1,108 @@
+<!-- 设备模型查询-->
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/right-menus.css" charset="utf-8">
+<style>
+     
+    .fixed-table-container table{
+    	width:99.9%;
+    }
+    .fixed-table-container .fixed-table-body{
+        overflow-x:auto;
+    }
+    #infotd{
+        overflow-y:auto;
+    }
+    .condition{
+        border: 1px solid rgba(31, 105, 158, 0.22);
+        height: 34px;
+        top: 10px;
+        width: 18%;
+        position: absolute;
+        background: rgba(59, 70, 77, 0.62);
+        color: rgb(255, 255, 255);
+        z-index: 1999;
+        border-radius: 5px;
+        line-height: 32px;
+    }
+    .condition >.input{
+        border: 0;
+        border-radius: 5px;
+    }
+    .condition >.input >input{
+        border-radius: 5px;
+    }
+    .condition >input{
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        float: left;
+        outline: none;
+        border-radius: 5px;
+        text-indent: 10px;
+        position:absolute;
+        top:0;
+        left:0;
+    }
+    .condition_btn{
+        position: absolute;
+        top: 10px;
+        border: 1px solid rgba(31, 105, 158, 0.22);
+        border-radius: 5px;
+        background-color: #054f9a;
+        height: 34px;
+        width: 5%;
+        line-height: 34px;
+    }
+    .condition_btn >button{
+        width: 100%;
+        height: 100%;
+        line-height: 34px;
+        outline: none;
+    }
+    .condition_btn:hover{
+        background-color: #08417a;
+    }
+   .hbtn span{
+        height: 100%;
+        line-height: 22px;
+    }
+    #table{
+    	padding:5px;
+    }
+</style>
+<div class="right-menus" style="display: none;">
+    <ul>
+        <li @click="rmEdit()"><span>编辑</span></li>
+        <li @click="rmRemove()"><span>删除</span></li>
+    </ul>
+</div>
+<div class="vbox box-con" id="infolist" oncontextmenu="return false">
+    <div class="condition" style="left:1%">
+        <input placeholder="设备名称" class='form-control' v-model="condition.dmb_dvc_name" >
+    </div>
+    <div class="condition" style="left:20%">
+        <hz-select
+                tip="设备类型"
+                code="securityDeviceType"
+                :id.sync="condition.dmb_dvc_type"
+                />
+    </div>
+    <div class="condition_btn" style="left:39%;">
+        <button @click="showAll()">重置</button>
+    </div>
+    <div class="hbox hz-col-1">
+        <div class="hz-col-1" style='padding:5px;'>
+            <table id="table" ></table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+    require(["hz/modelBinding/modelBinding"]);
+   
+</script>

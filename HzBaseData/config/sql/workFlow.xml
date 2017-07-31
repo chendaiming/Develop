@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_flow_type_info" desc="流程分类表查询">
+		<sql>
+			SELECT 
+				fti_cus_number,
+				fti_id,
+				fti_name,
+				fti_key,
+				fti_seq 
+				FROM wfw_flow_type_info
+		</sql>
+		<where id="0">
+			 WHERE  fti_cus_number = :fti_cus_number
+		</where>
+		<where id="1">
+			 WHERE  fti_cus_number = :fti_cus_number
+			 	  AND fti_id =:fti_id
+		</where>
+		<where id="2">
+			 WHERE  fti_cus_number = :fti_cus_number
+			 	  AND fti_key =:fti_key
+		</where>
+		<order id="0">
+			ORDER BY fti_seq
+		</order>
+    </item>
+	
+	<item id="insert_flow_type_info" desc="流程分类表新增">
+		<seq>wfw_flow_type_info@id</seq> 
+		<sql>
+			INSERT INTO
+				 wfw_flow_type_info
+				 (
+				 	fti_cus_number,
+				 	fti_id,
+				 	fti_name,
+				 	fti_key,
+				 	fti_seq,
+				 	fti_crte_user_id,
+				 	fti_crte_time
+				 	
+				 )
+			values
+				(
+					:fti_cus_number,
+				 	:id,
+				 	:fti_name,
+				 	:fti_key,
+				 	:fti_seq,
+				 	:fti_crte_user_id,
+					sysdate 
+				)
+		</sql>
+    </item>
+    
+     <item id="update_flow_type_info" desc="流程分类表修改">
+		<sql>
+			UPDATE 
+				wfw_flow_type_info
+			SET 	
+					fti_name=:fti_name,
+	         		fti_key=:fti_key,
+	         		fti_seq	=:fti_seq,
+	         		fti_updt_user_id=:fti_updt_user_id,
+	         		fti_updt_time=sysdate
+			WHERE 
+				fti_cus_number=:fti_cus_number
+			AND
+				fti_id=:fti_id
+		</sql>
+   </item>
+   
+   <item id="query_work_flow_info" desc="流程详细步骤表查询">
+		<sql>
+			SELECT 
+				wfi_cus_number,
+				wfi_id,
+				wfi_type_id,
+				wfi_name,
+				wfi_role_id,
+				wfi_pre_id,
+				wfi_back_id,
+				wfi_first,
+				wfi_last,
+				wfi_seq 
+				FROM wfw_work_flow_info
+		</sql>
+		<where id="0">
+			 WHERE  wfi_cus_number = :wfi_cus_number
+			 AND wfi_type_id =:wfi_type_id
+		</where>
+		<where id="1">
+		    WHERE wfi_cus_number = :wfi_cus_number 
+		      AND wfi_name like concat('%',concat(:wfi_name,'%'))
+		</where>
+		<where id="2">
+			 WHERE  wfi_cus_number = :wfi_cus_number
+			 AND wfi_type_id =:wfi_type_id
+			 AND wfi_seq =:wfi_seq
+		</where>
+		<order id="0">
+			ORDER BY wfi_seq
+		</order>
+	</item>
+	
+	<item id="delete_flow_type_info" desc="流程分类表删除">
+		<sql>
+			DELETE FROM 
+				wfw_flow_type_info
+			WHERE 
+				fti_cus_number=:fti_cus_number
+			AND
+				fti_id=:fti_id
+		</sql>
+   </item>
+   
+   <item id="delete_work_flow_info" desc="流程详细步骤表删除">
+		<sql>
+			DELETE FROM 
+				wfw_work_flow_info
+		</sql>
+		<where id="0">
+			 WHERE 
+				wfi_cus_number=:wfi_cus_number
+			AND
+				wfi_type_id=:wfi_type_id
+		</where>
+		<where id="1">
+			 WHERE 
+				wfi_cus_number=:wfi_cus_number
+			AND
+				wfi_type_id=:wfi_type_id
+			AND
+				wfi_id >=:wfi_id
+		</where>
+   </item>
+   
+   <item id="insert_work_flow_first" desc="流程表第一次插入">
+		<seq>wfw_work_flow_info@id</seq> 
+		<sql>
+			INSERT INTO
+				 wfw_work_flow_info
+				 (
+				 	wfi_cus_number,
+				 	wfi_id,
+				 	wfi_type_id,
+				 	wfi_name,
+				 	wfi_role_id,
+				 	wfi_pre_id,
+				 	wfi_first,
+				 	wfi_last,
+				 	wfi_seq,
+				 	wfi_crte_user_id,
+				 	wfi_crte_time
+				 	
+				 )
+			values
+				(
+					:wfi_cus_number,
+				 	:id,
+				 	:wfi_type_id,
+				 	:wfi_name,
+				 	:wfi_role_id,
+				 	:wfi_pre_id,
+				 	:wfi_first,
+				 	:wfi_last,
+				 	:wfi_seq,
+				 	:wfi_crte_user_id,
+					sysdate 
+				)
+		</sql>
+    </item>
+   
+   <item id="update_work_flow_first" desc="更新上一个流程表">
+		<sql>
+			UPDATE 
+				wfw_work_flow_info
+			SET
+				wfi_back_id =:wfi_back_id,
+				wfi_first =:wfi_first,
+				wfi_last =:wfi_last,
+				wfi_updt_user_id =:wfi_updt_user_id,
+				wfi_updt_time =sysdate
+			WHERE 
+				wfi_cus_number=:wfi_cus_number
+			AND
+				wfi_id=:wfi_id
+			AND
+				wfi_type_id=:wfi_type_id
+		</sql>
+   </item>
+   
+    <item id="update_work_flow_after_del" desc="删除流程后更新上一个流程">
+		<sql>
+			UPDATE 
+				wfw_work_flow_info
+			SET
+				wfi_back_id ='',
+				wfi_last =1,
+				wfi_updt_user_id =:wfi_updt_user_id,
+				wfi_updt_time =sysdate
+			WHERE 
+				wfi_cus_number=:wfi_cus_number
+			AND
+				wfi_id=:wfi_id
+			AND
+				wfi_type_id=:wfi_type_id
+		</sql>
+   </item>
+   
+</sqlItem>

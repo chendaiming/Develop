@@ -1,0 +1,12 @@
+@CHARSET "UTF-8";
+.today-count {position: absolute;top: 218px;right:10px;padding: 5px 2px 8px 2px; text-align: left; background: rgba(12,34,48,0.8); border-radius: 3px; border: 1px solid #FFF;box-shadow: 2px 2px 5px #000; z-index: 4; display: none;}
+.today-count:hover {background: rgba(12,34,48,0.9);}
+.today-count .tc-close {position: absolute;width: 12px;height: 12px;top: 5px;right: 5px;background: url(images/close.png) center center no-repeat; opacity:.5; z-index: 1;}
+.today-count .tc-close:hover {opacity:1; cursor: pointer;}
+.today-count .tc-head {margin-bottom:8px;width: 100%;text-align: center;text-shadow: 0px 0px 5px rgba(0, 255, 255, 0.8);}
+.today-count .tc-node {padding: 4px 15px 5px 15px; text-shadow: 0px 0px 5px rgba(0, 255, 255, 0.8); font-size: 1em; cursor: default;}
+.today-count .tc-node >span.tc-num {margin: 0 25px 0 10px; color: #ffe200; text-decoration: underline; text-shadow: none; cursor: pointer;}
+.today-count .tc-node >span.tc-unit {float: right; margin-left: 30px;}
+.today-count .tc-node:hover {background-color: rgba(215, 216, 17, .2);border-radius: 3px;}
+.today-count .tc-split {margin: 5px 5% 5px 5%;width: 90%;height: 1px;background: rgba(255, 255, 255, 0.14);}
+.today-count .tc-split:last-child {display: none;}

@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+
+	<item id="select_area_tree_for_alarm_plan" desc="区域树的查询">
+		<sql>
+			SELECT abd_cus_number AS cus_number,
+			       abd_area_id AS id,
+			       abd_area_name AS name,
+			       abd_parent_id AS pid,
+			       abd_area_id AS rid
+			FROM com_area_base_dtls
+		</sql>
+		<where id="1">
+			WHERE abd_cus_number = ?
+		</where>
+		<order id="1">
+			ORDER BY abd_seq
+		</order>
+    </item>
+
+	<item id="select_dptt_tree_for_alarm_plan" desc="查询部门树">
+		<sql>
+			SELECT odd_id AS id, 
+			       odd_name AS name, 
+			       odd_parent_id AS pid
+			  FROM sys_org_dept_dtls
+		</sql>
+		<where id="0">
+			 WHERE odd_id #$ ?
+			 START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id = odd_parent_id
+		</where>
+	</item>
+
+	<item id="select_network_alarm_for_alarm_plan" desc="查询网络报警">
+		<sql>
+			SELECT nbd_cus_number AS cus_number,
+			       nbd_id AS id,
+			       CONCAT('network', nbd_id) AS rid,
+			       nbd_name AS name,
+			       nbd_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM alt_network_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = nbd_cus_number
+			   AND ldr_alertor_id = nbd_id
+		</sql>
+		<where id="1">
+			 WHERE nbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY nbd_seq
+		</order>
+    </item>
+
+    <item id="select_camera_alarm_for_alarm_plan" desc="查询摄像机报警">
+    	<sql>
+			SELECT cbd_cus_number AS cus_number,
+			       cbd_id AS id,
+			       CONCAT('camera', cbd_id) as rid,
+			       cbd_name AS name,
+			       cbd_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM cmr_camera_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = cbd_cus_number
+			   AND ldr_alertor_id = cbd_id
+    	</sql>
+    	<where id="1">
+			 WHERE cbd_cus_number = ?
+		</where>
+		<order id="1">
+			ORDER BY cbd_seq			
+		</order>
+    </item>
+
+    <item id="select_door_alarm_for_alarm_plan" desc="查询门灯报警设备">
+    	<sql>
+			SELECT dbd_cus_number AS cus_number,
+			       dbd_id AS id,
+			       CONCAT('door', dbd_id) as rid,
+			       dbd_name AS name,
+			       dbd_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM dor_door_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = dbd_cus_number
+			   AND ldr_alertor_id = dbd_id
+    	</sql>
+    	<where id="1">
+			 WHERE dbd_cus_number = ?
+		</where>
+		<order id="1">
+			ORDER BY dbd_seq
+		</order>
+    </item>
+
+    <item id="select_broadcast_alarm_for_alarm_plan" desc="查询广播报警设备">
+    	<sql>
+			SELECT bbd_cus_number AS cus_number,
+			       bbd_id AS id,
+			       CONCAT('broadcast', bbd_id) as rid,
+			       bbd_name AS name,
+			       bbd_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM bct_broadcast_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = bbd_cus_number
+			   AND ldr_alertor_id = bbd_id
+    	</sql>
+    	<where id="1">
+			 WHERE bbd_cus_number = ?
+		</where>
+		<order id="1">
+			ORDER BY bbd_seq
+		</order>
+    </item>
+
+    <item id="select_rfid_alarm_for_alarm_plan" desc="查询RFID报警设备">
+    	<sql>
+			SELECT rbd_cus_number AS cus_number,
+			       rbd_id AS id,
+			       CONCAT('rfid', rbd_id) as rid,
+			       rbd_name AS name,
+			       rbd_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM dvc_rfid_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = rbd_cus_number
+			   AND ldr_alertor_id = rbd_id
+    	</sql>
+    	<where id="1">
+			 WHERE rbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY rbd_seq
+		</order>
+    </item>
+
+    <item id="select_talkback_alarm_for_alarm_plan" desc="查询对讲报警设备">
+    	<sql>
+		      SELECT tbd_cus_number AS cus_number,
+		             tbd_id AS id,
+		             CONCAT('talkback', tbd_id) as rid,
+		             tbd_name AS name,
+		             tbd_area_id AS pid,
+		             ? AS type,
+		             ldr_alertor_id AS link_id
+		        FROM tbk_talkback_base_dtls
+		        LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+		                     FROM alt_link_dvc_rltn
+		                    WHERE ldr_cus_number = ?
+		                      AND ldr_alertor_type = ?
+		                    GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+		          ON ldr_cus_number = tbd_cus_number
+		         AND ldr_alertor_id = tbd_id
+    	</sql>
+    	<where id="1">
+			 WHERE tbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY tbd_seq
+		</order>
+    </item>
+
+    <item id="select_power_network_alarm_for_alarm_plan" desc="查询高压电网报警设备">
+    	<sql>
+			SELECT pnb_cus_number AS cus_number,
+			       pnb_id AS id,
+			       CONCAT('power_network', pnb_id) as rid,
+			       pnb_name AS name,
+			       pnb_area AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM pnw_power_network_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = pnb_cus_number
+			   AND ldr_alertor_id = pnb_id
+    	</sql>
+    	<where id="1">
+			 WHERE pnb_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY pnb_seq
+		</order>
+    </item>
+
+    <item id="select_vibratingfiber_device_for_alarm_plan" desc="查询振动光纤报警设备">
+    	<sql>
+			SELECT fbd_cus_number AS cus_number,
+			       fbd_idnty AS id,
+			       CONCAT('fiber', fbd_idnty) as rid,
+			       fbd_name AS name,
+			       fbd_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM dvc_fiber_base_dtls
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = fbd_cus_number
+			   AND ldr_alertor_id = fbd_idnty
+    	</sql>
+    	<where id="1">
+			 WHERE fbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY fbd_name
+		</order>
+    </item>
+
+
+    <item id="select_wireless_alarm_master_for_alarm_plan" desc="查询无线报警主机设备">
+    	<sql>
+			SELECT wam_cus_number AS cus_number,
+			       wam_id AS id,
+			       CONCAT('wireless_alarm', wam_id) as rid,
+			       wam_name AS name,
+			       wam_area_id AS pid,
+			       ? AS type,
+			       ldr_alertor_id AS link_id
+			  FROM dvc_wireless_alarm_master
+			  LEFT JOIN (SELECT ldr_cus_number, ldr_alertor_type, ldr_alertor_id
+			               FROM alt_link_dvc_rltn
+			              WHERE ldr_cus_number = ?
+			                AND ldr_alertor_type = ?
+			              GROUP BY ldr_cus_number, ldr_alertor_type, ldr_alertor_id)
+			    ON ldr_cus_number = wam_cus_number
+			   AND ldr_alertor_id = wam_id
+    	</sql>
+    	<where id="1">
+			 WHERE wam_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY wam_seq
+		</order>
+    </item>
+
+
+
+    <item id="select_cameras_for_alarm_plan">
+		<sql>
+			SELECT cbd_cus_number AS cus_number,
+			       cbd_area_id    AS pid,
+			       cbd_id         AS id,
+			       CONCAT('camera', cbd_id) as rid,
+			       cbd_name       AS name,
+			       cbd_type       AS type
+			  FROM cmr_camera_base_dtls
+		</sql>
+		<where id="1">
+			 WHERE cbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY cbd_seq
+		</order>
+	</item>
+
+	<item id="select_door_for_alarm_plan">
+		<sql>
+			SELECT dbd_cus_number AS cus_number,
+			       dbd_area_id    AS pid,
+			       dbd_id         AS id,
+			       CONCAT('door', dbd_id) as rid,
+			       dbd_name       AS name,
+			       dbd_type       AS type
+			  FROM dor_door_base_dtls
+		</sql>
+		<where id="1">
+			 WHERE dbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY dbd_seq
+		</order>
+	</item>
+
+	<item id="select_broadcast_for_alarm_plan">
+		<sql>
+			SELECT bbd_cus_number AS cus_number,
+			       bbd_area_id    AS pid,
+			       bbd_id         AS id,
+			       CONCAT('broadcast', bbd_id) as rid,
+			       bbd_name       AS name,
+			       bbd_brand      AS type
+			  FROM bct_broadcast_base_dtls
+		</sql>
+		<where id="1">
+			 WHERE bbd_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY bbd_seq
+		</order>
+	</item>
+
+	<item id="insert_link_dvc_for_alarm_plan">
+		<sql>
+			INSERT INTO alt_link_dvc_rltn
+			  (ldr_cus_number,
+			   ldr_alertor_type,
+			   ldr_alertor_id,
+			   ldr_dvc_type,
+			   ldr_dvc_id,
+			   ldr_dvc_act,
+			   ldr_seq,
+			   ldr_crte_time,
+			   ldr_crte_user_id,
+			   ldr_updt_time,
+			   ldr_updt_user_id)
+			VALUES
+			  (:cus_number,
+			   :alertor_type,
+			   :alertor_id,
+			   :dvc_type,
+			   :dvc_id,
+			   :dvc_act,
+			   :seq,
+			   SYSDATE,
+			   :crte_user_id,
+			   SYSDATE,
+			   :updt_user_id)
+		</sql>
+	</item>
+
+	<item id="delete_link_dvc_for_alarm_plan">
+		<sql>
+			DELETE FROM alt_link_dvc_rltn
+		</sql>
+		<where id="1">
+			 WHERE ldr_cus_number = ?
+			   AND ldr_alertor_type = ?
+			   AND ldr_alertor_id = ?
+		</where>
+		<where id="2">
+			 WHERE ldr_cus_number = :cus_number
+			   AND ldr_alertor_type = :alertor_type
+			   AND ldr_alertor_id = :alertor_id
+		</where>
+		<where id="3">
+			 WHERE ldr_cus_number = :cus_number
+			   AND ldr_alertor_type = :alertor_type
+			   AND ldr_alertor_id = :alertor_id
+			   AND ldr_dvc_type = :dvc_type
+			   AND ldr_dvc_id = :dvc_id
+		</where>
+	</item>
+
+	<item id="select_link_dvc_for_alarm_plan">
+		<const key="dvc_type_cn">LDR_DVC_TYPE</const>
+		<sql>
+			SELECT ldr_cus_number   AS cus_number,
+			       ldr_alertor_type AS alertor_type,
+			       ldr_alertor_id   AS alertor_id,
+			       ldr_dvc_type     AS dvc_type,
+			       ldr_dvc_type		AS dvc_type_cn,
+			       ldr_dvc_id       AS dvc_id,
+			       ldr_dvc_act      AS dvc_act,
+			       ldr_seq          AS seq,
+			       ldr_crte_time    AS crte_time,
+			       ldr_crte_user_id AS crte_user_id,
+			       ldr_updt_time    AS updt_time,
+			       ldr_updt_user_id AS updt_user_id
+			  FROM alt_link_dvc_rltn
+		</sql>
+		<where id="1">
+			 WHERE ldr_cus_number = ?
+			   AND ldr_alertor_type = ?
+			   AND ldr_alertor_id = ?
+		</where>
+		<order id="1">
+			 ORDER BY ldr_seq
+		</order>
+	</item>
+</sqlItem>

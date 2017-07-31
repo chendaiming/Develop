@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_videotalk_org" desc="查询可视对讲设备">
+		<sql>
+			WITH cor AS
+			 (SELECT DISTINCT (oar_area_id)
+			    FROM (SELECT odd_id
+			            FROM sys_org_dept_dtls
+			           START WITH odd_id = :org
+			          CONNECT BY PRIOR odd_id = odd_parent_id)
+			  
+			   INNER JOIN com_org_area_rltn
+			      ON odd_id = oar_dept_id)
+			
+			SELECT '2-' || odd_id id,
+					'' other_id,
+			       '2-' || odd_parent_id pid,
+			       odd_name name,
+			       NULL 	tname,
+			       'org.png' icon,
+			       NULL mainid,
+			       NULL childid,
+			       NULL ip,
+			       NULL port,
+			       NULL status,
+			       0 type,
+			       odd_seq seq
+			  FROM sys_org_dept_dtls
+			 WHERE LEVEL # :level
+			 START WITH odd_id = :cus
+			CONNECT BY prior odd_id = odd_parent_id
+			
+			UNION ALL
+			
+			SELECT '1-' || abd_area_id id,
+					'' other_id,
+			       decode(abd_parent_id,
+			              abd_cus_number,
+			              '2-' || abd_parent_id,
+			              '1-' || abd_parent_id) pid,
+			       abd_area_name name,
+			       NULL 	tname,
+			       'area.png' icon,
+			       NULL mainid,
+			       NULL childid,
+			       NULL ip,
+			       NULL port,
+			       NULL status,
+			       0 type,
+			       abd_seq seq
+			  FROM com_area_base_dtls
+			 INNER JOIN cor
+			    ON abd_area_id = oar_area_id
+			UNION ALL
+			SELECT '' || tbd_id id,
+				   tbd_other_id other_id,	
+			       '1-' || tbd_area_id pid,
+			       tbd_name ||  DECODE(tbd_use_stts,1,' 忙线...','') name ,
+			       tbd_name tname,
+			       DECODE(tbd_use_stts,0,'talk.png',1,'busy.png','') icon,
+			       tbd_mian_id mainid,
+			       tbd_child_id childid,
+			       tbd_ip ip,
+			       tbd_port port,
+			       tbd_use_stts status,
+			       1 type,
+			       tbd_seq seq
+			  FROM tbk_talkback_base_dtls
+			 INNER JOIN cor
+			    on tbd_area_id = oar_area_id
+		</sql>
+		<where id="0" desc="查询正在通话的设备">
+			WHERE tbd_use_stts=0
+			AND
+				  tbd_dvc_stts=0
+		</where>
+		<order id="0">
+		 ORDER BY seq
+		</order>
+	</item>
+	<item id="update_talk_by_id" desc="更新对讲设备状态">
+	<sql>
+		UPDATE 
+			tbk_talkback_base_dtls
+		SET
+			tbd_use_stts=:status
+		WHERE
+			tbd_id=:device
+	</sql>
+	</item>
+	<item id="select_main_talk_id" desc="获取可用的对讲主机号">
+		select 
+			tbd_mian_id device
+		from
+			tbk_talkback_base_dtls
+		<where id="0">
+		WHERE 
+			tbd_cus_number=:cus
+		AND
+			tbd_use_stts=0
+		AND
+			tbd_dvc_stts=0
+		AND
+			ROWNUM=1
+		</where>
+	</item>
+	<item id="insert_videotalk_record" desc="插入对讲记录">
+	<seq>tbk_talkback_record_dtls@trd_id</seq>
+	<sql>
+		INSERT INTO 
+			tbk_talkback_record_dtls(
+			   trd_cus_number   ,
+			   trd_id           ,
+			   trd_call_talk_id ,
+			   trd_start_time   ,
+			   trd_end_time     ,
+			   trd_event_type   ,
+			   trd_crte_time    ,
+			   trd_crte_user_id ,
+			   trd_updt_time    ,
+			   trd_updt_user_id 
+			)
+		VALUES(
+		   :cus   ,
+		   :trd_id,
+		   :device,
+		   SYSDATE,
+		   SYSDATE,
+		   :event ,
+		   trunc(SYSDATE),
+		   :user  ,
+		   SYSDATE,
+		   :user 
+		)
+	</sql>
+	</item>
+	<item id="select_talk_record">
+	<const key="type">TRD_EVENT_TYPE</const>
+	<sql>
+		WITH tt as(
+			SELECT tbd_name  name,
+		       TO_CHAR(trd_start_time,'yyyy-mm-dd hh24:mi:ss') time,
+		       (SELECT WM_CONCAT(tbd_name || '  接听时间   :' || TO_CHAR(trd_start_time,'yyyy-mm-dd hh24:mi:ss'))
+		          FROM tbk_talkback_record_rltn
+		         INNER JOIN tbk_talkback_base_dtls
+		            ON TBD_ID = trr_receive_talk_id
+		         WHERE TRR_ID = TRD_ID) revice,
+		       trd_event_type  type,
+		       trd_call_talk_id,
+		       ROWNUM  nums
+		  FROM tbk_talkback_record_dtls
+		 INNER JOIN tbk_talkback_base_dtls
+		    ON tbd_id = trd_call_talk_id
+		WHERE 
+			trd_crte_time=TO_DATE(:day,'yyyy-mm-dd')
+		AND
+			trd_cus_number=:cus
+		)
+		 SELECT 
+		    ''||count(0) name,
+		    null time,
+		    null revice,
+		    null type
+	    FROM tt
+	    UNION ALL
+	    SELECT 
+	    	t.name,
+	    	t.time,
+	    	t.revice,
+	    	t.type
+	    FROM
+	    (
+    	 SELECT 
+	    	name,
+	    	time,
+	    	revice,
+	    	type,
+	    	trd_call_talk_id,
+	    	nums
+	     FROM
+	     	tt
+		WHERE
+			nums &gt;=:min
+		)t
+		WHERE
+			nums &lt;:max
+	</sql>
+	<where id="0">
+		AND
+			t.trd_call_talk_id=:talkid
+	</where>
+	<order id="0">
+	    ORDER BY 
+      		time  DESC
+	</order>
+	</item>
+	
+	<item id="select_talk_device">
+	<sql>
+	
+		WITH cor AS
+		 (SELECT DISTINCT (oar_area_id)
+		    FROM (SELECT odd_id
+		            FROM sys_org_dept_dtls
+		           START WITH odd_id = :cus
+		          CONNECT BY PRIOR odd_id = odd_parent_id)
+		  
+		   INNER JOIN com_org_area_rltn
+		      ON odd_id = oar_dept_id)
+		      
+		SELECT 
+				'2-'||odd_id        id,
+				'2-'||odd_parent_id pid,
+				odd_name            name,
+				'org.png'           icon,
+		        0					type
+		FROM sys_org_dept_dtls
+		
+		WHERE level # :level
+		START WITH odd_id=:cus CONNECT BY PRIOR odd_id = odd_parent_id 
+		UNION ALL
+		SELECT 
+			'2-'||odd_id  id,
+			'2-'||odd_parent_id pid,
+			odd_name name,
+			'org.png' icon,
+			0 type
+		FROM
+			sys_org_dept_dtls
+		START WITH   
+	      odd_parent_id=:cus
+	     CONNECT by odd_id=odd_parent_id
+     	UNION ALL
+			SELECT '1-' || abd_area_id id,
+			       decode(abd_parent_id,
+			              abd_cus_number,
+			              '2-' || abd_parent_id,
+			              '1-' || abd_parent_id) pid,
+			       abd_area_name name,
+			       'area.png' icon,
+			       0 type
+			  FROM com_area_base_dtls
+			 INNER JOIN cor
+			    ON abd_area_id = oar_area_id
+	    UNION ALL
+	    SELECT 
+	    	''||tbd_id   id,
+	    	'1-'||tbd_area_id pid,
+	    	tbd_name name,
+	    	'talk.png'      icon,
+	    	1			type
+	    FROM
+	    	tbk_talkback_base_dtls
+	     INNER JOIN cor
+			    on tbd_area_id = oar_area_id
+	   </sql>
+	</item>
+</sqlItem>

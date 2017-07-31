@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<constants>
+	<constant id="DEVICE_MAPPED_TABLE" name="设备状态记录映射设备信息表" desc="">
+		<item key="1@摄像机@0" value="CMR_CAMERA_BASE_DTLS@CBD_NAME@CBD_ID" keydesc="设备类型@类型名称@正常状态" valuedesc="表名@设备名称字段@设备编号字段(系统内部编号)"/>
+		<item key="2@门禁@0" value="DOR_DOOR_BASE_DTLS@DBD_NAME@DBD_ID"/>
+		<item key="3@对讲@0" value="TBK_TALKBACK_BASE_DTLS@TBD_NAME@TBD_ID"/>
+		<item key="4@数字广播@0" value="BCT_BROADCAST_BASE_DTLS@BBD_NAME@BBD_ID"/>
+		<item key="6@网络报警器@0" value="ALT_NETWORK_BASE_DTLS@NBD_NAME@NBD_ID"/>
+	</constant>
+</constants>

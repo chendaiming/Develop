@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>   
+	<item id="select_police_base_dtls"  desc="根据警员编号查询详细信息">
+		<const key="pbd_pstn_name">pbd_pstn_name</const>
+		<const key="pbd_sex">pbd_sex</const>
+		<const key="pbd_police_type_indc">pbd_police_type_indc</const>
+		<const key="pbd_degree_indc">pbd_degree_indc</const>
+		<sql>
+		   SELECT pbd_cus_number,
+		          pbd_user_id AS id,
+		          pbd_police_id AS policeid,
+		          pbd_police_name AS name,
+		          pbd_pstn_name,
+		   		  pbd_sex,
+		   		  TO_CHAR(SYSDATE,'YYYY') - TO_CHAR(pbd_birth_date, 'YYYY') AS pbd_age,
+		   		  pbd_political_status,
+		   		  pbd_official_title,
+		   		  TO_CHAR(pbd_birth_date,'YYYY-MM-DD') AS pbd_birth_date,
+		   		  pbd_fixed_phone,
+		   		  pbd_ip_phone,
+		   		  pbd_phone,
+		   		  pbd_short_phone,
+		   		  pbd_fax,
+		   		  pbd_talk_num,
+		   		  pbd_email,
+		   		  pbd_oa_system,
+		   		  pbd_police_cmmnct,
+		   		  pbd_family_phone,
+		   		  pbd_police_type_indc,
+		   		  pbd_degree_indc,
+		   		  pbd_profession,
+		   		  TO_CHAR(pbd_job_date,'YYYY-MM-DD') AS pbd_job_date,
+		   		  pbd_img,
+		   		  pbd_remark,
+				  odd_name
+		     FROM plc_police_base_dtls
+	    LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id)   
+		</sql>
+		<where id="0">
+			WHERE pbd_cus_number = ?
+			  AND pbd_user_id = ?
+		</where>
+		<where id="1">
+			WHERE pbd_cus_number = ?
+			  AND pbd_police_id = ?
+		</where>
+		<where id="2">
+			WHERE pbd_cus_number = ?
+		</where>
+	</item> 
+
+	<item id="select_police_inout_byid"  desc="根据警号查询进出监信息">
+		<const key="pir_inout_flag">pir_inout_flag</const>
+		<sql>
+			SELECT pir_police_id,
+			       pir_bsns_date,
+			       TO_CHAR(pir_bsns_time,'YYYY-MM-DD HH24:MI:SS') AS pir_bsns_time,
+			       pir_inout_flag
+			 FROM  plc_police_inout_record     
+		</sql>
+		<where id="0">
+			 WHERE pir_cus_number = ?
+			   AND pir_police_id = ? 
+		</where>
+	</item> 
+
+	<item id="select_police_doorcard_byid"  desc="根据警员编号(数据库seq)查询刷卡信息">
+		<const key="scr_inout_flag">pir_inout_flag</const>
+		<sql>
+			SELECT TO_CHAR(scr_bsns_time,'YYYY-MM-DD HH24:MI:SS') AS scr_bsns_time,
+				   dbd_name,
+				   scr_inout_flag,
+				   scr_record_id,
+				   scr_door_id
+			  FROM dor_swipe_card_record
+	     LEFT JOIN dor_door_card_dtls
+			    ON (dcd_door_card_id = scr_card_id)
+	     LEFT JOIN dor_door_base_dtls
+			    ON (scr_door_id = dbd_id)       
+		</sql>
+		<where id="0">
+			 WHERE  scr_cus_number = ? 
+			   AND  dcd_people_id = ?  
+		</where>
+		<order id="0">
+		  ORDER BY  scr_bsns_time DESC
+		</order>
+	</item> 
+
+	<item id="select_police_achievement_byid"  desc="根据警号查询成就信息">
+		<sql>
+			SELECT epi_specialty
+			  FROM ctg_expert_info
+		</sql>
+		<where id="0">
+			  WHERE epi_cus_number = ?
+			    AND epi_police_id = ?  
+		</where>
+	</item>		
+	<item id="query_policeType_info" desc="查询民警，(门禁卡管理 ,rfid数据绑定)使用">
+		<sql>
+			SELECT pbd_user_id as person_id,
+				   pbd_police_id as number_id,
+				   pbd_police_name as person_name
+			FROM PLC_POLICE_BASE_DTLS
+		</sql>
+		<where id="0">
+			WHERE pbd_police_name like concat('%',concat(:pbd_police_name,'%'))
+		</where>
+		<order id="0">
+			ORDER BY pbd_police_id
+		</order>
+	</item>	       
+</sqlItem>

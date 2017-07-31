@@ -1,0 +1,58 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# 创建的文件:15.12.2016 09:33:20
+
+newmtl mkjy_bjq_metal_jpg
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\mkjy_bjq_metal.jpg
+	map_Kd maps\mkjy_bjq_metal.jpg
+
+newmtl mkjy_bjq_red_jpg
+	Ns 10.000000
+	Ni 1.500000
+	d 0.500000
+	Tr 0.500000
+	Tf 0.500000 0.500000 0.500000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\mkjy_bjq_red.jpg
+	map_Kd maps\mkjy_bjq_red.jpg
+
+newmtl Material__39
+	Ns 31.000000
+	Ni 1.500000
+	d 0.200000
+	Tr 0.800000
+	Tf 0.200000 0.200000 0.200000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 1.899000 1.899000 1.899000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\mkjy_bjq_red.jpg
+	map_Kd maps\mkjy_bjq_red.jpg
+
+newmtl mkjy_bjq_black_jpg
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka maps\mkjy_bjq_black.jpg
+	map_Kd maps\mkjy_bjq_black.jpg

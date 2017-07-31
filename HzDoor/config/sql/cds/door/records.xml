@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_records_by_date" desc="时间线">
+		<sql>
+		SELECT
+			scr_people_name plc,
+			scr_door_name   name,
+			scr_inout_flag,
+			scr_dept_name,
+			TO_CHAR(scr_bsns_time,'yyyy-mm-dd hh24:mi:ss')	time
+		FROM
+			dor_swipe_card_record
+		WHERE
+			scr_bsns_date=TO_DATE(:day,'yyyy-MM-dd')
+		</sql>
+		<where id="0">
+		AND
+			scr_people_id =:plc
+		</where>
+		<where id="-1">
+		AND
+			scr_door_id=:doorId
+		</where>
+		<where id="1">
+		AND
+			(:doorId IS NULL OR scr_door_id =:doorId)
+		AND
+			(:plc IS NULL OR scr_people_id =:plc)
+		AND
+			(:area IS NULL OR scr_area_id =:area)
+		</where>
+		<order id="0">
+		ORDER BY
+			scr_bsns_time ASC	
+		</order>
+	</item>
+	<!-- <item id="query_records_query"  desc="时间线">
+		<sql>
+			SELECT 
+			       pbd_police_name plc,
+			       dbd_name name,
+			       TO_CHAR(scr_bsns_date, 'yyyy-MM-dd hh24:mi:ss') time
+			  FROM (SELECT odd_id
+			          FROM sys_org_dept_dtls
+			         START WITH odd_id = :org
+			        CONNECT BY prior odd_id = odd_parent_id)
+			 INNER JOIN com_org_area_rltn
+			    ON oar_dept_id = odd_id
+			 INNER JOIN com_area_base_dtls
+			    ON abd_area_id = oar_area_id
+			 INNER JOIN dor_door_base_dtls
+			    ON dbd_area_id = abd_area_id
+			 INNER JOIN dor_swipe_card_record
+			    ON scr_door_id = dbd_id 
+			 LEFT JOIN dor_door_card_dtls
+			    ON dcd_door_card_id = scr_card_id
+			 LEFT JOIN plc_police_base_dtls
+			    ON pbd_police_id = dcd_people_id
+			 WHERE 	
+				scr_bsns_date=TO_DATE(:day,'yyyy-MM-dd')
+		</sql>
+		<where id="0" desc="快速查询，刷卡地点">
+			AND
+				(:plc IS NULL OR pbd_police_name LIKE '%:plc%')
+		</where>
+		<where id="1" desc="多条件查询">
+			AND
+				(:address IS NULL OR dbd_name LIKE CONCAT('%',CONCAT(:address,'%')))
+			AND
+				(:plc IS NULL OR pbd_police_name LIKE CONCAT('%',CONCAT(:plc,'%')))
+			AND
+				(:area IS NULL OR abd_area_id =:area)
+		</where>
+		<order id="0">
+			AND
+				(:doorId  IS NULL OR  scr_door_id=:doorId )
+			ORDER	BY 	
+				scr_bsns_date ASC
+		</order>
+	</item>	 -->
+	<item id="query_record_time" desc="一天24小时数据">
+		<sql>
+		WITH t AS
+		 (SELECT :day || DECODE(SIGN(level - 10),
+		                                -1,
+		                                ' 0' || (level - 1),
+		                                0,
+		                                ' 0' || (level - 1),
+		                                ' ' || (level - 1)) AS time
+		    FROM DUAL
+		  CONNECT BY level # 25)
+		  
+	    SELECT 
+		  	WM_CONCAT(s) as r
+		  FROM
+		  (
+			SELECT 
+				COUNT(scr_door_id) s
+			  FROM (SELECT 
+			  			scr_door_id, 
+			  			scr_bsns_time time,
+			  			scr_area_id,
+			  			scr_inout_flag,
+			  			scr_people_id
+			          FROM dor_swipe_card_record
+			         WHERE scr_bsns_date = TO_DATE(:day, 'yyyy-mm-dd')) scr
+			 RIGHT JOIN t
+			    ON TO_CHAR(scr.time, 'yyyy-mm-dd hh24') = t.time
+		</sql>
+		<where id="0">
+		AND
+			(:doorId  IS NULL OR  scr_door_id=:doorId )
+		</where>
+		<where id="1">
+		AND
+			(:plc IS NULL OR scr.scr_people_id = :plc)
+		AND
+			(:area IS NULL OR scr.scr_area_id =:area)
+		AND
+			(:doorId  IS NULL OR  scr.scr_door_id=:doorId )
+		</where>
+		<order id="0">
+		GROUP BY t.time
+		ORDER BY t.time
+		)
+		</order>
+	</item>
+	<!-- <item id="query_record_time" desc="按时间查询">
+		<sql>
+			WITH t AS
+			 (SELECT :day || DECODE(SIGN(level - 10),
+			                                -1,
+			                                ' 0' || (level - 1),
+			                                0,
+			                                ' 0' || (level - 1),
+			                                ' ' || (level - 1)) AS time
+			    FROM DUAL
+			  CONNECT BY level # 25)
+			  SELECT 
+			  	WM_CONCAT(s) as r
+			  FROM
+			  (
+				 SELECT COUNT(scr_door_id)s
+				  FROM (SELECT odd_id
+				          FROM sys_org_dept_dtls
+				         START WITH odd_id = :org
+				        CONNECT BY prior odd_id = odd_parent_id)
+				 INNER JOIN com_org_area_rltn
+				    ON oar_dept_id = odd_id
+				 INNER JOIN com_area_base_dtls
+				    ON abd_area_id = oar_area_id
+				 INNER JOIN dor_door_base_dtls
+				    ON dbd_area_id = abd_area_id
+				 INNER JOIN dor_swipe_card_record
+				    ON scr_door_id = dbd_id AND scr_cus_number=:org
+	    </sql>
+	    <where id="1">
+	             INNER JOIN dor_door_card_dtls
+				    ON dcd_door_card_id = scr_card_id
+				 INNER JOIN plc_police_base_dtls
+				 	 ON pbd_police_id = dcd_people_id
+	    		AND
+					(:address IS NULL OR dbd_name LIKE CONCAT('%',CONCAT(:address,'%')))
+				AND
+					(:plc IS NULL OR pbd_police_name LIKE CONCAT('%',CONCAT(:plc,'%')))
+				AND
+					(:area IS NULL OR abd_area_id =:area)
+	    </where>
+	    <order id="0">
+	    	 RIGHT JOIN t
+				    ON t.time = TO_CHAR(scr_bsns_date, 'yyyy-MM-dd hh24')
+			 AND
+				(:doorId  IS NULL OR  scr_door_id=:doorId )
+				 GROUP BY t.time
+				 ORDER by t.time
+			 )
+	    </order>
+	</item> -->
+	<item id="query_record_area" desc="按区域查询">
+		<sql>
+		SELECT 
+			COUNT(scr_record_id) value, 
+			scr_inout_flag,
+			scr_area_name name
+		FROM
+			dor_swipe_card_record
+		WHERE
+		 	scr_bsns_date =TO_DATE(:day,'yyyy-MM-dd')
+		 </sql>
+		<where id="0">
+		AND
+			scr_door_id=:doorId
+		</where>
+		<where id="1">
+		AND
+			(:doorId IS NULL OR scr_door_id=:doorId)
+		AND
+			(:plc IS NULL OR scr_people_id =:plc)
+		AND
+			(:area IS NULL OR scr_area_id =:area)
+		</where>
+		<order id="0">
+		 GROUP BY scr_area_name
+		</order>
+	</item>
+	<!-- <item id="query_record_area" desc="按区域查询">
+		<sql>
+		SELECT COUNT(SCR_RECORD_ID) value, abd_area_name name
+		  FROM (SELECT odd_id
+		          FROM sys_org_dept_dtls
+		         START WITH odd_id = :org
+		        CONNECT BY prior odd_id = odd_parent_id)
+		 INNER JOIN com_org_area_rltn
+		    ON oar_dept_id = odd_id
+		 INNER JOIN com_area_base_dtls
+		    ON abd_area_id = oar_area_id
+		 INNER JOIN DOR_DOOR_BASE_DTLS
+		    ON DBD_AREA_ID = ABD_AREA_ID
+		 INNER JOIN DOR_SWIPE_CARD_RECORD
+		    ON SCR_DOOR_ID = DBD_ID
+		</sql>
+	    <where id="1">
+	     INNER JOIN dor_door_card_dtls
+		    ON dcd_door_card_id = scr_card_id
+		 INNER JOIN plc_police_base_dtls
+		 	 ON pbd_police_id = dcd_people_id
+   		AND
+			(:address IS NULL OR dbd_name LIKE CONCAT('%',CONCAT(:address,'%')))
+		AND
+			(:plc IS NULL OR pbd_police_name LIKE CONCAT('%',CONCAT(:plc,'%')))
+		AND
+			(:area IS NULL OR abd_area_id =:area)
+	    </where>
+	    <order id="0">
+	     WHERE
+		 	scr_bsns_date =TO_DATE(:day,'yyyy-MM-dd')
+		 AND
+				(:doorId  IS NULL OR  scr_door_id=:doorId )
+    	 GROUP BY abd_area_name
+	    </order>	
+	</item> -->
+	<item id="query_record_out" desc="进出次数">
+		<sql>
+		SELECT 
+			COUNT(scr_record_id) out
+		FROM
+			dor_swipe_card_record
+	    WHERE 
+	    	scr_inout_flag = 0
+	    AND 
+	    	scr_bsns_date =TO_DATE(:day,'yyyy-MM-dd')
+	    </sql>
+	    <where id="0">
+	    AND
+			scr_door_id=:doorId
+	    </where>
+	    <where id="1">
+	    AND
+			(:doorId IS NULL OR scr_door_id=:doorId)
+		AND
+			(:plc IS NULL OR scr_people_id =:plc)
+		AND
+			(:area IS NULL OR scr_area_id =:area)
+	    </where>
+	</item>
+	<!-- <item id="query_record_out" desc="进出次数">
+		<sql>
+		SELECT COUNT(scr_record_id) out
+		  FROM (SELECT odd_id
+		          FROM sys_org_dept_dtls
+		         START WITH odd_id = :org
+		        CONNECT BY prior odd_id = odd_parent_id)
+		 INNER JOIN com_org_area_rltn
+		    ON oar_dept_id = odd_id
+		 INNER JOIN com_area_base_dtls
+		    ON abd_area_id = oar_area_id
+		 INNER JOIN dor_door_base_dtls
+		    ON dbd_area_id = abd_area_id
+		 INNER JOIN dor_swipe_card_record
+		    ON scr_door_id = dbd_id
+		</sql>
+	    <where id="1">
+	    INNER JOIN dor_door_card_dtls
+		    ON dcd_door_card_id = scr_card_id
+		 INNER JOIN plc_police_base_dtls
+		 	 ON pbd_police_id = dcd_people_id
+   		AND
+			(:address IS NULL OR dbd_name LIKE CONCAT('%',CONCAT(:address,'%')))
+		AND
+			(:plc IS NULL OR pbd_police_name LIKE CONCAT('%',CONCAT(:plc,'%')))
+		AND
+			(:area IS NULL OR abd_area_id =:area)
+	    </where>
+	    <order id="0">
+	     WHERE scr_inout_flag = 0
+		   AND scr_bsns_date =TO_DATE(:day,'yyyy-MM-dd')
+		   AND
+				(:doorId  IS NULL OR  scr_door_id=:doorId )
+	    </order>
+	</item> -->
+	
+	<item id="select_query_area" desc="区域查询">
+	<sql>
+		SELECT 
+				''||odd_id        id,
+				''||odd_parent_id pid,
+				odd_name            name,
+				'org.png'           icon,
+		        0					type
+		FROM sys_org_dept_dtls
+		WHERE level # :level
+		START WITH odd_id=:org CONNECT BY PRIOR odd_id = odd_parent_id 
+		UNION ALL
+		SELECT 
+				''||abd_area_id id,
+				''||abd_parent_id pid,
+				abd_area_name name,
+				'area.png'   icon,
+				1            type
+		 FROM
+       			com_area_base_dtls
+         WHERE
+         		abd_cus_number=:org
+     </sql>
+	</item>
+	<item id="select_address_by_org" desc="根据刷卡地点查询">
+		<sql>
+			SELECT 
+					'1-'||odd_id        id,
+					'1-'||odd_parent_id pid,
+					odd_name            name,
+					'org.png'           icon,
+			        0					type,
+			        odd_seq 			seq
+			FROM sys_org_dept_dtls
+			WHERE level # :level
+			START WITH odd_id=:org CONNECT BY PRIOR odd_id = odd_parent_id 
+			UNION ALL	
+			SELECT
+				id,
+				pid,
+				name,
+				icon,
+        		type,
+        		seq
+			FROM
+			(
+			SELECT 
+				''||dbd_id           id,
+				'1-'||dbd_area_id    pid,
+				dbd_name             name,
+				'address.png'			 icon,
+        		1					type,
+        		dbd_seq  			seq
+			FROM 
+				dor_door_base_dtls
+			UNION ALL
+			SELECT 
+				'1-'||abd_area_id      id,
+				'1-'||abd_parent_id	  pid,
+				abd_area_name         name,
+				'area.png'			  icon,
+        		0					  type,
+        		abd_seq   			  seq
+			FROM
+				com_area_base_dtls
+			)t
+		</sql>
+		<where id="0" desc="非省局用户登录">
+			 where t.orgid=:org
+		</where>
+		<order id="0">
+			 ORDER　By seq
+		</order>
+	</item>
+	<item id="select_plc_by_orgid" desc="根据刷卡人查询">
+	<sql>
+		SELECT 
+				'1-'||odd_id        id,
+				'1-'||odd_parent_id pid,
+				odd_name            name,
+				'org.png'           icon,
+		        0					type
+		FROM sys_org_dept_dtls
+		
+		WHERE level # :level
+		START WITH odd_id=:org CONNECT BY PRIOR odd_id = odd_parent_id 
+		UNION ALL
+		SELECT 
+		    ''||pbd_police_id id,
+		    '1-'||pbd_drptmnt_id pid,
+		    pbd_police_name name,
+		    'user.png' icon,
+		    1 type
+		FROM 
+			plc_police_base_dtls
+		UNION ALL
+		SELECT 
+			'1-'||odd_id  id,
+			'1-'||odd_parent_id pid,
+			odd_name name,
+			'org.png' icon,
+			0 type
+		FROM
+			sys_org_dept_dtls
+		START WITH   
+	      odd_parent_id=:org
+	     CONNECT by odd_id=odd_parent_id
+	 </sql>
+	</item>
+</sqlItem>
+ 

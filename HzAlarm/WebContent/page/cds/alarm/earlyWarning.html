@@ -1,0 +1,186 @@
+<!-- 预警信息管理 -->
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/right-menus.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/cds/alarm/earlyWarning.css"/>
+<style>
+    @media screen and (min-width: 768px) {
+        form.form-horizontal .form-group{
+             position: relative;
+            margin-left:0;
+            margin-right:0;
+         }
+        form.form-horizontal .form-group label{
+            width:20%;
+        }
+        form.form-horizontal .form-group >div{
+            padding-top:7px;
+        }
+        form.form-horizontal .form-group.wirtetime{
+            width:50%;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
+    form.form-horizontal div.form-group.textarea div textarea{
+        width:100%;
+        height:200px;
+        border:1px solid #1f699e;
+        padding-top: 6px;
+        padding-left: 12px;
+    }
+    .fixed-table-container .fixed-table-body{
+        overflow-x:auto;
+    }
+    #infotd{
+        overflow-y:auto;
+    }
+    #back{
+        float:left;
+        margin-left:24px;
+        padding:0 18px;
+    }
+</style>
+<div class="right-menus" style="display: none;">
+    <ul>
+        <li @click="rmDetail()" ><span>详情</span></li>
+        <li @click="rmEdit()"  v-show="statusMenu==0"><span>编辑</span></li>
+        <li @click="rmRemove()"  v-show="statusMenu==0"><span>删除</span></li>
+        <li @click="rmPrint()"  v-show="statusMenu==1"><span>撤销</span></li>
+        <li @click="rmRelease()"  v-show="statusMenu==0"><span>发布</span></li>
+    </ul>
+</div>
+<div class="vbox box-con" id="infolist" oncontextmenu="return false">
+    <div class="condition" style="left:1%">
+        <input placeholder="标题"  v-model="condition['ewi_title']" >
+    </div>
+    <div class="condition" style="left:22%">
+        <input placeholder="内容" v-model="condition['ewi_content']" >
+    </div>
+    <div class="condition_btn" style="right:5%">
+        <button @click="showAll()">显示全部</button>
+    </div>
+    <div class="condition" style="left:43%">
+        <hz-select
+                tip="预警级别"
+                code="warningw_level"
+                :id.sync="condition['ewi_level']"
+                />
+    </div>
+
+    <div class="hbox hz-col-1">
+        <div class="hz-col-1">
+            <table id="table" ></table>
+        </div>
+    </div>
+
+    <div class="bottom" >
+        <div class="buttons" id="oprbutton">
+            <a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>
+        </div>
+    </div>
+
+    <div class="vbox hz-col-1" id="infotd" style="display:none;">
+        <div class="hz-col-3">
+            <form class="form-horizontal" style="margin-top:20px;">
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">标题</label>
+                    <div v-if="!dateil" class="col-sm-8">
+                        <input type="text" class="form-control" :disabled='dateil'  v-model="infogroup['ewi_title']" placeholder="请输入标题">
+                    </div>
+                    <div v-else class="col-sm-8">
+                        <span>{{infogroup['ewi_title']}}</span>
+                    </div>
+                </div>
+
+                <div class="form-group textarea">
+                    <label class="col-sm-3 control-label">内容</label>
+                    <div  v-if="!dateil" class="col-sm-8">
+                        <textarea placeholder="最多可输入800字" :disabled='dateil'  maxlength="800" v-model="infogroup['ewi_content']"></textarea>
+                    </div>
+                    <div v-else  class="col-sm-8">
+                        <span>{{infogroup['ewi_content']}}</span>
+                    </div>
+                </div>
+
+                <div class="form-group ">
+                    <label class="col-xs-2 control-label">预警级别</label>
+                    <div v-if="!dateil" class="col-sm-8" style="padding-top:0;">
+                        <hz-select
+                                tip="预警级别"
+                                code="warningw_level"
+                                :id.sync="infogroup.ewi_level"
+                                />
+                    </div>
+                    <div v-else class="col-sm-8" style="padding-top:0;">
+                        <span>{{infogroup['ewi_leve']}}</span>
+                    </div>
+                </div>
+                <div v-if="flag" class="form-group ">
+                    <label class="col-xs-2 control-label">状态</label>
+                    <div class="col-sm-8" style="padding-top:7px;">
+                        <span>{{infogroup['ewi_name']}}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">创建人</label>
+                    <div class="col-sm-8">
+                        <span>{{infogroup['ewi_crte_name']}}</span>
+                    </div>
+                    <div class="form-group wirtetime">
+                        <label class="col-sm-3 control-label">创建时间</label>
+                        <div v-if="!type" class="col-sm-8">
+                            <span class="date"></span>
+                        </div>
+                        <div v-else class="col-sm-8">
+                            <span>{{infogroup['ewi_crte_time']}}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" v-if="flag"  v-show="infogroup['ewi_status']!=0">
+                    <label class="col-sm-3 control-label">发布人</label>
+                    <div class="col-sm-8">
+                        <span>{{infogroup['ewi_publish_name']}}</span>
+                    </div>
+                    <div class="form-group wirtetime">
+                        <label class="col-sm-3 control-label">发布时间</label>
+                        <div class="col-sm-8">
+                            <span v-if="infogroup['ewi_publish_time']!=''">{{infogroup['ewi_publish_time']}}</span>
+                            <span v-else class="date"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+        <div v-if="!dateil" class="hz-col-1">
+            <div class="hbtn btn_primary btn_mini pull-right" id="quit" @click="close()" style="margin-right:15px;margin-bottom:10px;padding:0 14px;"><span>取消</span></div>
+            <a class="hbtn btn_primary btn_mini pull-right" id="save" @click="preserve()" style="margin-right:15px;margin-bottom:10px;"><i class="btn_icon icon_save"></i><span>保存</span></a>
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+    require(["hz/cds/alarm/earlyWarning"]);
+    function showTime(){
+        var dates=new Date();
+        var hh=dates.getHours();
+        var mm=dates.getMinutes();
+        var ss=dates.getSeconds();
+        hh=hh<10?('0'+hh):hh;
+        mm=mm<10?('0'+mm):mm;
+        ss=ss<10?('0'+ss):ss;
+        if(document.querySelectorAll(".wirtetime div span.date").length>0){
+            document.querySelectorAll(".wirtetime div span.date")[0].innerHTML=hh+":"+mm+":"+ss;
+        }
+    }
+    setInterval("showTime()",100);
+</script>

@@ -1,0 +1,204 @@
+<!-- 设备模型绑定-->
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css">
+<style>
+   
+     form.form-horizontal .form-group{
+         position: relative;
+         margin-bottom: 25px;
+         margin-left:0;
+         margin-right:0;
+     }
+     form.form-horizontal .form-group label{
+        width: 20%;
+	    float: left;
+	    margin-right: 8%;
+	    height: 34px;
+	    line-height: 34px;
+	    text-align: right;
+    }
+     form.form-horizontal .form-group.wirtetime{
+         width:50%;
+         position: absolute;
+         top: 0;
+         right: 0;
+     }
+    
+    .fixed-table-container table{
+    	width:99.9%;
+    }
+    
+    .fixed-table-container .fixed-table-body{
+        overflow-x:auto;
+    }
+    #infotd{
+        overflow-y:auto;
+        position: relative;
+    }
+   
+    .fixed-table-toolbar .columns-right{
+        margin-right: 10px;
+    }
+    tbody tr td.text {
+        width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .fixed-table-container .table td .ellipsis{
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+   .combox_panel{
+     max-height: 150px; 
+   }
+    .model_name{
+    	display: block;
+	    width: 100%;
+	    height: 34px;
+	    padding: 6px 12px;
+	    font-size: 14px;
+	    line-height: 1.42857143;
+	    color: #fff;
+	    background-image: none;
+	    border: 1px solid #1f699e;
+	    border-radius: 1px;
+    }
+     .buttonDiv{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+	    border-top: 1px solid #4077ae;
+	    padding-top: 8px;
+	    padding-right: 10px;
+    } 
+     .hbtn span{
+        height: 100%;
+        line-height: 30px;
+    }
+    #terrPanel {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.8);
+        z-index: 5;
+        overflow: hidden;
+        overflow-y: auto;
+        display: none;
+    }
+    #terrPanel .terrPanelSpasn{
+        position: fixed;
+	    top: 0;
+	    right: 0;
+	    width: 30px;
+	    padding-left: 5;
+	    height: 30px;
+	    line-height: 25px;
+	    text-align: center;
+	    background-color: #ec0505;
+	    border-radius: 0 0 0 100%;
+	    cursor:pointer;
+    }
+     #terrPanel .terrPanelSpasn:hover{
+     	background-color: #a31f1f;
+     }
+    div.divInput{
+    	position: relative;
+	    min-height: 1px;
+	    width: 65%;
+	    float: left;
+    }
+    .combox_dev{
+        position: absolute;
+	    top: 34px;
+	    left: 0;
+	    max-height: 100px;
+	    width: 100%;
+	    overflow: hidden;
+	    overflow-y: auto;
+	    z-index:20;
+	    background: rgba(21, 67, 82,1);
+	    display:none;
+    }
+    .combox_dev >a{
+    	width: 1005;
+	    height: 30px;
+	    line-height: 30px;
+		text-indent: 10px;
+		cursor: pointer;
+    }
+    .combox_dev >a:hover{
+    	color:#fff700;
+    }
+    a.combox_dev_a{
+    	color:#fff700;
+    }
+    .form-group input {
+	    cursor: pointer;
+	}
+	.btn_mini{
+		height:30px;
+		line-height:30px;
+		font-size:14px;
+	}
+</style>
+
+<div class="vbox  box-con" id="infolist" >
+
+    <div class="vbox hz-col-1" id="infotd">
+        <div class="hz-col-3">
+            <form class="form-horizontal" style="margin-top:20px;">
+                <div class="form-group textarea">
+                    <label class="control-label">模型名称</label>
+                    <div class="divInput">
+                         <input type="text" readonly class="model_name" maxlength="25" v-model="modelDevice.dmb_model_name" 
+                             placeholder="请获取模型名称" @click='modelNameDvc()'>
+                    </div>
+                </div>
+                
+                <div class="form-group ">
+                    <label class="control-label">设备类型</label>
+                    <div  class="divInput" style="padding-top:0;">
+                     	<input type="text" readonly class="model_name"  v-model="modelDevice.dmb_dvc_type_name" 
+                        placeholder="请选择设备类型" @click='modelTypeClick()'>
+                        <span class='drop' ></span>
+                        <div class='combox_dev'>
+                        	<a v-for='key in modelData' @click='modelAClick($event,key)' :id='key.id' v-text='key.name'></a>
+                        </div>
+                       
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">设备名称</label>
+                    <div  class="divInput">
+                        <input type="text" readonly class="model_name" maxlength="25" v-model="modelDevice.dmb_dvc_name" 
+                        placeholder="请选择设备名称" @click='modelNameClick()'>
+                        
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+        <div v-if="!type" class="hz-col-1 buttonDiv">
+            <div class="hbtn btn_primary btn_mini pull-right"  @click="close()" style="margin-right:15px;margin-bottom:10px;padding:0 14px;"><span>取消</span></div>
+            <a class="hbtn btn_primary btn_mini pull-right"  @click="preserve()" style="margin-right:15px;margin-bottom:10px;"><i class="btn_icon icon_add"></i><span>保存</span></a>
+        </div>
+    </div>
+
+<div id="terrPanel">
+	<span class='terrPanelSpasn' @click='closeTerr'>X</span>
+	<ul id="terr" class="ztree"></ul>
+</div>
+
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+    require(["hz/modelBinding/modelBindingAdd"]);
+   
+</script>

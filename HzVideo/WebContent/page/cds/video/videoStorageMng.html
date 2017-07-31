@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>视频存储管理</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<style>
+.input input{
+	height: 28px;
+}
+.datetime{
+	top: 1px;
+}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="vsmQuery">
+	<div class="hbox hz-col-1">
+		<div style="width: 100%;height: 100%;padding: 10px;">
+			<div style="width: 100%; position: absolute; padding-top: 9px;">
+				<div style="width: 15%;height: 80%;float: left;margin-right: 5px;">
+					<input class="form-control" v-model="query.event_name" placeholder="视频事件名" style="height: 30px;" @keyup="queryData">
+				</div>&nbsp;&nbsp;
+				<div style="width: 15%;height: 80%;float: left;margin-right: 5px;">
+					<input class="form-control" v-model="query.storage_addr" placeholder="视频存储地址" style="height: 30px;" @keyup="queryData">
+				</div>&nbsp;&nbsp;
+			</div>
+			<div id="tableDiv" style="width: 100%;height: 100%;">
+	       		<table id="table"></table>
+	       	</div>
+       	</div>
+	</div>
+	<div class="bottom" >
+		<div class="buttons" id="oprbutton">
+			<a class="hbtn btn_primary btn_large" @click="showAddPanel"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+			<a class="hbtn btn_primary btn_large" @click="remove"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div>
+
+	<div class="vbox hz-col-1" id="addPanel" style="display:none;">
+		<div class="hz-col-9">
+			<form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+		    	<div class="form-group ">
+			        <label class="col-sm-3 control-label">事件名称</label>
+			        <div class="col-sm-8">
+			            <hz-select code="VIDEO_EVENT" :id.sync="edit.vel_event_id" :sname.sync="edit.vel_event_name" tip="请选择事件类型" />
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">提前录像时间(秒)</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="200" v-model="edit.vel_before_time" placeholder="请输入提前录像时间(秒)">
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">延后录像时间(秒)</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="200" v-model="edit.vel_after_time" placeholder="请输入延后录像时间(秒)">
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">存储文件夹名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="200" v-model="edit.vel_storage_addr" placeholder="请输入存储文件夹名称">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div class="hz-col-1">
+		 	<a class="hbtn btn_primary btn_mini pull-right" style="margin-right:15px;margin-bottom:10px;" @click="cancel"><i class="btn_icon icon_cancel"></i><span>取消</span></a>
+		 	<a class="hbtn btn_primary btn_mini pull-right" style="margin-right:15px;margin-bottom:10px;" @click="reset"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+			<a class="hbtn btn_primary btn_mini pull-right" style="margin-right:15px;margin-bottom:10px;" @click="insert"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>	
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['cds/video/videoStorageMng']);
+</script>
+</html>

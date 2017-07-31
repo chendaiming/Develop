@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/jms 
+			http://www.springframework.org/schema/jms/spring-jms.xsd
+			http://www.springframework.org/schema/integration
+			http://www.springframework.org/schema/integration/spring-integration-2.1.xsd
+			http://www.springframework.org/schema/integration/jms
+			http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.1.xsd">
+	<context:property-placeholder />
+
+
+	<int:channel id="channel.internal.web.out" />
+	<int:channel id="channel.internal.web.in" />
+	<int-jms:outbound-channel-adapter
+		channel="channel.internal.web.out" destination-name="${topic.internal.web}" pub-sub-domain="true"
+		explicit-qos-enabled="true" delivery-persistent="false" />
+	<int:gateway id="sendInternalWebMessageAction" default-request-channel="channel.internal.web.out"
+		service-interface="com.hz.frm.net.amq.service.SendMqMessageAction">
+		<int:method name="send" payload-expression="#args[0]">
+			<int:header name="cusNumber" expression="#args[1]" />
+		</int:method>
+	</int:gateway>
+	<int-jms:message-driven-channel-adapter
+		id="jms-md-adapter@send-netty-service" destination-name="${topic.internal.web}"
+		channel="channel.internal.web.in" extract-payload="true"  pub-sub-domain="true" subscription-durable="false" 
+		durable-subscription-name="${subscription.name}"/>
+	<int:service-activator input-channel="channel.internal.web.in"
+		expression="@nettyMessageSendService.handleNettyMessage(payload, headers.cusNumber)" requires-reply="false" />
+		
+		
+	<int:channel id="channel.internal.fe.out" />
+	<int:channel id="channel.internal.fe..in" />
+	<int-jms:outbound-channel-adapter
+		channel="channel.internal.fe.out" destination-name="${queue.internal.fe}"
+		explicit-qos-enabled="true" delivery-persistent="false" />
+	<int:gateway id="sendInternalFeMessageAction" default-request-channel="channel.internal.fe.out"
+		service-interface="com.hz.frm.net.amq.service.SendMqMessageAction">
+		<int:method name="send" payload-expression="#args[0]">
+			<int:header name="cusNumber" expression="#args[1]" />
+			<int:header name="msgId" expression="#args[2]" />
+		</int:method>
+	</int:gateway>
+	<int-jms:message-driven-channel-adapter
+		id="jms-md-adapter@send-service" destination-name="${queue.internal.fe}"
+		channel="channel.internal.fe..in" extract-payload="true" />
+	<int:service-activator input-channel="channel.internal.fe..in"
+		expression="@messageSendService.handleMessage(payload, headers.cusNumber,headers.msgId)" requires-reply="false" />
+		
+	<!-- 与前置机的MQ输入配置 -->
+	<int:channel id="channel.fe.in" />
+	<int:channel id="channel.fe.out" />	
+    <int-jms:message-driven-channel-adapter
+		id="jms-md-adapter@kernel-service-com" destination-name="${queue.fe.in}"
+		channel="channel.fe.in" extract-payload="true" />
+	<int:service-activator input-channel="channel.fe.in"
+		output-channel="channel.fe.out"
+		expression="@commonMessageHandle.handle(payload,headers.cusNumber)"
+		requires-reply="false"/>
+
+	<int-jms:outbound-channel-adapter
+		channel="channel.fe.out" destination-name="${queue.fe.out}" pub-sub-domain="true"
+		explicit-qos-enabled="true" delivery-persistent="false" />
+	<int:gateway id="sendFeMessageAction" default-request-channel="channel.fe.out"
+		service-interface="com.hz.frm.net.amq.service.SendMqMessageAction">
+		<int:method name="send" payload-expression="#args[0]">
+		    <int:header name="cusNumber" expression="#args[1]" />
+			<int:header name="msgId" expression="#args[2]" />
+		</int:method>
+	</int:gateway>
+	
+</beans>

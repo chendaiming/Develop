@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../libs/webuploader/webuploader.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="css/broadcast.css" >
+<title></title>
+</head>
+<body>
+<div class="vbox box-con">
+<div class="hbox hz-col-1">
+	<div class="left-con vbox" style="width:280px">
+		<div class="input icon" >
+		  	<input v-model="searchTree" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+	    <div class="hz-col-1" style="overflow:auto">
+			<ul id="areaTree" class="ztree"></ul>	    	
+	    </div>
+	</div>
+	<div class="hz-col-1 right-con">
+		<form class="form-horizontal" role="form" style="height:85%;overflow: auto">
+			<div style="padding:0 0 10px 10px">
+				<a @click="showUpload()" class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>添加MP3文件</span></a>
+				<a @click="showCreateTask()" class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>设置定时广播</span></a>
+				<a @click="createTimerTask()" class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>测试</span></a>
+				<a @click="deleteSelect()" class="hbtn btn_primary btn_mini pull-right"><i class="btn_icon icon_del"></i><span>一键删除</span></a>
+				<a @click="selectAll(false)" class="hbtn btn_primary btn_mini pull-right"><i class="btn_icon icon_edit"></i><span>反选</span></a>
+				<a @click="selectAll(true)" class="hbtn btn_primary btn_mini pull-right"><i class="btn_icon icon_save"></i><span>全选</span></a>
+			</div>
+			<template v-for="obj in audioListData">
+			 	<div class="form-group audio-list" v-bind:class="{'audio-list-selected':obj.isSelected == 1}" @click="clickAudioDiv($index)">
+			 		<input type="checkbox"  class="input-checkbox" v-model="obj.checked" @click="input_check(obj)">
+					<img src="img/audio.jpg">{{obj.value}}
+					<a @click="deleteFile(obj.value)" href="javascript:;" style="float: right;margin-top: 35px;margin-right: 20px;color:red">删除</a>
+					<a @click="audition($index)" href="javascript:;" style="float: right;margin-top: 35px;margin-right: 20px;color:#54d3f4">试听</a>
+			  	</div>
+		  	</template>
+		</form>
+		<div class="bottom" style="height:90px;line-height: 75px;">
+			<ul class="list-inline text-center">
+				<li>
+					<button @click="#" type="button" class="btn btn_primary btn_large mode-popover">
+					  <span class="glyphicon glyphicon-share-alt mode-mark"></span>&nbsp;<span class="mode">单次播放</span>
+					</button>
+				</li>
+				<li>
+					<span @click="audioPreviose()" class="hbtn btn_primary btn_large glyphicon glyphicon-step-backward choose_music_css"></span>
+					<a @click="playToggle()" class="hbtn btn_primary btn_large play_music_css" id="play">
+						<i class="glyphicon glyphicon-play" v-bind:class="{'glyphicon-play':isPlay == 0,'glyphicon-pause':isPlay == 2}"></i>
+					</a>
+					<span @click="audioNext()" class="hbtn btn_primary btn_large glyphicon glyphicon-step-forward choose_music_css"></span>
+				</li>
+				<li>
+					<button  type="button" class="btn btn_primary btn_large sound-popover">
+					  <span class="glyphicon glyphicon-volume-up"></span> 音量调节
+					</button>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<!-- 所属部门树形区 -->
+	<div id="deptCon" class="treeContent" style="display:none; position: absolute;">
+		<ul id="deptTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+	</div>
+	
+	<!-- 模式调节按钮 -->
+	<div id="mode-div" style="display: none">
+		<ul>
+			<li onclick="modeToggle(1)"><span class="glyphicon glyphicon-share-alt"></span>&nbsp;单次播放</li>
+			<li onclick="modeToggle(2)"><span class="glyphicon glyphicon-refresh"></span>&nbsp;循环播放</li>
+			<li onclick="modeToggle(3)"><span class="glyphicon glyphicon-volume-up"></span>&nbsp;实时喊话</li>
+		</ul>
+	</div>
+	
+	<!-- 音量调节按钮 -->
+	<div id="sound-div" style="display: none">
+ 		<input id="sound"  class="sound"  onmouseup="ctrlvolume(this.value)"  onchange="soundChange(this)" type="range" min="0"  max="56" title="5" value="5" />
+	</div>
+	<!-- 播放器 -->
+	<div id="audio-div" style="display:none;">
+		<audio id="audio-path"  controls="controls">
+		  <source v-bind:src="auditionAudio" type="audio/mp3">
+		</audio>
+	</div>
+	<!-- 上传 -->
+	<div class="vbox hz-col-1" id="upload_dialog" style="display: none;">
+		<!-- 上传 -->
+		<div id="uploader" class="uploader">
+			<div class="queueList">
+				<div id="dndArea" class="placeholder">
+					<div id="filePicker"></div>
+					<p>将文件拖到这里</p>
+				</div>
+			</div>
+			<div class="statusBar" style="display: none;">
+				<div class="progress">
+					<span class="text">0%</span> <span class="percentage"></span>
+				</div>
+				<div class="info"></div>
+				<div class="btns">
+					<div id="cancelBtn" class="webuploader-pick">取消上传</div>
+					<div class="uploadBtn">开始上传</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 添加定时任务 -->
+	<div class="vbox hz-col-1" id="addTask_dialog" style="display: none;">
+				<form class="form-horizontal">
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">任务名称</label>
+						<div class="col-xs-8">
+							<input type="text" class="form-control"
+								v-model="playTask.utt_task_name" />
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">播放终端</label>
+						<div class="col-xs-8">
+							<input type="text" class="form-control"
+								v-model="playTask.utt_device_name" readonly="readonly" />
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">播放文件</label>
+						<div class="col-xs-8">
+							<input type="text" class="form-control"
+								v-model="playTask.utt_play_file" readonly="readonly" />
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">是否重复</label>
+						<div class="col-xs-8">
+							<label class="checkbox-inline"> <input type="checkbox"
+								id="never" v-model="everyDay">每天
+							</label>
+							<label class="checkbox-inline" style="padding-left: 34px;"> <input type="checkbox"
+								v-model="weekCheck[1]"> 每周一
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[2]"> 每周二
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[3]"> 每周三
+							</label> <label class="checkbox-inline" style="padding-left: 10px;">
+								<input type="checkbox" v-model="weekCheck[4]"> 每周四
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[5]"> 每周五
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[6]"> 每周六
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[0]"> 每周日
+							</label>
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">播放时间</label>
+<!-- 						<div class="col-xs-8" v-if="neverCheck"> -->
+<!-- 							只定时播放一次时,选择具体的某一天的时间 -->
+<!-- 							<hz-date tip="选择播放时间" :val.sync="playTask.utt_exec_time" -->
+<!-- 								enabletime=true /> -->
+<!-- 						</div> -->
+						<div class="col-xs-8">
+							<!--  -->
+							<hz-time tip="选择播放时间"
+								:val.sync="playTask.utt_exec_time"  enablesecond=false format="H:i" />
+						</div>
+					</div>
+
+					<div class="bottom">
+						<a class="hbtn btn_primary btn_mini pull-right" id="cancel"><i
+							class="btn_icon icon_reset"></i><span>取消</span></a> 
+						<a  class="hbtn btn_primary btn_mini pull-right" id="save"
+							@click="saveTask()"><i class="btn_icon icon_save"></i><span>保存</span></a>
+					</div>
+				</form>
+			</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+
+<script type="text/javascript">
+var volume = 0; //音量
+var _ctrlVolume; //音量控制方法
+var playMode = 1;//模式   1 播放一次  2 单曲循环 3 实时喊话
+requirejs(['hz/cds/broadcast/broadcast']);
+//播放模式选择
+function modeToggle(i){
+	
+	switch(i){
+	case 1:
+		$(".mode-popover .mode-mark").removeClass("glyphicon-refresh").removeClass("glyphicon-volume-up");
+		$(".mode-popover .mode-mark").addClass("glyphicon-share-alt");
+		$(".mode-popover .mode").html("单次播放");
+		break;
+	case 2:
+		$(".mode-popover .mode-mark").removeClass("glyphicon-share-alt").removeClass("glyphicon-volume-up");
+		$(".mode-popover .mode-mark").addClass("glyphicon-refresh");
+		$(".mode-popover .mode").html("循环播放");
+		break;
+	case 3:
+		$(".mode-popover .mode-mark").removeClass("glyphicon-share-alt").removeClass("glyphicon-refresh");
+		$(".mode-popover .mode-mark").addClass("glyphicon-volume-up");
+		$(".mode-popover .mode").html("实时喊话");
+		break;
+	}
+	$(".mode-popover").popover("hide");
+	playMode = i;
+}
+
+//音量选择
+function soundChange(obj){
+	$(obj).attr("title",obj.value);
+}
+
+function soundBlur(){
+	$(".sound-popover").click();
+}
+
+function ctrlvolume(value){
+	_ctrlVolume(value);
+}
+
+</script>
+</html>

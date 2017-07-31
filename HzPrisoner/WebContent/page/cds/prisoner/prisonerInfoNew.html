@@ -1,0 +1,398 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../css/cds/prisoner/prisonerInfoNew.css" >
+<style>
+
+</style>
+
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+	<!-- 左侧收缩边栏 -->
+		<div class="hbox left-nav">
+			<div class="showFlagIcon" @click="leftExpandChange">
+				<span v-if="leftExpandShow"><img src="image/right_blue.png" /></span>
+				<span v-cloak v-else ><img src="image/left_blue.png" /></span>
+			</div>
+			<div class=" left-con vbox"  v-show="leftExpandShow" transition="expand">
+				<div class="input icon" >
+				  	<input id="input" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				 <div class="hz-col-1" id="scrollDiv" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+			</div>
+			<!-- 左侧人员信息及导航 -->
+			<div class="left-con vbox" v-cloak v-show="!leftExpandShow">
+				<div class="personBaseInfo">
+					<div class="personBaseImg"><img src="image/personDefault.png" /></div>
+					<div class="personBaseContent ">
+						<div class="">
+							<span class="">姓名：</span>
+							<div class="">{{prisoner.name}}</div>
+						</div>
+						<div class="">
+							<span class="">编号：</span>
+							<div class="">{{prisoner.prisonerid}}</div>
+						</div>
+					</div>
+					<div style="margin-top:25px;">
+						<div class="nav-header-title" @click="selectNav(0)" :class="{navActive:navIndex==0}">基本信息</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(1)" :class="{navActive:navIndex==1}">收支情况</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(2)" :class="{navActive:navIndex==2}">健康档案</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(3)" :class="{navActive:navIndex==3}">身体特征</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(4)" :class="{navActive:navIndex==4}">指纹</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(5)" :class="{navActive:navIndex==5}">声纹</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(6)" :class="{navActive:navIndex==6}">DNA</div>
+						<img src="image/line.png" class="solidLine" />
+						<div class="nav-header-title" @click="selectNav(7)" :class="{navActive:navIndex==7}">法律文书</div>
+						<img src="image/line.png" class="solidLine" />
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+		
+		
+		<div class="hz-col-9 right-con">
+		<!-- 基本信息 -->
+		<div class="" v-if="navIndex==0">
+			<form class="form-horizontal">
+			<table class="table table-bordered">
+				<tr>
+					<td class="col-xs-1">编号</td>
+					<td class="col-xs-2" v-text="prisoner.prisonerid"></td>
+					<td class="col-xs-1">姓名</td>
+					<td class="col-xs-2" v-text="prisoner.name"></td>
+					<td class="col-xs-1">监区</td>
+					<td class="col-xs-3" v-text="prisoner.pname"></td>
+					<td class="col-xs-2" rowspan="3">
+						<div id="imageview">
+							<!-- <img v-if="prisoner.img_url" :src='prisoner.img_url' > -->
+						</div>
+					</td>					
+				</tr>
+				<tr>
+					<td class="col-xs-1">性别</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_sex_indc"></td>
+					<td class="col-xs-1">民族</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_nation"></td>
+					<td class="col-xs-1">籍贯</td>
+					<td class="col-xs-3" v-text="prisoner.pbd_native_addrs"></td>
+				</tr>
+				<tr>
+					<td class="col-xs-1">出生日期</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_birth_date"></td>
+					<td class="col-xs-1">证件类别</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_crtfcts_type"></td>
+					<td class="col-xs-1">证件号码</td>
+					<td class="col-xs-3" v-text="prisoner.pbd_crtfcts_id"></td>
+				</tr>
+			</table>
+
+			<table class="table table-bordered">
+				<tr>
+					<td class="col-xs-1">罪名</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_accstn"></td>
+					<td class="col-xs-1">刑期</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_sntn_term"></td>
+					<td class="col-xs-1">刑期起日</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_sntn_start_date"></td>
+					<td class="col-xs-1">刑期止日</td>	
+					<td class="col-xs-2" v-text="prisoner.pbd_sntn_end_date"></td>
+				</tr>
+				<tr>
+					<td class="col-xs-1">入监日期</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_entry_prisoner_date"></td>
+					<td class="col-xs-1">犯人类型</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_type_indc"></td>
+					<td class="col-xs-1">剥权年限</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_sntn_dprvtn_term"></td>	
+					<td class="col-xs-1">罪犯状态</td>	
+					<td class="col-xs-2" v-text="prisoner.pbd_prsnr_stts"></td>									
+				</tr>					
+				<tr>
+					<td class="col-xs-1">刑种</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_sntn_type"></td>
+					<td class="col-xs-1">收押类别</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_detain_type"></td>
+					<td class="col-xs-1">分押类别</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_charge_type"></td>	
+					<td class="col-xs-1">分管等级</td>	
+					<td class="col-xs-2" v-text="prisoner.pbd_sprt_mnge"></td>									
+				</tr>				
+				<tr>
+					<td class="col-xs-1">文化程度</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_cltre_level"></td>
+					<td class="col-xs-1">婚姻状况</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_mrrge_stts"></td>
+					<td class="col-xs-1">捕前单位</td>
+					<td class="col-xs-2" v-text="prisoner.pbd_arrst_cmpny" colspan="3"></td>			
+				</tr>				
+			</table>
+			</form>
+		</div>
+		<!-- 收支情况 -->
+		<div class="" v-if="navIndex==1" v-cloak>
+			<div class="panel-body" style="padding: 5px;">
+							<span class="dataIsNone">暂无收支情况</span>
+						</div>
+		</div>
+		<!-- 健康档案 -->
+		<div class="" v-if="navIndex==2" v-cloak>
+			<div class="panel-body" style="padding: 5px;">
+				<div class="caption_title">一般情况</div>
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-1">体温</td>
+						<td class="col-xs-2" v-text="healthy.phe_temperature"></td>
+						<td class="col-xs-1">呼吸</td>
+						<td class="col-xs-2" v-text="healthy.phe_breath"></td>
+						<td class="col-xs-1">脉搏</td>
+						<td class="col-xs-2" v-text="healthy.phe_pulse"></td>	
+						<td class="col-xs-1">血压</td>	
+						<td class="col-xs-2" v-text="healthy.phe_blood_pressure"></td>	
+					</tr>
+					<tr>
+						<td class="col-xs-1">身高</td>
+						<td class="col-xs-2" v-text="healthy.phe_height"></td>
+						<td class="col-xs-1">体重</td>
+						<td class="col-xs-2" v-text="healthy.phe_weight"></td>
+						<td class="col-xs-1">发育</td>
+						<td class="col-xs-2" v-text="healthy.phe_develop"></td>	
+						<td class="col-xs-1">营养</td>	
+						<td class="col-xs-2" v-text="healthy.phe_nutrition"></td>	
+					</tr>
+					<tr>
+						<td class="col-xs-1">神志</td>
+						<td class="col-xs-2" v-text="healthy.phe_sense"></td>
+						<td class="col-xs-1">精神</td>
+						<td class="col-xs-2" v-text="healthy.phe_mind"></td>
+						<td class="col-xs-1">面容</td>
+						<td class="col-xs-2" v-text="healthy.phe_face"></td>	
+						<td class="col-xs-1">体位</td>	
+						<td class="col-xs-2" v-text="healthy.phe_position"></td>	
+					</tr>
+					<tr>
+						<td class="col-xs-1">小结</td>
+						<td colspan="5" style="background: rgba(00,00,00,0.4);"  v-text="healthy.phe_base_summary"></td>
+						<td class="col-xs-1">签字</td>
+						<td class="col-xs-2" v-text="healthy.phe_base_sign"></td>
+					</tr>
+				</table>
+				<div class="caption_title">内科</div>
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-1">心脏</td>
+						<td class="col-xs-2" v-text="healthy.phe_in_heart"></td>
+						<td class="col-xs-1">肺</td>
+						<td class="col-xs-2" v-text="healthy.phe_in_lung"></td>
+						<td class="col-xs-1">腹部</td>
+						<td class="col-xs-2" v-text="healthy.phe_in_stomach"></td>	
+					</tr>
+					<tr>
+						<td class="col-xs-1">肝部</td>	
+						<td class="col-xs-2" v-text="healthy.phe_in_liver"></td>
+						<td class="col-xs-1">脾部</td>
+						<td class="col-xs-2" v-text="healthy.phe_in_spleen"></td>
+						<td class="col-xs-1">其他</td>
+						<td class="col-xs-2" v-text="healthy.phe_in_other"></td>
+					</tr>
+					<tr>
+						<td class="col-xs-1">小结</td>
+						<td colspan="3" style="background: rgba(00,00,00,0.4);" v-text="healthy.phe_in_summary"></td>	
+						<td class="col-xs-1">签字</td>	
+						<td class="col-xs-2" v-text="healthy.phe_in_sign"></td>	
+					</tr>	
+				</table>
+				<div class="caption_title">外科</div>
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-1">皮肤</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_skin"></td>
+						<td class="col-xs-1" title="浅表淋巴结">淋巴</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_lymph_node"></td>
+						<td class="col-xs-1">头颅</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_head"></td>	
+						<td class="col-xs-1">甲状腺</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_thyroid"></td>									
+					</tr>
+					<tr>
+						<td class="col-xs-1">乳腺</td>	
+						<td class="col-xs-2" v-text="healthy.phe_out_breast"></td>
+						<td class="col-xs-1">脊柱</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_spine"></td>
+						<td class="col-xs-1" titie="四肢关节">四肢</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_joint"></td>
+						<td class="col-xs-1" titie="肛门外生殖器官">肛门</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_reproduction"></td>									
+					</tr>
+					<tr>
+						<td class="col-xs-1">其他</td>
+						<td class="col-xs-2" v-text="healthy.phe_out_other"></td>	
+						<td class="col-xs-1">小结</td>
+						<td colspan="3" style="background: rgba(00,00,00,0.4);" v-text="healthy.phe_out_summary"></td>	
+						<td class="col-xs-1">签字</td>	
+						<td class="col-xs-2" v-text="healthy.phe_out_sign"></td>	
+					</tr>	
+				</table>
+				<div class="caption_title">五官科</div>
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-1">视力</td>
+						<td class="col-xs-3" v-text="healthy.phe_vision"></td>
+						<td class="col-xs-1">矫正</td>
+						<td class="col-xs-3" v-text="healthy.phe_correct_vision"></td>
+						<td class="col-xs-1">听力</td>
+						<td class="col-xs-3" v-text="healthy.phe_listem"></td>	
+					</tr>
+					<tr>
+						<td class="col-xs-1">眼</td>	
+						<td class="col-xs-3" v-text="healthy.phe_eye"></td>
+						<td class="col-xs-1">耳</td>
+						<td class="col-xs-3" v-text="healthy.phe_ear"></td>
+						<td class="col-xs-1" >鼻</td>
+						<td class="col-xs-3" v-text="healthy.phe_nose"></td>
+					</tr>
+					<tr>
+						<td class="col-xs-1">口腔</td>
+						<td class="col-xs-3" v-text="healthy.phe_oral"></td>	
+						<td class="col-xs-1">小结</td>
+						<td class="col-xs-3" style="background: rgba(00,00,00,0.4);" v-text="healthy.phe_facial_summary"></td>	
+						<td class="col-xs-1">签字</td>	
+						<td class="col-xs-3" v-text="healthy.phe_facial_sign"></td>	
+					</tr>	
+				</table>																			
+			</div>
+		</div>
+		<!-- 身体特征 -->
+		<div class="" v-if="navIndex==3" v-cloak>
+			<div class="panel-body" style="padding:5px;height: 88%;overflow: auto;">
+				<div class="phyList">
+					<div style="font-size: 16px;text-align:center;padding:15px 0">特征详情</div>
+					<div class="col-xs-12 phyListContent">
+						<div v-for="(index,item) in phyInfoList" class="phyListItem" @click="openPhyDetail(index)" @mouseover="testOver">
+							<div class="col-xs-4 phyListItem-t">
+								<label>特征{{item.id}}：</label>
+							</div>
+							<div class="col-xs-8" style="padding: 0;">
+								{{item.content}}
+							</div>
+						</div>
+						
+					</div>
+				</div>
+				<div class="phyContent" style="padding: 30px;cursor: default;position: relative;">
+					<div class="test-line">
+						<span class='test-span' @click="openPhyDetail(0)">狼头纹身</span>
+						<div class="test-cricle"></div>
+					</div>
+					<div class="test-line2">
+						<span class='test-span' @click="openPhyDetail(1)">疤痕</span>
+						<div class="test-cricle"></div>
+					</div>
+					<div class="test-line3">
+						<span class='test-span-left' @click="openPhyDetail(2)">胎记</span>
+						<div class="test-cricle-left"></div>
+					</div>
+					<div class="test-line4">
+						<span class='test-span-left-2' @click="openPhyDetail(3)">心型纹身</span>
+						<div class="test-cricle-left-2"></div>
+					</div>
+					<img  src="image/people.png" />
+					<div id="openDetail" class="hbox hz-col-1" style="display:none;">
+						<div class="hz-col-1"><img class="detail-img" /></div>
+						<div class="hz-col-1">
+							<div style="margin-top: 10%;">
+								<div style="font-size: 16px;color: #a3cde2;">详细信息：</div>
+								<p class="detail-content">{{phyDetail}}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 指纹 -->
+		<div class="" v-if="navIndex==4" v-cloak>
+			<div class="panel-body" style="padding: 5px;">	
+				<div class="finger-content">
+					<div class="finger-item">
+						<div><img src="image/11.jpg" /></div>
+						<p>右手大拇指指纹</p>
+					</div>
+					<div class="finger-item">
+						<div><img src="image/22.jpg" /></div>
+						<p>右手无名指指纹</p>
+					</div>
+					<div class="finger-item">
+						<div><img src="image/33.jpg" /></div>
+						<p>左手食指指纹</p>
+					</div>
+					<div class="finger-item">
+						<div><img src="image/44.jpg" /></div>
+						<p>左手大拇指指纹</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 声纹 -->
+		<div class="" v-if="navIndex==5" v-cloak>
+			<div class="panel-body" style="padding: 5px;">
+				<div>
+					<div class="voice-show">
+						<img :src="voiceImg" />
+						<div></div>
+					</div>
+					<div class="voice-content" style="text-align:center;">
+						<div class="voice-item" @click="selecteVoice(0)" :class="{voiceActive:voiceIndex==0}" >
+							<img src="image/timgG1.jpg" />
+							<p>声纹1</p>
+						</div>
+						<div class="voice-item" @click="selecteVoice(1)" :class="{voiceActive:voiceIndex==1}" >
+							<img src="image/timgG2.jpg" />
+							<p>声纹2</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- DNA -->
+		<div class="" v-if="navIndex==6" v-cloak>
+		<div class="panel-body" style="padding: 5px;">
+							<span class="dataIsNone">暂无DNA情况</span>
+						</div>
+		</div>
+		<!-- 法律文书 -->
+		<div class="" v-if="navIndex==7" v-cloak>
+		<div class="panel-body" style="padding: 5px;">
+							<span class="dataIsNone">暂无法律文书情况</span>
+						</div>
+		</div>
+	</div>
+	</div>
+	
+	<div class="bottom">
+<!-- 		<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_upload"></i><span>导入</span></a>		   -->
+		<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_download"></i><span>导出</span></a>
+		<div class="buttons">
+			<a v-cloak v-if="isDelPoint" @click="delPoint()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除点位</span></a>
+			<a @click="monitor()" class="hbtn btn_primary btn_large"><i class="btn_icon"></i><span>监控</span></a>
+			<a @click="openMap()" class="hbtn btn_primary btn_large"><i class="btn_icon"></i><span>地图</span></a>
+		</div>
+	</div> 
+</div>
+
+
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/prisoner/prisonerInfoNew"]);
+</script>

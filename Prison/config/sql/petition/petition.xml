@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_petition_info" desc="上访信息添加">
+		<seq>idp_petition_record@per_record_id</seq>
+		<sql>
+			INSERT INTO
+				idp_petition_record
+				(	
+					per_cus_number,
+					per_record_id,
+					per_name,
+	       			per_sex,
+	       			per_birthday,
+	       			per_cert_type,
+	       			per_cert_code,
+	       			per_family_address,
+	       			per_petition_time,
+				    per_petition_reason,
+				    per_petition_content,
+				    per_create_uid,
+				    per_create_datetime,
+				    per_update_uid,
+				    per_update_datetime
+				)
+			VALUES(
+					:per_cus_number,
+					:per_record_id,
+					:per_name,
+	       			:per_sex,
+	       			TO_DATE(:per_birthday,'yyyy-mm-dd'),
+	       			:per_cert_type,
+	       			:per_cert_code,
+	       			:per_family_address,
+	       			TO_TIMESTAMP(:per_petition_time,'yyyy-mm-dd'),
+				    :per_petition_reason,
+				    :per_petition_content,
+				    :per_create_uid,
+				    SYSDATE,
+				    :per_update_uid,
+				    SYSDATE
+				)
+		</sql>
+	</item>
+	<item id="update_petition_info" desc="上访信息更新">
+		<sql>
+			UPDATE
+				idp_petition_record
+			SET
+					per_name=:per_name,
+					per_sex=:per_sex,
+           			per_birthday=TO_DATE(:per_birthday,'yyyy-mm-dd'),
+           			per_cert_type=:per_cert_type,
+           			per_cert_code=:per_cert_code,
+           			per_family_address=:per_family_address,
+           			per_petition_time=TO_TIMESTAMP(:per_petition_time,'yyyy-mm-dd'),
+				    per_petition_reason=:per_petition_reason,
+				    per_petition_content=:per_petition_content,
+				    per_update_uid=:per_update_uid,
+				    per_update_datetime=SYSDATE
+				    
+			WHERE
+				per_record_id=:per_record_id
+		</sql>
+	</item>
+	<item id="delete_petition_info" desc="上访信息删除">
+		<sql>
+			DELETE FROM 
+				idp_petition_record
+			<where id="0">
+				WHERE	
+					per_record_id=:per_record_id
+			</where>
+		</sql>
+	</item>
+    <item id="query_petition_info" desc="上访信息查询">
+    	<const key="per_create_us" module="user"></const>
+    	<const key="per_update_us" module="user"></const>
+    	<const key="per_sex">pbd_sex</const>
+    	<const key="per_cert_type">fpd_id_card_type</const>
+		<sql>
+			SELECT 
+					per_cus_number,
+					per_record_id,
+					per_name,
+					per_sex,
+					per_sex sex,
+					TO_CHAR(per_birthday,'yyyy-mm-dd') birthday,
+					per_cert_type,
+					per_cert_type cert_type,
+					per_cert_code,
+					per_family_address,
+					TO_CHAR(per_petition_time,'yyyy-mm-dd') petition_time,
+					per_petition_reason,
+					per_petition_content,
+					per_create_uid,
+           			per_create_uid AS per_create_us,
+				    TO_CHAR(per_create_datetime,'yyyy-mm-dd') create_datetime,
+				    per_update_uid,
+				    per_update_uid AS per_update_us,
+				    TO_CHAR(per_update_datetime,'yyyy-mm-dd') update_datetime,
+				    odd_name
+			FROM 	
+					idp_petition_record
+			INNER JOIN sys_org_dept_dtls ON per_cus_number = odd_id
+		</sql>
+		<where id="0">
+			WHERE 	
+				per_record_id=:per_record_id
+		</where>
+		<where id="1">
+			WHERE 
+				per_name LIKE concat('%',concat(:per_name,'%'))
+		</where>
+		<where id="2">
+			WHERE 
+				TO_CHAR(per_petition_time,'yyyy-mm') = :chartData
+		</where>
+		<where id="3">
+			WHERE
+				per_cus_number = :per_cus_number
+		</where>
+		<where id="4">
+			WHERE
+				TO_CHAR(per_petition_time,'yyyy') = :yearData
+		</where>
+		<order id="0">
+			ORDER BY  
+				per_petition_time
+		</order>
+    </item>
+    <item id="query_petition_years" desc="年份查询">
+    	<sql>
+    		SELECT TO_CHAR(per_petition_time,'yyyy') per_petition_years,
+    				COUNT(1) per_petition_count
+    		FROM idp_petition_record
+    		GROUP BY TO_CHAR(per_petition_time,'yyyy')
+    	</sql>
+    	<order id="0">
+    		ORDER BY 
+    			TO_CHAR(per_petition_time,'yyyy')
+    	</order>
+    </item>
+    <item id="query_petition_months" desc="月份查询">
+    	<sql>
+			SELECT TO_CHAR(per_petition_time, 'yyyy-mm') begin_months,
+			       COUNT(1) begin_count
+			  FROM (SELECT per_petition_time
+			          FROM idp_petition_record
+			         WHERE TO_CHAR(per_petition_time, 'yyyy') = ?)
+			 GROUP BY TO_CHAR(per_petition_time, 'yyyy-mm')
+
+		</sql>
+		<order id="0">
+			ORDER BY 	
+				TO_CHAR(per_petition_time,'yyyy-mm')
+		</order>
+	</item>
+</sqlItem>

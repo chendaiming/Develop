@@ -1,0 +1,83 @@
+@CHARSET "UTF-8";
+
+.map-base-bgc {background-color: rgba(42, 61, 82,.95) !important; transition: all 0.5s;}
+.map-base-bgc:hover {box-shadow: 0 0 5px #e74c3c;}
+
+#hzMap {position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; z-index: 0;}
+#hzMap {
+	background-color: #4f7f9b;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#4f7f9b), to(#293c55));
+	background-image: -webkit-linear-gradient(top, #4f7f9b, #293c55);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#4f7f9b), to(#293c55));
+	background-image: linear-gradient(to bottom, #4f7f9b, #293c55);
+	background-repeat: repeat-x;
+	background-size: 100% 100%;
+	line-height: normal !important;
+	overflow: hidden;
+}
+
+#hzMap canvas {opacity: .98;}
+
+#hzMap .map-console {position: absolute; right:5px; bottom:15px; width: 310px; height: 180px; padding:5px 1px 5px 5px; border: 1px solid rgba(137, 181, 47, .8); background-color: rgba(29, 49, 68, 0.8); overflow:hidden; z-index: 99; display: none;}
+#hzMap .map-console >div {width: 100%; height: 100%; overflow-y: auto;}
+#hzMap .map-console >div .contents {}
+#hzMap .map-console >div .contents >li {font-size: .85em; color: #dadada; padding: 3px 5px; cursor: default; text-shadow: 0 1px 1px #000;word-break: break-all;}
+#hzMap .map-console >div .contents >li:hover {background-color: rgba(215, 216, 17, .2);}
+#hzMap .map-console >div .time {color: #edff00;}
+#hzMap .map-console:hover {border: 1px solid rgba(137, 181, 47, .9); background-color: rgba(29, 49, 68, 0.9);}
+#hzMap .map-console:hover >div .contents >li {color: #F2F2F2;}
+
+#hzMap .label-point {z-index: 2;}
+#hzMap .label-point:hover {z-index: 3;}
+#hzMap .label-point:hover >span {background-color: rgba(17, 37, 58, .9);}
+#hzMap .label-point >span {font-size: 15px;color: #ffff00; padding: 2px 5px; border-radius: 3px;text-shadow: 1px 0 1px #ff0000, 0 1px 1px #ff0000, -1px 0 1px #ff0000, 0 -1px 1px #ff0000;}
+
+#hzMap .map-cross {position: absolute; top: 50%; left: 50%; z-index: 99; background-color: rgb(0, 231, 255);}
+#hzMap .map-cross.x {margin-top: -0px; margin-left: -10px; width: 21px; height: 1px;}
+#hzMap .map-cross.y {margin-top: -10px; margin-left: -0px; width: 1px; height: 21px; }
+
+#hzMap .map-stats {top: 90px; left: 8px; box-shadow: 0 0 5px 1px #00fffe;border-radius: 0px;overflow: hidden;z-index: 99;}
+
+#hzMap .label-room {z-index: 99;}
+#hzMap .label-room .label-span {padding: 2px 5px; border-radius: 3px; border: 1px solid #f34503; background: rgba(12,34,48,0.9); font-size: 1em; color: #ffff00;cursor: pointer;}
+#hzMap .label-room .label-span:hover {text-shadow: 1px 0 1px #ff0000, 0 1px 1px #ff0000, -1px 0 1px #ff0000, 0 -1px 1px #ff0000;}
+
+#mapLoading {position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background-color: rgba(245,245,245,0.9); z-index: 9999999;}
+#mapLoading #loading {position: absolute; top: 50%; left: 50%; margin-top: -20px; margin-left: -50px; width: 100px; height: 30px; border: 2px solid rgba(245,245,245,0.6); background-color: rgba(0,0,0,0.8); line-height: 30px; text-align: center; color: #E0F2BE; }
+
+#mapLoading .splash {position: absolute; z-index: 999; display: table; width: 100%; height: 100%; background-color: #F3F0EB;}
+#mapLoading .splash >.splash-inner {display: table-cell; text-align: center; vertical-align: middle;}
+#mapLoading .splash h1, .splash h2, .splash h3 {font-weight: normal;}
+#mapLoading .splash h3 {display: block; margin-top: 34px; font-size: 18px; color: #666; font-weight: lighter;}
+#mapLoading .splash .loading-circle {position: relative; width: 204px; height: 204px; margin: auto;}
+#mapLoading .splash .loading-circle >* {display: block; position: absolute; box-sizing: border-box; border-radius: 102px;}
+#mapLoading .splash .loading-circle >canvas.bg {z-index: 1; width: 100%; height: 100%; border: 8px solid #ddd ;}
+#mapLoading .splash .loading-circle >canvas.mask {z-index: 2; transform: rotate(-90deg); -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg);}
+#mapLoading .splash .loading-circle >p {margin: 0; padding: 0;font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+#mapLoading .splash .loading-circle >p {position:absolute;top:0;left:0;z-index: 3;  width: 100%; height: 100%; text-align: center; line-height: 204px; font-size: 56px; font-weight: lighter; color: #999;}
+
+.map-config {position:absolute; top:100px; right:110px;border: 1px solid rgba(0,0,0,.1); border-radius: 3px; background-color: rgba(42, 61, 82, .95); box-shadow: 0 0 10px #333; z-index: 99; display: none;}
+.map-config.show {display: block;}
+
+.map-config a.map-config-btn {float: right;font-size: 1em; padding: 0px 10px 0px 40px; height: 35px; line-height: 35px; border-radius: 5px 0 0 5px; background:url(../images/data_config.png) 5px center no-repeat; cursor: pointer;}
+.map-config a.map-config-btn:hover,
+.map-config a.map-config-btn.open {color: #0FF; background-image: url(../images/data_config_h1.png);}
+.map-config ul.map-config-list {padding: 5px; cursor: default; list-style: none;}
+.map-config ul.map-config-list >li {margin-bottom: 1px;padding: 5px 15px 5px 32px; background: url(../images/data_config_uncheck.png) 10px center no-repeat;color: #84807b;}
+.map-config ul.map-config-list >li:hover {background-color: rgba(215, 216, 17, .2); text-shadow: 0 1px 2px #000;color: #F2F2F2;}
+.map-config ul.map-config-list >li.checked {background-image: url(../images/data_config_checked.png); text-shadow: 0 1px 2px #000; color: #fff;}
+
+.map-config-btn {background:url(../images/nav_config.png) 6px center no-repeat;}
+.map-config-btn:hover, .map-config-btn.open {background-image: url(../images/nav_config_h.png);}
+
+.map-head-title {padding: 8px 10px 8px 36px;position: absolute;right: 0px;top: 0px;border-radius: 0 0 0 36px;text-shadow: 0px 0px 5px rgba(0, 255, 255, 0.8);font-size: 1em; cursor: default;z-index: 1; display: none; transition: all .5s;}
+.map-head-title .mht-node {margin-right: 20px;}
+.map-head-title .mht-num {margin-right: 3px;color: #ffe200;text-decoration: underline;text-shadow: none;cursor: pointer;}
+
+.map-instruction-icon {background:url(../images/nav_instruction.png) 8px center no-repeat; background-size: 25px;}
+.map-instruction-icon:hover {background-image: url(../images/nav_instruction_h.png);}
+
+
+#loadSchedule {position: absolute; padding: 15px 10px; margin-left: -180px; width: 360px; top: 40px; left: 50%; background-color: rgba(28,28,28,0.8); border-radius: 3px; text-align: center; font-size: 1.1em; z-index: 999;}
+#loadSchedule span.number {color: #00ff00;}
+#loadSchedule span.desc {font-size: .8em; color: #ff5555; padding-top: 2px;}

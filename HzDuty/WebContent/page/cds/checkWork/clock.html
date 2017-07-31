@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+div.top{
+	font-size: 18px;
+}
+div.top div{
+	float: left;
+	margin: 20px 20px;
+}
+div.mid{
+	font-size: 16px;
+}
+div.mid div{
+	float: left;
+	margin: 20px 20px;
+}
+div.empty{
+	font-size: 18px;
+}
+</style>
+<div class="vbox box-con" id="clock">
+	<div v-cloak v-if="!dutyPeoleInfo" class="empty">当前无值班!</div>
+	<div class="vbox box-con" v-cloak v-if="dutyPeoleInfo.ped_name">
+		<div class="top">
+			<div>当前日期：<span v-text="date"></span></div>
+			<div><span v-text="week"></span></div>
+			<div>部门名称：<span v-text="dutyPeoleInfo.odd_name"></span></div>
+		</div>
+		<div class="top">
+			<div>值班班次：<span v-text="dutyPeoleInfo.sbd_name"></span></div>
+			<div>值班岗位：<span v-text="dutyPeoleInfo.jbd_name"></span></div>
+			<div>值班人员：<span v-text="dutyPeoleInfo.ped_name"></span></div>
+		</div>
+		<div class="mid">
+			<div>
+				值班开始时间：<span v-text="dutyPeoleInfo.scd_shift_start_time"></span>
+			</div>
+			<div v-cloak v-if="!clockInfo.ckr_until_date">当前时间：<span v-text="time"></span></div>
+			<div v-cloak v-if="!clockInfo.ckr_until_date">
+				<a class="hbtn btn_primary btn_large" @click="untilClock()"><i class="btn_icon"></i><span>上班打卡</span></a>
+			</div>
+			<div v-cloak v-if="clockInfo.ckr_until_date">
+				上班打卡时间：<span v-text="clockInfo.ckr_until_date"></span>
+			</div>
+		</div>
+		<div class="mid">
+			<div>
+				值班结束时间：<span v-text="dutyPeoleInfo.scd_shift_end_time"></span>
+			</div>
+			<div v-cloak v-if="!clockInfo.ckr_back_date">当前时间：<span v-text="time"></span></div>
+			<div v-cloak v-if="clockInfo.ckr_until_date && !clockInfo.ckr_back_date">
+				<a class="hbtn btn_primary btn_large" @click="backClock()"><i class="btn_icon"></i><span>下班打卡</span></a>
+			</div>
+			<div v-cloak v-if="clockInfo.ckr_back_date">
+				下班打卡时间：<span v-text="clockInfo.ckr_back_date"></span>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/checkWork/clock"]);
+</script>

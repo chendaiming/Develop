@@ -1,0 +1,90 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+</style>
+<div class="vbox box-con" id="orderManage">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="categoryOrderTree" class="ztree"></ul>	    	
+		   		</div>
+			</div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">所属类别</label>
+	      	    	<div class="col-sm-9">
+		      	   		<input class="form-control" v-model="order.category_name" type="text" readonly placeholder="所属类别">
+				    	<input type="hidden" v-model="order.sbd_category_id">
+	          		</div>
+	          	</div>
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">班次名称</label>
+	      	    	<div class="col-sm-9">
+		      	   		<input class="form-control" v-model="order.sbd_name" type="text" placeholder="班次名称" maxlength="15">
+	          		</div>
+	          	</div>
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">开始时间</label>
+			    	<div class="col-sm-3">
+	      	    		<hz-select 
+					    		tip=""
+					    		code="DTY_TIME_FLAG"
+					    		:id.sync="order.sbd_stime_flag"
+				    	/>
+	          		</div>
+	      	    	<div class="col-sm-6" style="padding-left: 0px;">
+	      	    		<hz-time tip="开始时间" :val.sync="order.sbd_start_time" enablesecond=false format="H:i"/>
+	          		</div>
+	          	</div>
+	          	<div class="form-group">
+			    	<label  class="col-sm-2 control-label">结束时间</label>
+			    	<div class="col-sm-3">
+	      	    		<hz-select 
+					    		tip=""
+					    		code="DTY_TIME_FLAG"
+					    		:id.sync="order.sbd_etime_flag"
+				    	/>
+	          		</div>
+	      	    	<div class="col-sm-6" style="padding-left: 0px;">
+	      	    		<hz-time tip="结束时间" :val.sync="order.sbd_end_time" enablesecond=false format="H:i"/>
+	          		</div>
+	          	</div>
+	          	<div class="form-group">
+			    	<label  class="col-sm-2 control-label">下一班次</label>
+	      	    	<div class="col-sm-9">
+	      	    		<hz-select 
+					    		tip="下一班次"
+					    		sqlid="select_dty_category_order_select"
+					    		whereid=1
+					    		orderid=0
+					    		showload=true
+					    		:params=[order.sbd_cus_number,order.sbd_category_id]
+					    		:id.sync="order.sbd_next_shift_id"
+				    	/>
+	          		</div>
+	          	</div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large save"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a class="hbtn btn_primary btn_large del"><i class="btn_icon icon_del"></i><span>删除</span></a>		  
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyMode/orderManage"]);
+</script>

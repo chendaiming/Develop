@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_pn_view_point_byid" desc="查询高压电网图形点位">
+		<sql>
+			SELECT pgp_pos_x AS x, pgp_pos_y AS y,pgp_pos_z AS z
+			  FROM map_power_grid_points
+			 WHERE pgp_cus_number = :cusNumber
+			   AND pgp_power_grid_id = :pgp_power_grid_id
+		</sql>
+    </item>
+ 	<item id="delete_pn_view_point" desc="删除高压电网图形点位">
+		<sql>
+			DELETE FROM map_power_grid_points WHERE pgp_cus_number = :cusNumber AND pgp_power_grid_id = :pgp_power_grid_id
+		</sql>
+    </item>
+    <item id="insert_pn_view_point" desc="添加高压电网图形点位">
+		<sql>
+			INSERT INTO map_power_grid_points
+			  (pgp_cus_number,
+			   pgp_power_grid_id,
+			   pgp_pos_x, pgp_pos_y,
+			   pgp_pos_z,pgp_seq)
+			VALUES
+			  (:pgp_cus_number,
+			   :pgp_power_grid_id,
+			   :pgp_pos_x,
+			   :pgp_pos_y,
+			   :pgp_pos_z,
+			   :pgp_seq)
+		</sql>
+    </item>
+       <item id="update_pn_view_point" desc="更新高压电网图形点位">
+		<sql>
+			UPDATE map_power_grid_points 
+			   SET pgp_power_grid_id = :pgp_power_grid_id
+		</sql>
+		<where id="0">
+			 WHERE pgp_cus_number = :pgp_cus_number 
+			   AND pgp_power_grid_id = :old_id
+		</where>
+    </item>
+</sqlItem>

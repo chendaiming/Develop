@@ -1,0 +1,167 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 32px;
+    top: 15px;
+    width:18%;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 15px;
+    line-height:30px;
+}
+.right-con> div.condition{
+	width:15%;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+.condition>input:focus {outline: none;} 
+.conditionslid{
+	max-height:180px ;
+}
+.hz-col-1.line::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 100%;
+    border-style: dotted;
+    border: 1px dashed #699ead;
+    margin-left: -3px;
+}
+div.condition div{
+	border:none;
+}
+div.condition input{
+	border-radius: 15px;
+	height: 32px;
+}
+section.bigImg{
+    width: 50%;
+    max-height: 70%;
+    position: absolute;
+    top: 5%;
+    z-index: 1111;
+    left: 30%;
+    border: 1px solid #3bc7c1;
+    border-radius: 10px;
+    visibility: visible !important;
+    display: none;
+}
+section.bigImg img{
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    text-align: center;
+    color: #f5f6f7;
+    line-height: 150px;
+    font-size: xx-large;
+    background: rgb(24, 48, 62);
+    overflow: hidden;
+}
+td a{
+	cursor:pointer;
+	color:green;
+}
+span.timed:after{
+	content:'';
+}
+label.up{
+	width: 15px;
+    height: 15px;
+    background: red;
+    top:4px;
+    right: 8px;
+    position: absolute;
+    background:url('../../../libs/ztree/css/zTreeStyle/img/up.png');
+    cursor:pointer;
+}
+label.down{
+	width: 15px;
+    height: 15px;
+    background: red;
+    right: 8px;
+    bottom:0px;
+    position: absolute;
+    background:url('../../../libs/ztree/css/zTreeStyle/img/down.png');
+    cursor:pointer;
+}
+div.date-input{
+	right:
+}
+span[tip='异常']{
+	color:red;
+}
+span[tip='正常']{
+	color:green;
+}
+</style>
+<div class="vbox box-con" id="constlist">
+	<div class="hbox hz-col-1">
+	 	<div class="left-con vbox hz-col-3">
+				<div class="hz-col-1"  style="position:relative; text-align:center;margin-top:-10px;">
+					<div class="condition" style="width:45%;">
+					   <hz-date 
+								      		tip="选择查询日期" 
+								      		:val.sync="condition.begin"
+								      	 	format=Y-m-d
+								      	/>
+					</div> 
+					<span style="margin-top:20px;">-</span>
+					<div class="condition" style="right:0px;width:45%;">
+						<hz-date 
+							      		tip="选择查询日期" 
+							      		:val.sync="condition.end"
+							      	 	format=Y-m-d
+							      	/>
+					
+					</div>
+				</div>
+			    <div class="hz-col-9" id="tablepie" style="overflow:auto;">
+			    </div>
+		</div> 
+		
+		<div class="hz-col-9 vbox right-con">
+			<div class="condition" style="right:58%">
+				 <hz-select 
+		  			tip="设备类型" 
+		  			code="securityDeviceType"
+		  			:id.sync="condition['dsr_dvc_type']"
+		  			/>
+			</div>
+			<div class="condition" style="right:6%">
+				<input placeholder="设备名称" v-model="condition['dsr_dvc_name']" style="background-color: #505e66;background-image:url(../../../libs/ztree/css/zTreeStyle/img/type.png)">
+			</div>
+		
+			<div class="hz-col-9 right-con" style="padding:0px;margin:-1px -10px 0 0;">
+		       	<table id="table" ></table>
+			</div>
+		</div>
+		
+	</div>
+	
+	<div class="bottom" >
+		<div class="buttons" id="oprbutton">
+			<a class="hbtn btn_primary btn_large" @click="clear()"><i class="btn_icon icon_del"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/sys/deviceStatus/countDevice"]);
+</script>

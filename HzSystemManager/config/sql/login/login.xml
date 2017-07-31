@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="query_login_user" desc="登录信息">
+    	<sql>
+			SELECT t.id,
+			       t.postdate,
+			       t.logindate,
+			       t.loginip,
+			       t.used,
+			       t.admin,
+			       t.cus_number,
+			       t.dept_id,
+			       t.dept_name,
+			       t.data_auth,
+			       t.user_name,
+			       f.odd_name cus_number_name,
+			       plc_id,
+			       people_type,
+			       people_id
+			  FROM (SELECT ubd_id          id,
+			               ubd_expre_date  postdate,
+			               ubd_last_time   logindate,
+			               ubd_last_ip     loginip,
+			               ubd_use         used,
+			               ubd_admin       admin,
+			               ubd_cus_number  cus_number,
+			               ubd_dept_id     dept_id,
+			               odd_name        dept_name,
+			               odd_data_auth   data_auth,
+			               ubd_name        user_name,
+			               ubd_plc_id      plc_id,
+			               ubi_people_type people_type,
+			               ubi_people_id   people_id
+			          FROM sys_user_base_dtls
+			         INNER JOIN sys_org_dept_dtls
+			            ON ubd_dept_id = odd_id
+			          LEFT JOIN sys_user_bind_info
+			            ON ubd_id = ubi_uid
+			         WHERE ubd_name = ?
+			           AND ubd_pass = ?) t
+			 INNER JOIN sys_org_dept_dtls f
+			    ON f.odd_id = cus_number
+    	</sql>
+    </item>
+    <item id="update_login_user">
+    	<sql>
+    		UPDATE
+    			sys_user_base_dtls
+    		SET
+    			ubd_last_time  =sysdate,
+    			ubd_last_ip    =:ip
+    		WHERE
+    			ubd_name=:name
+    		AND
+    			ubd_pass=:pwd
+    	</sql>
+    </item>
+
+    <item id="update_last_login_info">
+    	<sql>
+			UPDATE sys_user_base_dtls
+			   SET ubd_last_time = SYSDATE, 
+			       ubd_last_ip = ?
+			 WHERE ubd_id = ?
+    	</sql>
+    </item>
+
+    <item id="query_user_menu">
+    	<sql>
+			SELECT fmd_id        id,
+			       fmd_parent_id pid,
+			       fmd_name      name,
+			       fmd_icon      icon,
+			       fmd_width     width,
+			       fmd_height    height,
+			       fmd_path      url,
+			       fmd_flag      permission,
+			       fmd_open_type type,
+			       fmd_seq		 seq
+			  FROM SYS_FUNC_MENU_DTLS
+	 	</sql>
+		<where id="0">
+			 INNER JOIN
+			 (
+			  SELECT DISTINCT (rfr_func_id)
+			   FROM
+			     sys_user_role_rltn
+			   INNER JOIN sys_role_base_dtls
+			      ON urr_role_id = rbd_id
+			   INNER JOIN
+			  sys_role_func_rltn
+			      ON rfr_role_id = rbd_id
+			  WHERE
+				urr_user_id=?
+			  )
+			    ON rfr_func_id = fmd_id
+          	   START WITH fmd_parent_id=-1 AND fmd_use=1
+              CONNECT  BY PRIOR  fmd_id = fmd_parent_id AND fmd_use=1
+          </where>
+          <order id="0">
+          	  ORDER BY  fmd_seq DESC
+          </order>
+    </item>
+
+	<item id="query_user_bind_roles" desc="查询用户绑定的角色">
+		<sql>
+			SELECT rbd_id, rbd_name
+			  FROM sys_role_base_dtls
+			 INNER JOIN sys_user_role_rltn
+			    ON urr_cus_number = rbd_cus_number
+			   AND urr_role_id = rbd_id
+			   AND urr_user_id = ?
+		</sql>
+	</item>
+
+	<item id="query_user_bind_police_info" desc="查询用户绑定的警员信息">
+		<sql>
+			SELECT pbd_user_id     AS id,
+			       pbd_police_id   AS code,
+			       pbd_police_name AS name,
+			       pbd_img         AS photo,
+			       pbd_drptmnt_id  AS dptt_id,
+			       odd_name        AS dptt_cn
+			  FROM sys_user_bind_info
+			 INNER JOIN plc_police_base_dtls
+			    ON ubi_people_id = pbd_user_id
+			 INNER JOIN sys_org_dept_dtls
+			    ON pbd_drptmnt_id = odd_id
+		</sql>
+		<where id="0" desc="根据登录用户编号查询">
+			 WHERE ubi_uid = ?
+		</where>
+	</item>
+</sqlItem>

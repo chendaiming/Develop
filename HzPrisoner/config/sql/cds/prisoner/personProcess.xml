@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_police_base_dtls_info"  desc="查询警员基础信息">
+		 <sql>
+			SELECT frr_cus_number,
+     			  frr_record_id,
+     			  frr_person_id,
+     			  frr_person_type,
+     		      frr_data_img AS img_face_url,
+     		   	  frr_now_img AS img_url_scene,
+     			  frr_send_time, 
+				  pbd_cus_number,
+		          pbd_user_id AS id,
+		          pbd_police_id AS policeid,
+		          pbd_police_name AS name,
+		          pbd_pstn_name,
+		   		  pbd_sex,
+		   		  TO_CHAR(SYSDATE,'YYYY') - TO_CHAR(pbd_birth_date, 'YYYY') AS pbd_age,
+		   		  pbd_political_status,
+		   		  pbd_official_title,
+		   		  TO_CHAR(pbd_birth_date,'YYYY-MM-DD') AS pbd_birth_date,
+		   		  pbd_fixed_phone,
+		   		  pbd_ip_phone,
+		   		  pbd_phone,
+		   		  pbd_short_phone,
+		   		  pbd_fax,
+		   		  pbd_talk_num,
+		   		  pbd_email,
+		   		  pbd_oa_system,
+		   		  pbd_police_cmmnct,
+		   		  pbd_family_phone,
+		   		  pbd_police_type_indc,
+		   		  pbd_degree_indc,
+		   		  pbd_profession,
+		   		  TO_CHAR(pbd_job_date,'YYYY-MM-DD') AS pbd_job_date,
+		   		  pbd_img,
+		   		  pbd_remark,
+				  odd_name
+		     FROM psr_face_recognition_record
+		left join   plc_police_base_dtls
+	    	    ON (pbd_police_id = frr_person_id)
+	    LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id)
+		 </sql>
+		 <where id="0">
+		 	WHERE frr_cus_number = ?
+			  AND frr_record_id = ?
+		 </where>
+     </item>
+     
+     <item id="insert_psr_face_recognition_record" desc="插人脸识别记录">
+     	<sql>
+     		INSERT INTO PSR_FACE_RECOGNITION_RECORD
+     			(frr_cus_number,
+     			 frr_record_id,
+     			 frr_person_id,
+     			 frr_person_type,
+     			 frr_data_img,
+     			 frr_now_img,
+     			 frr_camera_id，
+     			 frr_send_time,
+     			 frr_crte_time,
+     			 frr_crte_user_id,
+     			 frr_updt_time,
+     			 frr_updt_user_id
+     			)
+     		VALUES
+    			(:frr_cus_number,
+    			 :frr_record_id,
+    			 :frr_person_id,
+    			 :frr_person_type,
+    			 :frr_data_img,
+    			 :frr_now_img,
+    			 :frr_camera_id,
+    			 TO_TIMESTAMP(:frr_send_time, 'YYYY-MM-DD HH24:MI:SS'),
+    			 SYSDATE,
+			   	 0,
+			     SYSDATE,
+			     0
+     			)
+     	</sql>
+     </item>
+              
+     <item id="select_face_recognition" desc="查询人脸识别消息-犯人">
+     	<const key="type">person_type</const>
+     	<sql>
+     		select  distinct frr_cus_number,
+     			   frr_record_id,
+     			   frr_person_id as prisonerid,
+     			   frr_person_type,
+     			   frr_person_type as type,
+     			   frr_data_img as img_url,
+     			   frr_now_img as img_url_scene,
+     			   frr_send_time,
+     			   frr_camera_id,
+     			   cbd_dvc_addrs as addrs,
+     			   pbd_prsnr_name AS name
+     		FROM PSR_FACE_RECOGNITION_RECORD
+				LEFT JOIN CMR_CAMERA_BASE_DTLS
+				     ON(CBD_ID = FRR_CAMERA_ID)
+				 LEFT JOIN  psr_prisoner_base_dtls
+				    ON (pbd_other_id = frr_person_id)
+     	</sql>
+     	<where id="0">
+     		where frr_cus_number = ? AND
+     			  frr_record_id = ? AND
+     			  frr_person_id = ?
+     	</where>
+     </item>
+     
+      <item id="select_police_base" desc="查询人脸识别消息-警员">
+     	<const key="type">person_type</const>
+     	<sql>
+     		select frr_cus_number,
+     			   frr_record_id,
+     			   pbd_police_id as prisonerid,
+     			   frr_person_type,
+     			   frr_person_type as type,
+     			   frr_data_img as img_url,
+     			   frr_now_img as img_url_scene,
+     			   frr_send_time,
+     			   frr_camera_id,
+     			   cbd_dvc_addrs as addrs,
+     			   pbd_police_name AS name
+     		FROM PSR_FACE_RECOGNITION_RECORD
+				LEFT JOIN cmr_camera_base_dtls
+				     ON(CBD_ID = FRR_CAMERA_ID)
+				LEFT JOIN   plc_police_base_dtls
+	    	   		 ON(pbd_user_id = frr_person_id)
+     	</sql>
+     	<where id="0">
+     		where frr_cus_number = ? AND
+     			  frr_record_id = ? AND
+     			  frr_person_id = ?
+     	</where>
+     </item>
+     
+	<item id="select_person_data_img" desc="查询人脸识别消息-警员">
+     	<sql>
+     		select frr_data_img 
+     		FROM   psr_face_recognition_record
+     	</sql>
+     	<where id="0">
+     		where frr_cus_number = ? AND
+     			  frr_record_id = ? 
+     	</where>
+     </item>  
+ 
+ 	<item id="select_person_now_img" desc="查询人脸识别消息-警员">
+     	<sql>
+     		select frr_now_img
+     		FROM   psr_face_recognition_record
+     	</sql>
+     	<where id="0">
+     		where frr_cus_number = ? AND
+     			  frr_record_id = ?
+     	</where>
+     </item>    
+     <item id="select_face_recognition_record" desc="查询人脸识别记录">
+    	 <const key="status">person_type</const>
+     	<sql>
+     	select	frr_cus_number,
+     		frr_person_id as id,
+     		pbd_police_name as plc,
+     		cbd_dvc_addrs as address,
+     		frr_person_type as status,
+     		to_char(frr_send_time,'yyyy-mm-dd  hh24:mi:ss') as rtime
+     	from
+	     	(
+	     		select distinct frr_cus_number,
+		              frr_record_id,
+		              frr_person_id,
+		              pbd_police_name,
+		              cbd_dvc_addrs,
+		              frr_person_type,
+		              frr_data_img,
+		              frr_now_img,
+		              frr_send_time,
+		              frr_camera_id
+		        FROM psr_face_recognition_record
+		          LEFT JOIN  plc_police_base_dtls
+		               ON(pbd_police_id = frr_person_id)
+		          LEFT JOIN cmr_camera_base_dtls
+					   ON(CBD_ID = FRR_CAMERA_ID)
+		       where  FRR_PERSON_TYPE = 1
+		 	UNION ALL
+			  select distinct frr_cus_number,
+		              frr_record_id,
+		              frr_person_id,
+		              pbd_prsnr_name,
+		              cbd_dvc_addrs,
+		              frr_person_type,
+		              frr_data_img,
+		              frr_now_img,
+		              frr_send_time,
+		              frr_camera_id
+			 FROM psr_face_recognition_record
+			   LEFT JOIN  psr_prisoner_base_dtls
+			         ON (pbd_other_id = frr_person_id)
+			   LEFT JOIN cmr_camera_base_dtls
+					 ON(CBD_ID = FRR_CAMERA_ID)
+			     where FRR_PERSON_TYPE = 0
+			     
+			  )
+			  WHERE frr_cus_number=:cus
+		 		AND frr_send_time BETWEEN TO_DATE(:day,'yyyy-mm-dd')-numtodsinterval(1,'second')  AND  TO_DATE(:day,'yyyy-mm-dd')+1
+     	</sql>
+     	<where id="0">
+     		AND
+				(:plc       IS NULL OR  frr_person_id=:plc)
+			AND
+				(:status    IS NULL OR  frr_person_type=:status)
+     	</where>
+     	<order id="0">
+			ORDER BY
+				FRR_SEND_TIME
+			DESC
+		</order>
+     </item>
+     <item id="select_face_by_orgid" desc="根据人脸识别人物查询">
+		<sql>
+			SELECT 
+				'1-'||odd_id        id,
+				'1-'||odd_parent_id pid,
+				odd_name            name,
+				'org.png'           icon,
+		        0					type
+			FROM sys_org_dept_dtls
+			
+			WHERE level # :level
+			START WITH odd_id=:org CONNECT BY PRIOR odd_id = odd_parent_id 
+			UNION ALL
+			SELECT 
+			    ''||pbd_police_id id,
+			    '1-'||pbd_drptmnt_id pid,
+			    pbd_police_name name,
+			    'user.png' icon,
+			    1 type
+			FROM 
+				plc_police_base_dtls
+			UNION ALL
+			SELECT 
+				    ''||pbd_other_id id,
+				    '1-'||pbd_prsn_area_id pid,
+				    pbd_prsnr_name name,
+				    'prisoner.png' icon,
+				    1 type
+				FROM 
+					psr_prisoner_base_dtls
+			UNION ALL
+			SELECT 
+				'1-'||odd_id  id,
+				'1-'||odd_parent_id pid,
+				odd_name name,
+				'org.png' icon,
+				0 type
+			FROM
+				sys_org_dept_dtls
+			START WITH   
+		      odd_parent_id=:org
+		     CONNECT by odd_id=odd_parent_id
+		 </sql>
+	</item>
+</sqlItem>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_video_storage_path_for_tree">
+		<sql>
+			SELECT vel_cus_number,
+			       vel_id,
+			       vel_event_id,
+			       vel_event_name,
+			       vel_storage_addr
+			  FROM cmr_video_storage_dtls
+		</sql>
+		<where id="0">
+			 WHERE vel_cus_number = ?
+		</where>
+	</item>
+</sqlItem>

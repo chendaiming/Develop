@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RFID测试</title>
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style type="text/css">
+	html, body {margin: 0; padding: 0; width: 100%; height: 100%;}
+	body * {font-size: 12px;}
+	div.row {margin: 10px 0 0 20px;}
+	input {padding: 10px; margin: 0 5px;}
+	input.btn {padding: 10px 35px;}
+</style>
+</head>
+<body>
+	<div style="position: absolute; top: 15%; left: 50%; width: 360px; margin-left: -180px;">
+		<div class="row"><span>机构编号：</span><input id="txtCusNumber" value="3"></div>
+		<div class="row"><span>发送频率：</span><input id="txtSleep" value="500"><span>单位：毫秒</span></div>
+		<div class="row">
+			<input class="btn" type="button" value="开始" onclick="testStart()">
+			<input class="btn" type="button" value="结束" onclick="testStop()">
+		</div>
+		<div class="row"><span id="spanMsg"></span></div>
+	</div>
+</body>
+
+<script type="text/javascript" src="../../../../libs/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../../../libs/ztree/js/jquery.ztree.all.min.js"></script>
+<script type="text/javascript">
+
+function testStart () {
+	ajaxReq('rfidTestCtrl/start', {
+		'cusNumber': $('#txtCusNumber').val(),
+		'sleep': $('#txtSleep').val()
+	}, function (data) {
+		$('#spanMsg').html(JSON.stringify(data));
+	});
+}
+
+function testStop () {
+	ajaxReq('rfidTestCtrl/stop', null, function (data) {
+		$('#spanMsg').html(JSON.stringify(data));
+	});
+}
+
+function ajaxReq (url, data, callback) {
+	$.ajax({
+		'url': '../../../../' + url,
+		'data': data,
+		'timeout': 60 * 1000,
+		'type': 'POST',
+		'dataType': "json",
+		'contentType': "application/x-www-form-urlencoded; charset=utf-8",
+		'success': function (response) {
+			callback(response);
+		},
+		'error': function (request, status, e) {
+			console.error('Ajax请求响应异常：request=' + JSON.stringify(request));
+			console.error('Ajax请求响应异常：status=' + JSON.stringify(status));
+			console.error('Ajax请求响应异常：e=' + JSON.stringify(e));
+			error && error(status, e);
+		}
+	});
+}
+
+</script>
+</html>

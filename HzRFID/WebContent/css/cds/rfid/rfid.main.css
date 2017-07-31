@@ -1,0 +1,31 @@
+@CHARSET "UTF-8";
+
+.label-rfid {z-index: 1;}
+.label-rfid:hover {z-index: 2;}
+.label-rfid.moving {z-index: 3;}
+.label-rfid.moving:hover {z-index: 4;}
+.label-rfid >span {text-shadow: 1px 0px 1px #111, -1px 0px 1px #111, 0 1px 1px #111, 0 -1px 1px #111;}
+.label-rfid.moving >span,
+.label-rfid:hover >span {padding: 0px 4px 1px 3px; background: rgba(12,34,48,0.95); border-radius: 2px; border: 1px solid #802727;}
+
+.label-detail {position: absolute;padding: 5px;background: rgba(12,34,48,0.95); box-shadow: 2px 2px 5px #000; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 3px; z-index: 9; display: none;}
+.label-detail >ul {list-style: none;}
+.label-detail >ul >li {padding: 2px 5px; font-size: .95em; text-shadow: 0 1px 1px #000; color:#bcf7ea; cursor: default;}
+
+
+.label-count {z-index: 4;}
+.label-count:hover {z-index: 9;}
+.label-count.update {z-index: 5;}
+.label-count.update .label-html {background: rgba(12,34,48,0.95); box-shadow: 0 0 5px 2px #802727}
+.label-count .label-html {width: 100px; height: 65px; padding: 5px; text-align: center; background: rgba(12,34,48,0.9); border-radius: 3px; border: 1px solid #FFF;box-shadow: 2px 2px 5px #000;}
+.label-count .label-html:hover {background: rgba(12,34,48,0.95); box-shadow: 0 0 5px 2px #802727;}
+.label-count .label-html.opacity {opacity: 0.6;}
+.label-count .label-html.opacity .count-name {color: #9e9b1e;}
+.label-count .label-html.opacity .count-now {color: #dedede;}
+.label-count .label-html .count-now {cursor: pointer;padding: 5px 0 0 0; text-shadow: 0px 0px 5px rgba(0, 255, 255, 0.8); font-size: .9em; }
+.label-count .label-html .count-now span.number {margin: 0 2px; color: #ffe200; text-decoration: underline; text-shadow: none; cursor: pointer;}
+.label-count .label-html .count-name {width: 90px; padding: 0 0 5px 0; border-bottom: 1px solid rgba(99, 99, 99, 0.7); text-overflow: ellipsis; white-space: nowrap; overflow: hidden; cursor: default; color: #fff900;}
+
+.label-count .label-num {position: absolute; top: 25px; right: 5px; opacity:1;}
+.label-count .label-num.plus {color: #00FF00; text-shadow: 0 0 5px #00FFFF;}
+.label-count .label-num.minus {color: #FF0000; text-shadow: 0 0 5px #FF0000;}

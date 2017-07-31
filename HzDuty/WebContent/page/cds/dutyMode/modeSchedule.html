@@ -1,0 +1,280 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<style>
+.table-bordered tbody tr td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+}
+.a_leftDiv{
+	width: 232px;
+	border: 1px solid #1f699e;
+	margin-left: 5px;
+	padding: 0px;
+}
+.a_leftDiv .input{
+	border: none;
+	border-bottom: 1px solid #1f699e;
+}
+.a_rightDiv{
+	border: 1px solid #1f699e;
+	margin-right: 5px;
+	padding-right: 0px;
+}
+.b_leftDiv{
+	padding: 0px;
+	margin: 0px;
+	width: 180px;
+}
+.b_leftDiv .input{
+	border: none;
+	border-bottom: 1px solid #1f699e;
+}
+.b_rightDiv{
+	padding: 0px;
+	margin: 0px;
+	overflow: auto;
+}
+.b_rightDiv table tr.tr_1{
+	font-weight: bold;
+}
+.b_rightDiv table tr td{
+	min-width: 120px;
+	height: 50px;
+	vertical-align: middle;
+}
+.b_rightDiv div.title{
+	position: absolute;
+	overflow: hidden;
+	background-color: #000;
+	z-index: 2;
+}
+.b_rightDiv div.head{
+	position: absolute;
+	overflow: hidden;
+	background-color: #000;
+	z-index: 1;
+}
+.b_rightDiv div.head table{
+	width: 100%;
+}
+.b_rightDiv div.head table td a{
+	font-size: 13px;
+	font-weight: normal;
+	color: #BFEFFF;
+	text-decoration: underline;
+}
+.b_rightDiv div.head table td a:hover{
+	color: #ADFF2F;
+}
+.b_rightDiv div.right{
+	position: absolute;
+	overflow: hidden;
+	background-color: #000;
+	margin-top: 103px;
+}
+.b_rightDiv div.content{
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	margin-top: 103px;
+}
+.b_rightDiv div.content table{
+	width: 100%;
+}
+.b_rightDiv div.content table .name{
+	max-width: 87px;
+	width: 75%;
+	height: 22px;
+	border: 1px solid rgba(245,213,86,0.8);
+	margin: 5px auto;
+	border-radius: 5px;
+	text-align: center;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	-o-text-overflow:ellipsis;
+	overflow: hidden;
+}
+.b_rightDiv div.content table .name:hover{
+	cursor: pointer;
+	background-color: rgba(255,255,255,0.3);
+}
+.b_rightDiv div.content table .isMoveUp{
+	background-color: #000;
+	opacity: 0.5;
+}
+.b_rightDiv div.content table .rightClick{
+	background-color: rgba(255,255,255,0.3);
+}
+.b_rightDiv div.content table .top .name{
+	border: 1px solid rgba(120,120,120,0.8);
+}
+.b_rightDiv div.content table .mid .name{
+	border: 1px solid rgba(57,219,76,0.8);
+}
+#info_panel table .txt{
+	font-weight: bold;
+}
+#info_panel table{
+	margin-bottom: 0px;
+}
+</style>
+<div class="vbox box-con" id="scheduleManage">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox a_leftDiv">
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree_sd" placeholder="输入关键字搜索" style="width: 100%;">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="scheduleTree" class="ztree"></ul>	    	
+		   		</div>
+			</div>
+		</div>
+		<div class="hz-col-1 right-con vbox a_rightDiv">
+			<div class="hbox hz-col-1">
+				<div class="left-con vbox b_leftDiv">
+					<div class="hz-col-1 vbox">
+						<div class="input icon">
+						  	<input v-model="searchTree_dp" placeholder="输入关键字搜索">
+						  	<span class="find"></span>
+					    </div>
+					    <div class="hz-col-1" style="overflow:auto">
+							<ul id="deptPoliceTree" class="ztree"></ul>	    	
+				   		</div>
+					</div>
+				</div>
+				<div class="hz-col-1 vbox b_rightDiv" style="overflow: hidden;">
+					<form class="form-horizontal" role="form" id="dateForm" style="height: 48px;">
+						<div class="col-xs-12" style="margin-top: 5px;">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">开始日期</label>
+								<div class="col-sm-3"><hz-date tip="开始日期" :val.sync="schedule.scd_start_date"/></div>
+								<label class="col-sm-2 control-label">结束日期</label>
+								<div class="col-sm-3"><hz-date tip="结束日期" :val.sync="schedule.scd_end_date"/></div>
+								<div class="col-sm-2" style="padding-top: 3px;">
+									<a class="hbtn btn_primary btn_large save"><i class="btn_icon icon_save"></i><span>确定</span></a>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div class="vbox" style="position: relative;overflow: hidden;">
+						<div v-cloak v-if="orderList.length==0" class="empty" style="margin-top: 10%;">请选择模板或排班</div>
+						<div v-cloak v-if="orderList.length>0" class="title">
+							<table class="table-bordered" style="position: relative;">
+								<tr class="tr_1">
+									<td>班次</td>
+								</tr>
+								<tr class="tr_1">
+									<td>岗位</td>
+								</tr>
+							</table>
+						</div>
+						<div v-cloak v-if="orderList.length>0" class="head">
+			    			<table class="table-bordered" style="position: relative;">
+								<tr class="tr_1">
+									<td v-cloak v-if="orderList.length>0">班次</td>
+									<td v-cloak v-if="orderList.length>0" v-for="order in orderList" colspan="{{order.col}}">
+										{{order.name}}<br>({{order.start_time}} ~ {{order.end_time}})<br>
+										<a href="javascript:void(0);" @click="cloneOrder(order)">复制</a>
+									</td>
+								</tr>
+								<tr class="tr_1">
+									<td v-cloak v-if="jobList.length>0">岗位</td>
+									<td v-cloak v-if="jobList.length>0" v-for="job in jobList">
+										{{job.name}}<br>
+										<a href="javascript:void(0);" @click="cloneJob(job)">复制</a>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div v-cloak v-if="dateList.length>0" class="right">
+							<table class="table-bordered">
+								<tr v-cloak v-if="dateList.length>0" v-for="date in dateList">
+									<td class="{{date.className}}" date="{{date.name}}">{{date.name}}<br><span style="font-size: 12px;">({{date.week}})</span></td>
+								</tr>
+							</table>
+						</div>
+						<div class="content">
+							<table class="table-bordered">
+								<tr v-cloak v-if="dateList.length>0" v-for="date in dateList">
+									<td class="{{date.className}}" date="{{date.name}}">{{date.name}}<br><span style="font-size: 12px;">({{date.week}})</span></td>
+									<td v-for="people in date.peopleList" class="{{people.className}} peopleTd" orderId="{{people.orderId}}" jobId="{{people.jobId}}">
+										<div v-cloak v-if="people.flag == 2" v-for="list in people.list" class="name" name="{{list.name}}" value="{{list.id}}">
+											{{list.name}}
+										</div>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="bottom" style="margin-right: 0px;">
+				<a class="hbtn btn_primary btn_large" @click="openImportPanel()"><i class="btn_icon icon_upload"></i><span>导入</span></a>
+				<a class="hbtn btn_primary btn_large" @click="exportExcel()"><i class="btn_icon icon_download"></i><span>导出</span></a>		  
+				<div class="buttons">
+					<a class="hbtn btn_primary btn_large save"><i class="btn_icon icon_save"></i><span>保存</span></a>
+					<a class="hbtn btn_primary btn_large del"><i class="btn_icon icon_del"></i><span>删除</span></a>		  
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="vbox hz-col-1" id="info_panel" style="display:none;"><!-- 值班人员信息 -->
+		<div class="hz-col-7">
+			<form class="form-horizontal">
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-3" rowspan="6" style="padding: 1px;">
+							<div id="imageview" style="width: 100%;height: 182px;">
+								<img src="" style="width: 100%;height: 100%;">
+							</div>
+						</td>								
+					</tr>
+					<tr>
+						<td class="col-xs-2 txt">警号</td>
+						<td class="col-xs-5" v-text="police.pbd_police_id"></td>								
+					</tr>
+					<tr>
+						<td class="col-xs-2 txt">姓名</td>
+						<td class="col-xs-5" v-text="police.name"></td>							
+					</tr>
+					<tr>
+						<td class="col-xs-2 txt">职务</td>
+						<td class="col-xs-5" v-text="police.pbd_pstn_name"></td>								
+					</tr>
+					<tr>
+						<td class="col-xs-2 txt">所属部门</td>
+						<td class="col-xs-5" v-text="police.pbd_drptmnt"></td>								
+					</tr>
+					<tr>
+						<td class="col-xs-2 txt">对讲呼号</td>
+						<td class="col-xs-5" v-text="police.pbd_talk_num"></td>								
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<div class="vbox hz-col-1" id="import_panel" style="display:none;"><!-- 导入 -->
+		<form class="form-horizontal" role="form" id="importForm" style="height: 48px;">
+			<div class="col-xs-12" style="margin-top: 5px;">
+				<div class="form-group">
+					<div class="col-sm-12">
+						<input type="file" id="file" accept="application/vnd.ms-excel"/>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="hz-col-2">
+		    <a class="hbtn btn_primary btn_mini pull-right" @click="importExcel()"><i class="btn_icon icon_save"></i><span>确定</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyMode/modeSchedule"]);
+</script>

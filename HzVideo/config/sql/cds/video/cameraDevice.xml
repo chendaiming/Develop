@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_device_type_drop" desc="预案类型下拉框">
+		<sql>
+			SELECT 
+				dgt_grp_type_id AS id,
+				dgt_grp_type_name AS name,
+				dgt_parent_id  AS pid
+			FROM com_dvc_grp_type 
+		</sql>
+		<where id="0">
+			WHERE dgt_cus_number =?
+			ORDER BY dgt_seq
+		</where>
+    </item>
+    <item id="select_org_dept_byoddid" desc="根据登录用户所属部门查询权限区域">
+    	<sql>
+    		SELECT DISTINCT
+		      abd.abd_area_id as id,
+		      abd.abd_seq,
+		      abd.abd_area_name as name,
+		      abd.abd_parent_id as pid
+		   FROM com_org_area_rltn oar
+		   INNER JOIN  (
+		         SELECT odd_id FROM sys_org_dept_dtls
+		         START WITH odd_id = ? 
+		         CONNECT BY PRIOR odd_id = odd_parent_id
+		   ) odd ON oar.oar_dept_id = odd.odd_id
+		   INNER JOIN com_area_base_dtls abd ON oar.oar_area_id = abd.abd_area_id
+    	</sql>
+	   	<order id="0">
+			ORDER BY abd_seq,abd_area_id
+		</order>
+    </item>
+    <item id="select_camera_dept" desc="根据登录用户所属部门查询摄像机">
+    	<const key="icon">CAMERA_ICON</const>
+		<const key="cbd_stts_indc_name">CAMERA_STATUS</const>
+    	<sql>
+    		  SELECT 
+			    cbd.cbd_id as id,
+			    cbd.cbd_name as name,
+			    cbd.cbd_area_id as pid,
+			    cbd.cbd_type,
+			   	cbd.cbd_type AS icon
+			  FROM cmr_camera_base_dtls cbd
+			  INNER JOIN (
+			     SELECT DISTINCT
+			        abd.abd_area_id 
+			     FROM com_org_area_rltn oar
+			     INNER JOIN  (
+			           SELECT odd_id FROM sys_org_dept_dtls
+			           START WITH odd_id = ? 
+			           CONNECT BY PRIOR odd_id = odd_parent_id
+			     ) odd ON oar.oar_dept_id = odd.odd_id
+			     INNER JOIN com_area_base_dtls abd ON oar.oar_area_id = abd.abd_area_id
+			  ) abd ON abd.abd_area_id = cbd.cbd_area_id
+			  WHERE cbd.cbd_id not in  (
+			    SELECT das_dvc_id FROM com_dvc_auth_set  WHERE das_user_id = ? AND das_dvc_type = 1
+			  )
+    	</sql>
+    	<where id="0">
+    		   AND abd.abd_area_id = ?
+    	</where>
+    	<order id="0">
+			 ORDER BY cbd.cbd_seq
+    	</order>
+    </item>
+    <item id="select_camera_area" desc="根据登录用户所属区域查询摄像机">
+    	<const key="icon">CAMERA_ICON</const>
+		<const key="cbd_stts_indc_name">CAMERA_STATUS</const>
+    	<sql>
+    		  SELECT 
+			    cbd.cbd_id as id,
+			    cbd.cbd_name as name,
+			    cbd.cbd_area_id as pid,
+			    cbd.cbd_type,
+			   	cbd.cbd_type AS icon
+			  FROM cmr_camera_base_dtls cbd
+			  INNER JOIN com_area_base_dtls abd ON abd.abd_area_id = cbd.cbd_area_id
+			  WHERE cbd.cbd_id not in  (
+			    SELECT das_dvc_id FROM com_dvc_auth_set  WHERE das_user_id = :userId AND das_dvc_type = 1
+			  )
+    	</sql>
+    	<where id="0">
+   		      AND cbd.cbd_area_id = :areaId
+   		      ORDER BY cbd.cbd_seq
+    	</where>
+    </item>
+	<item id="select_org_dept" desc="根据机构号查询所有部门">
+		<sql>
+			SELECT 
+				odd_id AS id,
+				odd_name AS name,
+				odd_parent_id  AS pid
+			FROM sys_org_dept_dtls 
+		</sql>
+		<where id="0">
+			START WITH odd_id= ? and odd_use = 1 
+			CONNECT BY PRIOR odd_id=odd_parent_id
+		</where>
+		<where id="1">
+			WHERE odd_use = 1 AND odd_data_auth  = 1 
+		</where>
+		<where id="2">
+			WHERE odd_use = 1 AND (odd_data_auth  = 1 OR odd_data_auth  = 2)
+		</where>
+		<order id="0">
+			ORDER BY odd_seq
+		</order>
+    </item>
+	<item id="select_video_area_tree" desc="视频监控模块 区域树的查询">
+		<sql>
+			SELECT abd.abd_cus_number,
+			       abd.abd_area_id AS id,
+			       abd.abd_area_name AS name,
+			       abd.abd_parent_id AS pid,
+			       '-1'  type
+			FROM com_area_base_dtls abd
+		</sql>
+		<where id="0">
+			WHERE abd.abd_cus_number=?
+		</where>
+		<order id="0">
+			ORDER BY abd.abd_seq		
+		</order>
+    </item>
+    <item id="select_province_include_camera_area_tree" desc="只查询包含摄像机设备的区域 树">
+    	<sql>
+    		SELECT DISTINCT abd_area_id AS id,
+			  	   abd_area_name AS name,
+			       abd_parent_id AS pid
+			FROM com_area_base_dtls 
+			START WITH abd_area_id IN (
+			    SELECT cbd_area_id FROM cmr_camera_base_dtls 
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+    	</sql>
+    </item>
+    <item id="select_include_camera_area_tree" desc="只查询包含摄像机设备的区域 树">
+    	<sql>
+    		SELECT DISTINCT abd_area_id AS id,
+			  	   abd_area_name AS name,
+			       abd_parent_id AS pid,
+			       abd_cus_number
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = ? AND abd_area_id IN (
+			    SELECT cbd_area_id FROM cmr_camera_base_dtls 
+			    WHERE cbd_cus_number = ? 
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+    	</sql>
+    </item>
+	<item id="select_camera_tree">
+		<const key="icon">CAMERA_ICON</const>
+		<const key="cbd_stts_indc_name">CAMERA_STATUS</const>
+		<sql>
+			SELECT 
+			   cbd.cbd_cus_number,
+			   cbd.cbd_id AS id,
+			   cbd.cbd_name AS name,
+			   cbd.cbd_area_id AS pid,
+			   cbd.cbd_other_id,
+			   cbd.cbd_type,
+			   cbd.cbd_type AS icon,
+			   cbd.cbd_brand,
+			   cbd.cbd_ip_addrs,
+			   cbd.cbd_dept_id,
+			   cbd.cbd_area_id,
+			   cbd.cbd_dvc_addrs,
+			   cbd.cbd_stts_indc,
+			   cbd.cbd_stts_indc AS cbd_stts_indc_name,
+			   cbd.cbd_stream_type,
+			   cbd.cbd_playnow_type,
+			   cbd.cbd_playback_type,
+			   cbd.cbd_seq,
+			   cbd.cbd_crte_time,
+			   cbd.cbd_crte_user_id,
+			   cbd.cbd_updt_time,
+			   cbd.cbd_updt_user_id,
+			   odd.odd_name AS cbd_dept_name,
+			   abd.abd_area_name AS cbd_area_name
+			FROM cmr_camera_base_dtls cbd
+			LEFT JOIN sys_org_dept_dtls odd ON odd.odd_id = cbd.cbd_dept_id
+			LEFT JOIN com_area_base_dtls abd ON abd.abd_area_id = cbd.cbd_area_id
+		</sql>
+		<where id="0">
+			WHERE cbd.cbd_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE cbd.cbd_id = ? and cbd.cbd_cus_number = ?
+		</where>
+		<where id="2">
+			WHERE cbd.cbd_cus_number = ?
+			  AND cbd.cbd_area_id = ?
+		</where>
+		<where id="3">
+			WHERE cbd.cbd_area_id = ?
+		</where>
+		<where id="4">
+			WHERE cbd.cbd_cus_number = ?
+			AND cbd.cbd_area_id in(
+			SELECT abd_area_id
+			FROM com_area_base_dtls
+			START WITH abd_cus_number = ?
+			AND abd_area_id = ?
+			CONNECT BY PRIOR abd_area_id = abd_parent_id)			
+		</where>
+		<order id="0">
+			ORDER BY cbd.cbd_seq
+		</order>
+	</item>
+    <item id="update_camera" desc="更新摄像机设备信息">
+    	<sql>
+    	UPDATE cmr_camera_base_dtls SET
+    		cbd_cus_number=:cbd_cus_number,
+    		cbd_other_id=:cbd_other_id,
+    		cbd_name=:name,
+    		cbd_type=:cbd_type,
+    		cbd_brand=:cbd_brand,
+    		cbd_ip_addrs=:cbd_ip_addrs,
+    		cbd_dept_id=:cbd_dept_id,
+    		cbd_area_id=:cbd_area_id,
+    		cbd_dvc_addrs=:cbd_dvc_addrs,
+    		cbd_stts_indc=:cbd_stts_indc,
+    		cbd_stream_type=:cbd_stream_type,
+    		cbd_playnow_type=:cbd_playnow_type,
+    		cbd_playback_type=:cbd_playback_type,
+    		cbd_updt_time=SYSDATE,
+    		cbd_updt_user_id=:cbd_updt_user_id
+    	WHERE cbd_id=:id
+    	</sql>
+    </item>
+    <item id="insert_camera" desc="新增摄像机设备">
+    	<seq>cmr_camera_base_dtls@id@cbd_id</seq>
+    	<sql>
+    	INSERT INTO cmr_camera_base_dtls(
+    		cbd_cus_number,
+    		cbd_id,
+    		cbd_other_id, 
+    		cbd_name,
+    		cbd_type,
+    		cbd_brand,
+    		cbd_ip_addrs,
+    		cbd_dept_id,
+    		cbd_area_id,
+    		cbd_stts_indc,
+    		cbd_stream_type,
+    		cbd_dvc_addrs,
+    		cbd_playnow_type,
+    		cbd_playback_type,
+    		cbd_crte_time,
+    		cbd_crte_user_id,
+    		cbd_updt_time,
+    		cbd_updt_user_id
+    	) VALUES (
+    		:cbd_cus_number,
+    		:id,
+    		:cbd_other_id,
+    		:name,
+    		:cbd_type,
+    		:cbd_brand,
+    		:cbd_ip_addrs,
+    		:cbd_dept_id,
+    		:cbd_area_id,
+    		:cbd_stts_indc,
+    		:cbd_stream_type,
+    		:cbd_dvc_addrs,
+    		:cbd_playnow_type,
+    		:cbd_playback_type,
+    		SYSDATE,
+    		:cbd_crte_user_id,
+    		SYSDATE,
+    		:cbd_crte_user_id
+    	)
+    	</sql>
+    </item>
+    <item id="del_camera" desc="删除摄像机设备">
+    	<sql>
+	    	DELETE FROM  cmr_camera_base_dtls WHERE cbd_id = ?
+    	</sql>
+    </item>
+    <item id="select_cameravideo">
+    	<sql>
+    		SELECT 
+    			cvr_cus_number,
+	    		cvr_camera_id,
+	    		cvr_device_id,
+	    		cvr_chnnl_code
+	    	FROM cmr_camera_video_rltn
+	    	WHERE cvr_cus_number=? AND cvr_camera_id=?
+    	</sql>
+    </item>
+    <item id="insert_camera_video" desc="新增摄像机关联设备表">
+    	<sql>
+	    	INSERT INTO cmr_camera_video_rltn (
+	    		cvr_cus_number,
+	    		cvr_camera_id,
+	    		cvr_device_id,
+	    		cvr_chnnl_code
+	    	) VALUES (
+	    		:cvr_cus_number,
+	    		:cvr_camera_id,
+	    		:cvr_device_id,
+	    		:cvr_chnnl_code
+	    	)
+    	</sql>
+    </item>
+    <item id="del_camera_video" desc="删除所有摄像机关联设备">
+    	<sql>
+	    	DELETE FROM  cmr_camera_video_rltn WHERE cvr_cus_number=:cvr_cus_number AND cvr_camera_id=:cvr_camera_id
+    	</sql>
+    </item>
+    <item id="del_camera_video_one" desc="删除单独一个摄像机关联设备">
+    	<sql>
+	    	DELETE FROM  cmr_camera_video_rltn 
+	    	WHERE cvr_cus_number=:cvr_cus_number AND cvr_device_id=:cvr_device_id AND cvr_camera_id=:cvr_camera_id
+    	</sql>
+    </item>
+	<item id="select_camera_id_by_area_id" desc="根据区域id查询摄像机id">
+		<sql>
+			select cbd_id from CMR_CAMERA_BASE_DTLS t where cbd_area_id=:area_id
+		</sql>
+	</item>
+</sqlItem>

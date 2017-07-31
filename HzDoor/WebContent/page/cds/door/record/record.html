@@ -1,0 +1,217 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<style>
+.item{
+	margin-top:10px;
+}
+.item>label{
+	width: 70px; text-align: right;
+}
+.item>span{
+	margin-left: 10px;
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:32%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 10;
+    border-radius: 15px;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+.combox_panel{
+	max-height:90px;
+}
+.condition>input:focus {outline: none;} 
+ul.cardlist{
+    position: absolute;
+    width: 100%;
+    overflow:auto;
+    top: 54px;
+    bottom: 0px;
+}
+.conditionslid{
+	max-height:180px ;
+}
+.hz-col-5.line::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 100%;
+    border-style: dotted;
+    border: 1px dashed #699ead;
+    margin-left: -3px;
+    margin-top:44px;
+}
+div.line>.dateline::before{
+	border-style: none;
+}
+.intoLable {
+	width:50px !important;
+}
+
+#divExcel{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+}
+#divExcel >div{
+	position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 80%;
+    height: 80%;
+    background-color: #1a3865;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.tab-Excel{
+	height: 90%;
+    width: 100%;
+    overflow-y: auto;
+    
+}
+#tableExcel{
+     width: 100%;
+}
+ table#tableExcel td,table#tableExcel th{
+    margin: 0;
+    padding: 0;
+    width: 25%;
+    text-align: center;
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    border-right: 1px solid #4077ae;
+    border-bottom: 1px solid #4077ae;
+}
+table#tableExcel th{
+    height: 40px;
+    line-height: 40px
+}
+table#tableExcel .td-right{
+	border-right: 0;
+}
+.button-tab{
+    height: 10%;
+    width: 100%;
+    text-align: right;
+    border-top: 1px solid #4077ae;
+}
+.button-tab >button{
+	width:120px;
+	margin-right:40px;
+	margin-top:1%;
+	height:30px;
+	line-height:30px;
+	text-align:center;
+	border: 1px solid #4077ae;
+}
+.button-tab >button:hover{
+	background-color:#4077ae;
+}
+</style>
+<div class="vbox box-con" id="record" >
+	<div class="hbox hz-col-1" >
+		<div class="left-con hz-col-2 vbox">
+				<div class="hz-col-1" style="margin-right:6px;">
+				  		<hz-date 
+					      		tip="选择查询日期" 
+					      		:val.sync="today"
+					      	 	format=Y-m-d
+					      	/>
+			    </div>
+				<div class="hz-col-9 vbox" style="overflow:auto;color:rgb(255, 255, 255);">
+					<div class="hz-col-1 item" v-cloak >
+						<label class="intoLable" style="color:green;">进：{{enter}}</label>
+						<label class="intoLable" style="color:red;">出：{{out}}</label>
+					</div>
+					<div class="hz-col-4" id="tableshow"></div>
+					<div class="hz-col-5"></div>
+				</div>
+		</div>
+		<div class="hz-col-5 line" style="overflow:hidden;position:relative;" >
+			<div class="condition" style="right:67%;"><input placeholder="刷卡地点搜索" class="find" id="address" v-model="address" style="background-image:url(../../../../css/images/address.png)"></div>
+			<div class="condition" style="right:34%"><input placeholder="刷卡区域搜索" class="find" id="dep" v-model="area" style="background-image:url(../../../../css/images/area.png)"></div>
+			<div class="condition" style="right:1%"><input placeholder="刷卡人搜索" class="find" id="finda" v-model="plc" style="background-image:url(../../../../css/images/plc.png)"></div>
+			<div  v-if="records.length==0" class="empty" style="padding-top:44px">暂无记录</div>
+			<ul v-cloak class="dateline cardlist" id="scroll">
+				<li  v-for="record in records ">
+					<div>
+						<p class="item"><label >人物:</label><span >{{record.plc}}</span></p>
+						<p class="item"><label >部门:</label><span >{{record.scr_dept_name}}</span></p>
+						<p class="item"><label >地点:</label><span >{{record.name}}</span></p>
+					</div>
+					<span></span>
+					<a>{{record.time}}</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div id='divExcel' style='display:none;'>
+		<div>
+			<div class='tab-Excel'>
+				<table id='tableExcel'>
+				 <tr>  
+				 	<th colspan="3" align="center">刷卡人</th>  
+                    <th colspan="3" align="center">刷卡时间</th>  
+                    <th colspan="3" align="center">刷卡地点</th> 
+                    <th class='td-right' colspan="3" align="center">刷卡状态</th>   
+			    </tr>  
+			    <tr v-for="record in records ">  
+	 				<td colspan="3" align="center" v-text='record.plc'></td>  
+			        <td colspan="3" align="center" v-text='record.time'></td>  
+			        <td colspan="3" align="center" v-text='record.name'></td>  
+			        <td class='td-right' colspan="3" align="center" v-text='record.scr_inout_flag==0?"出":"进"'></td>   
+			    </tr> 
+			</table>
+			</div>
+			<div class='button-tab'>
+				<button  @click='exportClick(2)'>取消导出</button>
+				<button  @click='exportClick(1)'>确定导出</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons" style="float:left" @click='exportClick(0)'>
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>导出</span></a>
+		</div>
+		<div class="buttons" @click='reset'>
+				<a  class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+		<div class="buttons"  @click="query">
+				<a  class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>查询</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script> 
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/door/record/record"]);
+</script>

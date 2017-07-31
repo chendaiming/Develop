@@ -1,0 +1,164 @@
+<style>
+section.notice{
+	position:absolute;
+	width:300px;
+	bottom:5%;
+	right:-300px;
+	transition:right 0.5s linear 0.5s;
+}
+
+section.noticeH{
+	right:50px !important;
+}
+section.notice::before{
+    content: '';
+    position: absolute;
+    border: 2px solid #062c57;
+    right: -194px;
+    bottom: -10px;
+    width: 344px;
+}
+section.notice::after{
+	content:'';
+	position:absolute;
+	bottom:-10px;
+	height:15px;
+	border:2px solid #062c57;
+	left:50%;
+	margin-left:-1px;
+}
+section.notice p>span{
+	width:30%;
+	text-align:center;
+    display: inline-flex;
+    padding-left:15px;
+}
+section.notice p>label{
+	width:100%;
+	text-align:right;
+	cursor:pointer;
+	color:#55d5f6;
+	padding:5px 20px 0 0;
+    border-top: 1px solid #a0a6b9;
+    margin-top:5px;
+}
+section.notice p>label:hover{
+	color:#4c9db2;
+}
+section.notice p>span:last-child{
+	text-align:left;
+	width:70%;
+	padding:0px;
+	cursor:pointer;
+	color:red;
+}
+section.notice li{
+	margin:5px;
+	background:#0f253f;
+	padding:10px 0;
+	border-radius:10px;
+}
+section.notice>div.detail{
+    position: fixed;
+    width: 500px;
+    height: 200px;
+    background: #0f253f;
+    top: 10%;
+    left: 50%;
+    margin-left: -250px;
+    border-radius: 10px;
+    display:none;
+}
+</style>
+<div style="overflow:hidden;" >
+	<ul  style="overflow:auto;margin-right:-4px;max-height:257px;transition:height 0.5s;"><!-- 提示列表 -->
+		<li v-for="t in notice">
+			<div>
+				<p><span>待办事项:</span><span @click="detail(t)">视频巡视-{{t.name}}</span></p>
+			</div>
+		</li>
+	</ul>
+</div>
+<div   id="detailCameras" class="vbox box-con" style="display:none;width:100%;">
+	<style>
+		div.detail span{
+		    background-color:#936464;
+		    text-align: center;
+		    margin: 10px;
+		    border-radius: 10px;
+		    padding: 10px 30px 10px 10px;
+		    cursor:pointer;
+	        background-image: url(css/image/eye-close.png);
+		    background-repeat: no-repeat;
+	        background-position: 98% 50%;
+            width: 30%;
+		}
+		div.detail span:hover{
+			background-color:#9e9292;
+		}
+		div.detail span.play{
+			background-color:#317257;
+			cursor:not-allowed;
+			background-image: url(css/image/eye-open.png);
+		}
+		div.detail{
+			overflow:auto;
+		    padding: 10px 20px;
+			position:relative;
+		}
+		p.tips{
+			text-align:right;
+			color:#07f607;
+			width:50%;
+			float:left;
+		}
+		p.tips>label{
+			float:left;
+			height:19px;
+		    border-radius: 100%;
+		    color:#fff;
+		    margin-left:15px;
+		}
+		#detailCameras div.con{
+		    width: 94%;
+		    float: right;
+		    height: 100%;
+		    position: relative;
+		    overflow: auto;
+		    background: rgba(234, 157, 171, 0.29);
+		    border-radius: 10px;
+		}
+		#detailCameras div.con textarea{
+	        height: 95.7%;
+		    width: 100%;
+		    outline: none;
+		    text-align: left;
+		    padding:10px 0 0 10px;
+		}
+	</style>
+	<div class="detail hz-col-1" >
+		<div style="height:80%">
+			<label>摄像机:</label>
+			<div class="con">
+				<span v-for="c in cameras"  @click="play(c,$event)">{{c['name']}}</span>
+			</div>
+		</div>
+		<div style="height: 17%;margin-top: 1%;">
+			<label>备&nbsp;注：</label>
+			<div class="con">
+				<textarea style="height:90%;width:100%;" placeholder="请填写备注" v-model="mark"></textarea>
+			</div>
+		</div>
+	</div>
+	<div class="bottom">
+		<p class="tips">
+			<label>已查看：</label><label style="background:#317257;width:19px;"></label>
+			<label>未查看：</label><label style="background:#936464;width:19px;"></label>
+			提示：需手动点击查看视频
+		</p>
+		<div class="buttons">
+			<a  @click="sub($event);" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>提交</span></a>
+		</div>
+	</div>
+</div>
+

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_door_base_dtls">
+		<sql>
+			SELECT dbd_cus_number,
+			       dbd_id,
+			       dbd_other_id,
+			       dbd_ctrl_id,
+			       dbd_ctrl_chl,
+			       dbd_name,
+			       dbd_type,
+			       dbd_brand,
+			       dbd_dept_id,
+			       odd_name,
+			       dbd_area_id,
+			       abd_area_name,
+			       dbd_dvc_addrs,
+			       dbd_stts_indc,
+			       dbd_dvc_stts,
+			       dbd_seq,
+			       dbd_crte_time,
+			       dbd_crte_user_id,
+			       dbd_updt_time,
+			       dbd_updt_user_id
+			  FROM dor_door_base_dtls dbd
+			  LEFT JOIN sys_org_dept_dtls odd
+			    ON (dbd.dbd_dept_id = odd.odd_id)
+			  LEFT JOIN com_area_base_dtls abd
+			    ON (dbd_area_id = abd.abd_area_id)
+		</sql>
+		<where id="1">
+			WHERE dbd_cus_number = ?
+			   AND dbd_id = ?
+		</where>
+		<where id="2">
+			WHERE dbd_cus_number = ?
+			   AND dbd_other_id = ?
+		</where>
+		<where id="3">
+			WHERE dbd_cus_number = ?
+		</where>
+	</item>
+	<item id="select_door_control_device">
+		<sql>
+			SELECT dcd_cus_number,
+			       dcd_id,
+			       dcd_name,
+			       dcd_other_id,
+			       dcd_ip_addrs,
+			       dcd_port,
+			       dcd_user_name,
+			       dcd_user_password,
+			       dcd_dept_id,
+			       dcd_seq,
+			       dcd_area_id,
+			       dcd_brand,
+			       dcd_target_type
+			  FROM dor_door_control_device
+		</sql>
+		<where id="1">
+			 WHERE dcd_cus_number = ?
+			   AND dbd_id = ?
+		</where>
+		<where id="2">
+			 WHERE dcd_cus_number = ?
+		</where>	
+	</item>
+	<item id="select_door_card_dtls">
+		<sql>
+			SELECT dcd_cus_number,
+			       dcd_door_card_id,
+			       dcd_surface_id,
+			       dcd_chip_id,
+			       dcd_people_id,
+			       pbd_police_name,
+			       dcd_people_type,
+			       dcd_use,
+			       dcd_seq,
+			       dcd_crte_time,
+			       dcd_crte_user_id
+			  FROM dor_door_card_dtls
+			  LEFT JOIN plc_police_base_dtls
+			    ON (dcd_cus_number = pbd_cus_number AND dcd_people_id = pbd_police_id)
+		</sql>
+		<where id="1">
+			 WHERE dcd_cus_number = ?
+			   AND dcd_door_card_id = ?
+		</where>
+	</item>
+</sqlItem>

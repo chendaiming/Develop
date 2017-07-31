@@ -1,0 +1,155 @@
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+
+<style>
+	li{
+		position:relative;
+		width:25%;
+		float:left;
+		background:url('../../../css/images/route.png');
+	    background-repeat: no-repeat;
+    	background-position: center;
+	}
+	li>div{
+		margin:10px;
+		height:46px;
+		margin-top:15px;
+		border:1px solid #4077ae;
+		border-radius:6px;
+		text-align:center;
+		padding-top:38px;
+		padding-bottom:8px;
+		font-size:12px;
+		color:#eee;
+		cursor:pointer;
+	    background: rgba(22, 29, 26, 0.64);
+	}
+	li>div:hover{
+		background-color:rgba(64, 119, 174, 0.4);
+	}
+	li span{
+    	position: relative;
+	}
+	.select>div::before{
+		content:'';
+   		position: absolute;
+    	right: 10px;
+        top: 30px;
+	    width:24px;
+	    height:24px;
+	    background:url('../../../css/images/selectm.png')no-repeat;
+	}
+</style>
+<section class="selfSeach vbox h" id="selfSearch">
+		<style>
+		div.point>section.selfSeach{
+		    height: 70%;
+		    background: rgba(35, 40, 47, 0.91);
+		    position: absolute;
+		    left: 102%;
+		    top: 0px;
+		    border-radius: 10px;
+		       transform: rotateY(-180deg);
+		       overflow: hidden;
+		}
+		.h{
+			 display:none;
+		}
+		div.transa.mapopr{
+			overflow:hidden !important;
+		}
+		div.point{
+			overflow:initial !important;
+		}
+		a.speedup,a.speeddown{
+			float:right;
+			left:50%;
+			width:30px;
+			height:30px;
+			border:none;
+			background-image:url(css/image/speedup.png);
+		    background-position: center;
+		}
+		p.speedcontrol a:hover,p.speedcontrol a:focus{
+			text-decoration: none;
+		    background-color: rgba(0, 0, 0, 0);
+		}
+		a.speeddown{
+			background-image:url(css/image/speeddown.png);
+			float:left;
+		}
+		p.speedcontrol input{
+			width:45px;
+			height:30px;
+			border-radius:100%;
+			background:#658ca6;
+			text-align:center;
+		}
+		p.speedcontrol input.stoptime{
+			right:-100px;
+			position:absolute;
+			background:#9a6aca;
+		}
+		p.speedcontrol input:disabled{
+			background:grey;
+		}
+		p.speedcontrol{
+			position:absolute;
+			top:0px;
+			left:50%;
+			width:160px;
+			height:42px;
+			text-align:center;
+			padding:6px 0;
+			margin-left:-80px;
+		}
+		div.mapopr>p.speedcontrol{
+			display:block !important;
+		}
+		div.transa>p.speedcontrol{
+			transform: rotateY(-180deg);
+		}
+		div.flip> div.layui-layer-content{
+			height:100%;
+			overflow:hidden;
+		}
+	</style>
+</section>
+<div id="modelcontainer">
+	<div class="vbox box-con">
+		<div class="vbox hz-col-1">
+			<div class="hz-col-8 vbox" style="overflow-y: scroll;">
+				<ul  v-cloak >
+					<div v-if="patrol.length==0" class="empty">暂无记录</div>
+					<li v-for="c in patrol"  data-route="{{c.id}}"  data-speed="{{c.speed}}"  data-height="{{c.height}}" data-radius="{{c.radius}}">
+						<div>
+							<span>{{c.name}}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="bottom" style="height:30px">
+			<div class="buttons" id="oprs">
+				<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_save"></i><span>开始巡视</span></a>		  
+			</div>
+		</div> 
+	</div>
+	<div id="mainopr"  style="display:none;">
+		<a class="hbtn btn_primary btn_mini pause" @click="stop($event)" style="display:none;" title="暂停/继续"></a>
+		<a class="hbtn btn_primary btn_mini over" title="退出巡视" @click="over($event)" style="right:0px;display:none;"></a>
+		<ul style="display:none;"></ul>
+		<!-- 后加按钮2017-06-28 -->
+		<p class="speedcontrol" style="display:none;">
+			<a class="hbtn btn_primary btn_mini speeddown" title="减速，长按连续减速" @mousedown="updateSpeed(-1)" @mouseup="restorePatrol()"></a>
+			<input :disabled="view.disabled" v-model="view.speed" title="巡视速度，最大速度500，最小1"/>
+			<input :disabled="view.disabled" v-model="view.stoptime" title="暂停时间，默认3秒" class="stoptime"/>
+			<a class="hbtn btn_primary btn_mini speedup" title="加速，长按连续加速" @mousedown="updateSpeed(1)" @mouseup="restorePatrol()"></a>
+		</p>
+		<!--  -->
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/3Dpatrol/patrol"]);
+</script>

@@ -1,0 +1,268 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<style>
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:38%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 15px;
+}
+div.condition  input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+div.condition>div.input input{
+   background:none;
+}
+div.condition >div{
+	border:none;
+}
+.combox_panel{
+	max-height:90px;
+}
+.condition>input:focus, {outline: none;} 
+ul.cardlist{
+    position: absolute;
+    width: 100%;
+    overflow:auto;
+    top: 76px;
+    bottom: 0px;
+}
+.conditionslid{
+	max-height:180px ;
+}
+div.line li label{
+	float:left;
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-height:1px;
+    cursor: pointer;
+}
+div.line li{
+	margin: 10px 0px;
+    display: inline-block;
+    width: 100%;
+    text-align:center;
+}
+ul.cardlist>li{
+	line-height:30px;
+	color: rgb(247, 244, 244);
+}
+ul.cardlist>li:hover{
+	background:rgba(47, 47, 16, 0.6);
+}
+ul.titleli>li{
+	color: rgb(242, 138, 138);
+    font-size: medium;
+    margin-top:54px;
+}
+div.line li >p{
+	width:100%;
+}
+div.line li label:nth-child(1){
+	width:10%;
+}
+div.line li label:nth-child(2){
+	width:25%;
+}
+div.line li label:nth-child(3){
+	width:10%;
+}
+div.line li label:nth-child(4){
+	width:10%;
+}
+div.line li label:nth-child(5){
+	width:17.5%;
+}
+div.line li label:nth-child(6){
+	width:10%;
+}
+div.line li label:nth-child(7){
+	width:17.5%;
+}
+div.line li.active>p{
+	height:50%;
+}
+div.detail{
+    position: absolute;
+    bottom: 0px;
+    width: 98%;
+    height: 0px;
+    z-index: 2;
+    margin-left: 1%;
+    border-radius: 10px;
+    background: rgba(29, 56, 84, 0.62);
+    transition:height 0.6s;
+}
+div.detail:hover::after{
+    content: '';
+    background: url(../../../css/image/remove.png);
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    cursor: pointer;
+}
+div.detail p{
+	border:none;
+}
+input:read-only{
+	background:none;
+	cursor:pointer !important;
+}
+</style>
+<div class="vbox box-con" id="record" >
+	<div class="hbox hz-col-1" >
+		<div class="left-con hz-col-2 vbox">
+				<div class="hz-col-1" style="margin-right:6px;">
+				  		<hz-date 
+					      		tip="选择查询日期" 
+					      		:val.sync="condition['date']"
+					      	 	format=Y-m-d
+					      	/>
+			    </div>
+				<div class="hz-col-9 vbox" style="overflow:hidden;color:rgb(255, 255, 255);">
+					<div class="hz-col-1" id="tableshow"></div>
+				</div>
+		</div>
+		<div class="hz-col-6 line" style="overflow:hidden;position:relative;" >
+			<div class="condition" style="right:83%;width:15%">
+				<hz-select 
+					  			tip="设备类型" 
+					  			code="DGT_DVC_TYPE"
+					  			:id.sync="condition['devicetype']"
+					  			/>
+			</div>
+			
+			<div class="condition" style="right:42%"><input placeholder="设备名称" readonly="readonly" class="find" @click="showDevice($event)" v-model="condition['devicename']" style="background-image:url(../../../css/images/device.png)"></div>
+			<div class="condition" style="right:1%"><input placeholder="记录人员" readonly="readonly" class="find" id="findauser" v-model="condition['username']" style="background-image:url(../../../css/images/plc.png)"></div>
+			<ul class="titleli" v-cloak>
+				<li>
+				<p>
+					<label >类型</label>
+					<label >名称</label>
+					<label >区域</label>
+					<label >维修人</label>
+					<label >维修时间</label>
+					<label >记录人</label>
+					<label >记录时间</label>
+				</p>
+				</li>
+			</ul>
+			<ul  class="cardlist" id="scroll" v-cloak>
+				<div  v-if="records.length==0" class="empty" style="padding-top:44px">暂无记录</div>
+				<li  v-for="record in records"  @click="details(record)">
+					<p>
+					<label >{{record.devicetype}}</label>
+					<label >{{record.devicename}}</label>
+					<label >{{record.area}}</label>
+					<label >{{record.repairman}}</label>
+					<label >{{record.repairdate}}</label>
+					<label >{{record.recorder}}</label>
+					<label >{{record.cretdate}}</label>
+					</p>
+				</li>
+			</ul>
+			
+			<div class="vbox detail" id="details" @click="close($event)">
+				<form class="form-horizontal">
+					<div class="form-group ">
+				        <label class="col-sm-2 control-label">名称:</label>
+				        <div class="col-sm-4">
+				        	<p class="form-control">{{detail.devicename}}</p>
+				        </div>
+				         <label class="col-sm-2 control-label">区域:</label>
+				        <div class="col-sm-4">
+				        	<p class="form-control">{{detail.area}}</p>
+				        </div>
+				    </div>
+					<div class="form-group ">
+				        <label class="col-sm-2 control-label">详情:</label>
+				        <div class="col-sm-8">
+				        	<p class="form-control">{{detail.mark}}</p>
+				        </div>
+				    </div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+	<!--新增维修记录  -->
+	<div class="vbox hz-col-1" id="newRecord" style="display:none;">
+		<div class="hz-col-9">
+			<form class="form-horizontal"  style="margin-top:20px;overflow-x: hidden;">
+				<div class="form-group ">
+			        <label class="col-sm-2 control-label">设备类型</label>
+			        <div class="col-sm-3">
+			        	<hz-select 
+					  			tip="设备类型" 
+					  			code="DGT_DVC_TYPE"
+					  			:id.sync="record['devicetype']"
+					  			/>
+			         </div>
+			         <label class="col-sm-2 control-label">设备名称</label>
+			         <div class="col-sm-4">
+			         	<div data-rel="{{condition.rel}}">
+			            <input type="text" class="form-control" id="deviceName" readonly="readonly" @click.capture="checkType($event)" v-model="record['devicename']" palceholder="请先选中设备类型">
+			            </div>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">维修人员</label>
+			        <div class="col-sm-3">
+			            <input type="text" class="form-control" disalbled=true v-model="record['repairman']" placeholder="请输入维修人员">
+			        </div>
+			         <label class="col-sm-2 control-label">维修时间</label>
+			        <div class="col-sm-4">
+			            <hz-date 
+					      		tip="维修时间" 
+					      		:val.sync="record.repairdate"
+					      	 	enablesecond=1
+					      	 	enabletime=1
+					      	/>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			         <label class="col-sm-2 control-label">维修情况</label>
+			        <div class="col-sm-9">
+			            <textarea type="text" row="3" class="form-control" v-model="record['mark']" placeholder="请描述维修情况"></textarea>
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div class="hz-col-1">
+		    <a @click="save()" class="hbtn btn_primary btn_mini pull-right" id="save"  style="margin-right:20px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons" style="float:left">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>导出</span></a>
+		</div>
+		<div class="buttons"  >
+				<a  class="hbtn btn_primary btn_large" @click="open()"><i class="btn_icon icon_del"></i><span>新增</span></a>	
+				<a  class="hbtn btn_primary btn_large" @click="query()"><i class="btn_icon icon_del"></i><span>查询</span></a>
+				<a  class="hbtn btn_primary btn_large" @click="reset()"><i class="btn_icon icon_del"></i><span>重置</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript" >
+require(["hz/sys/device/device"]);
+</script>

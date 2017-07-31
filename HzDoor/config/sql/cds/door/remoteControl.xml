@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_remote_control_tree" desc="远程控制门禁查询，省局用户，一般用户">
+		<const  key="status">dbd_stts_indc</const>
+		<sql>
+			WITH cor AS
+			 (SELECT DISTINCT (oar_area_id)
+			    FROM (SELECT odd_id
+			            FROM sys_org_dept_dtls
+			           START WITH odd_id = :org
+			          CONNECT BY PRIOR odd_id = odd_parent_id)
+			   INNER JOIN com_org_area_rltn
+			      ON odd_id = oar_dept_id)
+			SELECT '2-' || odd_id id,
+			       '2-' || odd_parent_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       0 type,
+			       NULL status,
+			       odd_seq seq
+			  FROM sys_org_dept_dtls
+			 WHERE LEVEL # :level
+			 START WITH odd_id = :cus
+			CONNECT BY prior odd_id = odd_parent_id
+			UNION ALL
+			SELECT '1-' || abd_area_id id,
+			       decode(abd_parent_id,
+			              abd_cus_number,
+			              '2-' || abd_parent_id,
+			              '1-' || abd_parent_id) pid,
+			       abd_area_name name,
+			       'area.png' icon,
+			       0 type,
+			       NULL status,
+			       abd_seq seq
+			  FROM com_area_base_dtls
+			 INNER JOIN cor
+			    ON abd_area_id = oar_area_id
+			UNION ALL (SELECT '' || dbd_id id,
+			                  '1-' || dbd_area_id pid,
+			                  dbd_name name,
+			                  'door.png' icon,
+			                  1 type,
+			                  dbd_stts_indc status,
+			                  dbd_seq seq
+			             FROM dor_door_base_dtls
+			            INNER JOIN cor
+			               ON dbd_area_id = oar_area_id
+		</sql>
+		<where id="0" desc="非系统管理员">
+			INNER JOIN com_dvc_auth_set
+               ON dbd_id = das_dvc_id
+            WHERE das_user_id = :user
+              AND das_dvc_type = 2
+		</where>
+		<order id="0" desc="非省局用户">
+		AND
+			dbd_cus_number=:cus
+		)
+		ORDER BY
+			seq
+		</order>
+		<order id="1" desc="省局用户">
+			)
+		ORDER BY
+			seq
+		</order>
+	</item>	
+	<item id="query_remote_control_tree_super" desc="远程控制门禁查询，超级管理员">
+		<const  key="dbd_stts_indc">dbd_stts_indc</const>
+		<sql>
+			WITH cor AS
+			 (SELECT DISTINCT (oar_area_id)
+			    FROM (SELECT odd_id
+			            FROM sys_org_dept_dtls
+			          CONNECT BY PRIOR odd_id = odd_parent_id)
+			   INNER JOIN com_org_area_rltn
+			      ON odd_id = oar_dept_id)
+			SELECT '2-' || odd_id id,
+			       '2-' || odd_parent_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       0 type,
+			       null status,
+			       odd_seq seq
+			  FROM sys_org_dept_dtls
+			 WHERE LEVEL # ?
+			 start with odd_parent_id is null
+			CONNECT BY prior odd_id = odd_parent_id
+			UNION ALL
+			SELECT '1-' || abd_area_id id,
+			       decode(abd_parent_id,
+			              abd_cus_number,
+			              '2-' || abd_parent_id,
+			              '1-' || abd_parent_id) pid,
+			       abd_area_name name,
+			       'area.png' icon,
+			       0 type,
+			       null status,
+			       abd_seq seq
+			  FROM com_area_base_dtls
+			 INNER JOIN cor
+			    ON abd_area_id = oar_area_id
+			UNION ALL (SELECT '' || dbd_id id,
+			                  '1-' || dbd_area_id pid,
+			                  dbd_name name,
+			                  'door.png' icon,
+			                  1 type,
+			                  dbd_stts_indc status,
+			                  dbd_seq seq
+			             FROM dor_door_base_dtls
+			            INNER JOIN cor
+			               ON dbd_area_id = oar_area_id
+			             
+			              )
+		ORDER BY
+			seq
+		</sql>
+	</item>	
+	<item id="query_link_query" desc="查询当前用户接受哪些门禁的提示">
+		<sql>
+			SELECT 
+				dur_door_id id
+			FROM
+				dor_door_user_rltn
+		</sql>
+		<where id="0">
+			WHERE 
+				DUR_USER_ID=?
+			AND
+				DUR_CUS_NUMBER=?
+		</where>
+	</item>
+	<item id="query_person_query">
+		<sql>
+			SELECT
+				dus_rctrl_pwd  pwd,
+				dus_flag       avoid
+			FROM
+				dor_door_user_set
+		</sql>
+		<where id="0">
+			WHERE
+				dus_user_id=?
+			AND
+				dus_cus_number=?
+		</where>
+	</item>
+	<item id="insert_tip_doors">
+		<sql>
+			INSERT INTO
+				dor_door_user_rltn
+				(
+					dur_cus_number,
+					dur_user_id,
+					dur_door_id
+				)
+				VALUES
+				(
+					:cus,
+					:user,
+					:id
+				)
+		</sql>
+	</item>
+	<item id="delete_tip_doors">
+		<sql>
+			DELETE
+				dor_door_user_rltn
+		</sql>
+		<whereId id="0">
+			WHERE 
+				dur_cus_number=:cus
+			AND
+				dur_user_id=:user
+		</whereId>
+	</item>
+	<item id="insert_person_set">
+		<sql>
+			INSERT INTO dor_door_user_set
+			  (dus_cus_number, dus_user_id, dus_rctrl_pwd, dus_flag, dus_crte_time)
+			VALUES
+			  (:cus, :user, :pwd, :avoid, sysdate)
+		</sql>
+		
+	</item>
+	<item id="update_person_set">
+		<sql>
+			UPDATE dor_door_user_set
+			   SET dus_rctrl_pwd = :pwd, dus_flag = :avoid, dus_updt_time = SYSDATE
+		</sql>
+		<where id='0'>
+			WHERE
+				dus_user_id=:user
+			AND
+				dus_cus_number=:cus
+		</where>
+	</item>
+
+	<item id="select_model_door_name" desc="查询门禁点位的门禁模型名称">
+		<sql>
+			SELECT mpi_rltn_model_name
+			  FROM map_model_point_info
+		</sql>
+		<where id="0">
+			 WHERE mpi_cus_number = :cus
+			   AND mpi_link_type = 2
+			   AND mpi_link_id = :device
+		</where>
+	</item>
+</sqlItem>
+ 

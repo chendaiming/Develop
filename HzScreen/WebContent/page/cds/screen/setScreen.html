@@ -1,0 +1,193 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+.baseScreen .row{
+	margin: 0px;
+}
+.baseScreen .col-base{
+	border: 1px solid rgb(31, 105, 158);
+	border-bottom: none;
+	border-right: none;
+	height: 60px;
+	padding-top: 20px;
+	text-align: center;
+	cursor: pointer;
+}
+.baseScreen .col-base:hover{
+	background-color: #4F94CD;
+}
+.baseScreen .isSave{
+	color: #C0FF3E;
+	font-weight: bold;
+	font-size: 17px;
+}
+.baseScreen .s_right{
+	border-right: 1px solid rgb(31, 105, 158);
+}
+.baseScreen .s_bottom{
+	border-bottom: 1px solid rgb(31, 105, 158);
+}
+#screenGroup{
+	cursor:pointer;
+	overflow-y:scroll;
+	margin-top:15px;
+	border:1px solid #1e689d;
+	display: none;
+}
+</style>
+<div class="vbox box-con" id="screenlist">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				<ul class="hz-col-1 list-group" id="screenGroup">
+					<li class="list-group-item"  v-for="item in screenList" @click="refresh(item,this)" >{{item['sbi_screen_name']}}</li>
+				</ul>
+			</div>
+			<div style="height:20px" id="groupbtn">
+				<a class="hbtn btn_primary btn_mini add"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_mini edit"><i class="btn_icon icon_edit"></i><span>编辑</span></a>
+				<a class="hbtn btn_primary btn_mini del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			</div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form class="form-horizontal" role="form">
+				 <div class="col-xs-12">
+				 	 <div class="form-group">
+					    <div class="col-xs-12 baseScreen"></div>
+					 </div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="vbox hz-col-1" id="add_edit_panel" style="display:none;"><!-- 添加大屏信息 -->
+		<div class="hz-col-8">
+			<form class="form-horizontal"  style="margin-top: 20px;overflow-x: hidden;">
+				<div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >大屏名称</label>
+					    <div class="col-xs-10">
+					      	<input class="form-control" v-model="screen.sbi_screen_name" placeholder="请输入大屏名称" maxlength="15">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >大屏第三方编号</label>
+					    <div class="col-xs-10">
+					      	<input class="form-control" v-model="screen.sbi_other_idnty" placeholder="请输入大屏第三方编号" maxlength="25">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >所属部门</label>
+					    <div class="col-xs-10">
+					      	<hz-treeselect 
+					    		tip="请选择所属部门"
+					    		sqlid="select_screen_org_dept"
+					    		whereid=0
+					    		:params=[screen.sbi_cus_number]
+					    		:id.sync="screen.sbi_dept_id" 
+				    		/>
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >宽度</label>
+					    <div class="col-xs-10">
+					      	<input class="form-control" v-model="screen.sbi_width" placeholder="请输入宽度" maxlength="10">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >高度</label>
+					    <div class="col-xs-10">
+					      	<input class="form-control" v-model="screen.sbi_height" placeholder="请输入高度" maxlength="10">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >行数</label>
+					    <div class="col-xs-10">
+					      	<input id="rowNum" class="form-control" v-model="screen.sbi_column_num" placeholder="请输入行数(行数不能超过15)" maxlength="2">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >列数</label>
+					    <div class="col-xs-10">
+					      	<input id="colNum" class="form-control" v-model="screen.sbi_row_num" placeholder="请输入列数(列数不能超过15)" maxlength="2">
+					    </div>
+					  </div>
+				  </div>
+			</form>
+		</div>
+		<div class="hz-col-2">
+		    <a class="hbtn btn_primary btn_mini pull-right save"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+	
+	<div class="vbox hz-col-1" id="add_edit_base_panel" style="display:none;"><!-- 编辑基础屏信息 -->
+		<div class="hz-col-8">
+			<form class="form-horizontal"  style="margin-top: 20px;overflow-x: hidden;">
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">基础屏号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled="disabled" v-model="screenBase.dcr_screen_win_id">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">输出类型</label>
+			        <div class="col-sm-8">
+			            <hz-select tip=请选择输出类型 code="dcr_out_type"
+									:id.sync="screenBase.dcr_out_type" />
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">信号源</label>
+			        <div class="col-sm-8">
+			        	 <hz-select tip=请选择信号源 code="dcr_signal_id"
+									:id.sync="screenBase.dcr_signal_id" />
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">切割序号</label>
+			        <div class="col-sm-8">
+			        	<hz-select tip=请选择切割序号 code="dcr_cut_seq"
+									:id.sync="screenBase.dcr_cut_seq" />
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">解码器编号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="screenBase.dcr_decoder_id" placeholder="请输入解码器编号" maxlength="15">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">解码器通道号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="screenBase.dcr_decoder_chl" placeholder="请输入解码器通道号" maxlength="15">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div class="hz-col-2">
+		    <a class="hbtn btn_primary btn_mini pull-right save"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/screen/setScreen"]);
+</script>

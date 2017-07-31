@@ -1,0 +1,177 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<style>
+p.item{
+	margin: 10px;
+    text-align: left; 
+    line-height: 40px;
+    background: rgb(112, 128, 126);
+    border-radius: 10px;
+    position: relative;
+}
+.item>span{
+	    margin-left: 10px;
+    min-height: 40px;
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:32%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    //border-radius: 15px;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+.combox_panel{
+	max-height:90px;
+}
+.condition>input:focus {outline: none;} 
+ul.cardlist{
+    position: absolute;
+    width: 100%;
+    overflow:auto;
+    top: 54px;
+    bottom: 0px;
+}
+.conditionslid{
+	max-height:180px ;
+}
+div.line::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 100%;
+    border-style: dotted;
+    border: 1px dashed rgb(105, 158, 173);
+    margin-left: -1px;
+    margin-top:44px;
+}
+.cardlist>li{
+    position: relative;
+    padding: 10px;
+    width: 100%;
+    display: inline-block;
+}
+.cardlist>li>div{
+    width: 45%;
+    position: absolute;
+    top: 50%;
+    min-height:50px;
+    border-radius:10px;
+}
+.cardlist>li>div.right{
+	    float: right;
+        position: inherit;
+        width: 49%;
+   		padding-left: 20px;
+}
+.cardlist>li>span{
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 50%;
+    background: rgb(255, 0, 0);
+    top: 50%;
+    margin-left: -20px;
+    border-radius: 50%;
+    margin-top: -20px;
+    line-height: 40px;
+    text-align: center;
+}
+.cardlist  li::before{
+	content:'';
+    border: 1px solid rgb(0, 128, 0);
+    display: inline-block;
+    width: 5%;
+    left: 45%;
+    position: absolute;
+    top: 50%;
+}
+.cardlist li::after{
+    content: '';
+    border: 1px solid rgb(0, 128, 0);
+    display: inline-block;
+    width: 1%;
+    left: 50%;
+    margin-left: 20px;
+    position: absolute;
+    top: 50%;
+}
+.cardlist li>a{
+     position: absolute;
+    height: 100%;
+    left: 51%;
+    margin-left: 19px;
+    width: 1px;
+    padding-top: 30px;
+    padding-bottom: 48px;
+}
+.cardlist li>a>i{
+	height: 100%;
+    display: inline-block;
+    border: 1px solid rgb(0, 128, 0);
+}
+div.right> p:before{
+	content:'';
+    position: absolute;
+    width: 10px;
+    border: 1px solid rgb(0, 128, 0);
+    top: 50%;
+    left: -10px;
+}
+</style>
+<div class="vbox box-con" id="record" >
+	<div class="hbox hz-col-1" >
+		<div class="hz-col-5 line" style="overflow:hidden;position:relative;" id="scroll">
+			<div class="condition" style="right:67%;"><hz-date 
+					      		tip="选择查询日期" 
+					      		:val.sync="day"
+					      	 	format=Y-m-d
+					      	/></div>
+			<div class="condition" style="right:1%">
+			<input placeholder="对讲机搜索" class="find" id="talk" v-model="talk" style="background-image:url(../../../css/images/talk.png)">
+			</div>
+			<div  v-if="records.length==0" class="empty" style="padding-top:44px">暂无记录</div>
+			<ul  class="cardlist" v-cloak id="ullist">
+				<li  v-for="record in records">
+					<div style="margin-top:-30px;"> 	
+						<p class="item" ><span >{{record.name}}</span> {{record.time}}</p>
+					</div>
+					<span>{{record.type}}</span>
+					<a><i></i></a>
+					<div class="right">
+						<p class="item"  v-for="r in record.revice.split(',')"><span >{{r}}</span></p>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons" style="float:left">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>导出</span></a>
+		</div>
+		<div class="buttons"  @click="query">
+				<a  class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>查询</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/video/videoTalkRecord"]);
+</script>

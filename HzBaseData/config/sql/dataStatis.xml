@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_police_statis_info"  desc="查询警员统计信息">
+		<sql>
+			select odd_name name, count(odd_name) count
+			  from sys_org_dept_dtls d
+			 inner join plc_police_base_dtls p
+			    on d.odd_id = p.pbd_drptmnt_id
+		</sql>
+		<where id="0">
+	 		  start with odd_parent_id = :cusNumber
+			connect by odd_parent_id = prior odd_id
+		 	  group by odd_name
+		</where>
+		<where id="1">
+			  where odd_group_id = :groupId
+	 		  group by odd_name
+		</where>
+	</item>
+	<item id="select_prisoner_statis_info"  desc="查询罪犯统计信息">
+		<sql>
+			 select odd_name name, count(p.pbd_prsn_area_id) count from sys_org_dept_dtls d 
+			 left join psr_prisoner_base_dtls p on d.odd_id = p.pbd_prsn_area_id
+		</sql>
+		<where id="0">
+			  where odd_group_id = :groupId
+			    AND d.odd_parent_id = :cusNumber
+	 		  group by odd_name
+		</where>
+	</item>
+</sqlItem>

@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+.btn{
+	height:30px;
+	float: left;
+	margin-left: 10px;
+	background-color: rgba(51, 133, 255, 1);
+}
+#redFile{
+	width: 300px;
+	height:30px;
+	float: left;
+	border:1px solid #1f699e;
+	margin-left: 20px;
+}
+</style>
+<div class="vbox box-con" id="form">
+	<div style="margin-top: 10px;">
+		<form id="fileUpload"  action="" method="post" enctype="multipart/form-data" style="display: none;" target="zyl_iframe">
+			<input class="file" type="file" name="file" />
+			<input type="submit" id="submitFile">
+		</form>
+		<input id="redFile" placeholder="未选择文件" />
+		<input id="fileBtn" type="button" class="btn" value="文件读取" />
+			<input id="fileBtn"  type="button" class="btn" value="导入" style="width:80px;height:30px;float: left;background-color: rgba(51, 133, 255, 1);margin-left: 10px;"/>
+		<iframe name="zyl_iframe" style="display: none;" id="iframe"></iframe>
+	</div>
+	<div style="width: 98%;height:88%;border:1px solid #1f699e;margin-left: 10px;margin-top: 10px;">
+		<div>
+			<table>
+			
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/prisoner/import/importData"])
+</script>

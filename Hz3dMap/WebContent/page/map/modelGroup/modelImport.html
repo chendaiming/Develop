@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/hzdate/css/dark.css">
+<title></title>
+<style>
+.model_lable{
+    text-align: right;
+    padding-top: 5px;
+    padding-right: 5px;
+}
+.model_log{
+	height: 182px;
+    border: 1px solid #1f699e;
+    padding: 11px;
+    user-select: initial;
+    -webkit-user-select:initial;
+    -moz-user-select:initial;
+    overflow:auto;
+}
+.must {
+	color: red;
+}
+[v-cloak] {
+  display: none;
+}
+</style>
+</head>
+<body>
+<div class="vbox box-con">
+	<div class="hbox hz-col-1" v-if="readFlag">
+		<div class="hz-col-1 right-con" style="overflow: hidden;">
+			<form class="form-horizontal" role="form" >
+				<div class="form-group">
+				    <label class="col-xs-2 control-label model_lable" >文件名</label>
+				    <div class="col-xs-9">
+				      <!-- <input class="form-control" v-model="path" type="text" placeholder="请输入模型导入路径"> -->
+				      <div class="input-group" data-rel="dep">
+			            	<input type="text" class="form-control"  v-model="path" type="text" placeholder="请输入模型导入路径">
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default" @click="readFileName">读取</button>
+							</div>
+						</div>
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label class="col-xs-2 control-label model_lable" >日志记录</label>
+				    <div class="col-xs-9"> 
+				    	<div class="model_log" v-html="modelLog"></div>
+				    </div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<!-- 详情 -->
+	<div class="hbox hz-col-1" v-else v-cloak>
+		<div class="left-con vbox" style="width: 288px;">
+			<div class="input icon" >
+			  	<input id="input" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		    <!-- <div class="no-tree">
+			    <div class="dis-tab">
+		    		<div>正在加载列表...</div>
+		    	</div>
+	    	</div> -->
+		    <div class="hz-col-1" style="overflow:auto">
+				<ul id="modelFileInfoTree" class="ztree"></ul>
+		    </div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form id="modelFileInfoForm" class="form-horizontal" role="form">
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-1 control-label">文件路径</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="model.mfi_file_path" type="text" placeholder="文件路径" readonly>
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-1 control-label"><font class="must">*</font>父级名称</label>
+						<div class="col-xs-10">
+				     		<input class="form-control" v-model="model.mfi_file_pName" type="text" readonly placeholder="父级名称">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-1 control-label"><font class="must">*</font>文件名称</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="model.mfi_file_name" type="text" placeholder="文件名称" readonly>
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-1 control-label">文件标题</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="model.mfi_file_title" maxlength="40" type="text" placeholder="文件标题">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-1 control-label"><font class="must">*</font>文件类型</label>
+						<div class="col-xs-10">
+				      		<hz-select tip="文件类型" 
+				      		code="MFI_FILE_TYPE" 
+				      		:id.sync="model.mfi_file_type"/>
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-1 control-label"><font class="must">*</font>文件标识</label>
+						<div class="col-xs-10">
+				      		<hz-select tip="文件标识" 
+				      		code="MFI_FILE_FLAG" 
+				      		:id.sync="model.mfi_file_flag"/>
+				   		</div>
+				 	</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-1 control-label" >文件属性</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="model.mfi_file_attr" maxlength="40" type="text" placeholder="文件属性">
+				   		</div>
+				 	</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-1 control-label" ><font class="must">*</font>顺序</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="model.mfi_file_order" maxlength="3" type="text" placeholder="顺序(只能输入数字)">
+				   		</div>
+				 	</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-1 control-label">所属部门</label>
+						<div class="col-xs-10">
+						<hz-checktree tip="请选择所属部门" sqlid="select_org_dept"
+							:params= [cusNumber]
+							:ids.sync="model.mfi_dept_id" />
+						</div>
+				 	</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-1 control-label" >是否加载</label>
+				   		<div class="col-xs-10">
+							<label class="radio-inline"> <input type="radio" name="enable" value="1" v-model="model.mfi_load_flag" checked="checked"> 是</label> 
+							<label class="radio-inline"> <input type="radio" name="enable" value="0" v-model="model.mfi_load_flag"> 否</label>
+				   		</div>
+				 	</div>
+				</div>	
+				
+			</form>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons" >
+			<a v-show="!readFlag" @click="save" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>导入</span></a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/map/modelGroup/modelImport'])
+</script>
+<script type="text/javascript">
+requirejs(['hz/map/modelGroup/modelImportSelect'])
+</script>
+</html>

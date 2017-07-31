@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<br><br>
+	<div style="margin: auto; width: 200px;">
+		LED编号：<input id="ledId" type="text"><br>
+		显示文字：<input id="showText" type="text" value="这是一段发送给LED的测试内容"><br>
+		<button id="sendBtn">发送</button><br><br>
+		<span id="result"></span>
+	</div>
+</body>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script type="text/javascript">
+require(['jquery', 'cds/LED/LEDCtrl'], function($, LEDCtrl) {
+	var num = 1;
+
+	$('#sendBtn').click(function () {
+		LEDCtrl.sendMsg($('#ledId').val(), $('#showText').val(), function (resp) {
+			$('#result').html(num++ + ' --> ' + JSON.stringify(resp));
+		});
+	});
+});
+</script>
+</html>

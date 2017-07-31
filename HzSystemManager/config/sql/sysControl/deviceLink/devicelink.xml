@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+	<item id="query_link_device_by_device" desc="根据主表设备id查询从表关联设备信息">
+		<sql>
+		SELECT dlm_cus_number,
+		       dlm_link_id,
+		       dlm_link_purpose,
+		       dlm_dvc_type,
+		       dlm_dvc_id,
+		       dlm_dvc_name,
+		       dlm_seq,
+		       dlm_remark,
+		       dlm_crte_time,
+		       dlm_crte_user_id,
+		       dlm_updt_time,
+		       dlm_updt_user_id,
+		       dld_dvc_id,
+		       dld_dvc_name
+		  FROM 
+		  	   com_dvc_link_mian m
+		  INNER JOIN 
+		  	   com_dvc_link_dtls d
+		  ON 
+		  	   m.dlm_link_id = d.dld_link_id
+		</sql>
+		<where id="0">
+			WHERE dlm_cus_number = :cusNumber
+			  AND dlm_dvc_id = :id
+			  AND dlm_dvc_type = :mainType
+			  AND dld_dvc_type = :dtlsType
+		</where>
+    </item>
+	<item id="query_alt_link_dvc_by_device" desc="根据主表设备id查询从表关联设备信息">
+		<sql>
+			SELECT ldr_dvc_id id
+			  FROM alt_link_dvc_rltn
+		</sql>
+		<where id="0">
+			 WHERE ldr_cus_number = :cusNumber
+			   AND ldr_alertor_id = :id
+			   AND ldr_alertor_type = :mainType
+			   AND ldr_dvc_type = :dtlsType
+		</where>
+    </item>
+	<item id="select_devcelink_dvc" desc="设备关联查询">
+		<const key="act">TYPE_DEVICE_LINK_ACT</const>
+		<sql>
+			SELECT 
+				dld_dvc_id deviceid,
+				dld_link_id	linkid,
+				dld_dvc_name name,
+				dld_dvc_type type,
+				dld_dvc_type||'-'||dld_link_act act,
+				dld_link_act actid
+			FROM
+				com_dvc_link_dtls		
+		</sql>
+		<where id="0">
+			WHERE
+				dld_cus_number=:cus
+			AND
+				dld_link_id=:linkid
+		</where>
+	</item>
+	<item id="select_device_purpose" desc="设备关联主表">
+		<const key="purpose">DLM_LINK_PURPOSE</const>
+		<sql>
+			SELECT
+				dlm_link_id linkid,
+				dlm_link_purpose purpose,
+				dlm_link_purpose purposeid,
+				dlm_remark mark,
+				dlm_dvc_type
+			FROM
+				com_dvc_link_mian
+		</sql>
+		<where id="0">
+			WHERE
+				dlm_cus_number=:cus
+			AND
+				dlm_dvc_id=:device
+			AND
+				dlm_dvc_type=:type
+		</where>
+	</item>
+	<item id="insert_deviceLink_base"  desc="设备关联主表">
+		<seq>com_dvc_link_mian@dlm_link_id</seq>
+		<sql>
+			INSERT INTO com_dvc_link_mian
+			(
+			   dlm_cus_number       ,
+			   dlm_link_id          ,
+			   dlm_link_purpose     ,
+			   dlm_dvc_type         ,
+			   dlm_dvc_id           ,
+			   dlm_dvc_name         ,
+			   dlm_seq              ,
+			   dlm_remark           ,
+			   dlm_crte_time        ,
+			   dlm_crte_user_id     ,
+			   dlm_updt_time        ,
+			   dlm_updt_user_id     
+			 )
+			 VALUES
+			 (
+			   :cus,
+			   :dlm_link_id,
+			   :purposeid,
+			   :type,
+			   :device,
+			   :name,
+			   :dlm_link_id,
+			   :mark,
+			   SYSDATE,
+			   :user,
+			   SYSDATE,
+			   :user
+			 )
+		</sql>
+	</item>
+	<item id="insert_deviceLink_attachment" desc="设备关联从表">
+		<sql>
+			INSERT INTO  com_dvc_link_dtls
+			(
+			   dld_cus_number       ,
+			   dld_link_id          ,
+			   dld_dvc_type         ,
+			   dld_dvc_id           ,
+			   dld_dvc_name         ,
+			   dld_link_act         ,
+			   dld_seq              
+			)
+			values
+			(
+			   :cus,
+			   :linkid,
+			   :type,
+			   :linkdevice,
+			   :linkname,
+			   :actid,
+			   :linkid
+			)		
+		</sql>
+	</item>
+	<item id="update_deviceLink_base" desc="更新关联表">
+		<sql>
+			UPDATE 
+			   com_dvc_link_mian
+			SET
+			   dlm_link_purpose     =:purposeid,
+			   dlm_dvc_type         =:type,
+			   dlm_dvc_id           =:device,
+			   dlm_dvc_name         =:name,
+			   dlm_seq              =:seq,
+			   dlm_remark           =:mark,
+			   dlm_updt_user_id     =:user
+		</sql>
+		<where id="0">
+			WHERE 
+				dlm_cus_number=:cus
+			AND
+			   dlm_link_id=:linkid
+		</where>
+	</item>
+	<item id="delete_deviceLink_base" desc="删除设备关联主表">
+		<sql>
+			DELETE FROM 
+				com_dvc_link_mian
+			WHERE
+				dlm_cus_number=:cus
+			AND
+				dlm_link_id=:linkid  
+			AND
+				dlm_dvc_type=:type
+		</sql>
+	</item>
+			<!-- 	DELETE FROM 
+				com_dvc_link_dtls
+			WHERE
+				dld_cus_number=:cus
+			AND
+				dld_link_id=:linkid
+				 -->
+				
+	<item id="delete_deviceLink_attach" desc="删除从表">
+		<sql>
+			DELETE FROM 
+				com_dvc_link_dtls
+			WHERE
+				dld_link_id
+			IN
+			(
+				SELECT dlm_link_id  FROM com_dvc_link_mian  WHERE dlm_dvc_id=:device
+			)
+		</sql>
+	</item>
+	<item id="select_linked_device" desc="查询已经关联的设备">
+		<sql>
+		SELECT 
+			dlm_dvc_type type, 
+			WM_CONCAT(dlm_dvc_id) id
+	    FROM 
+	    	com_dvc_link_mian
+		WHERE
+			dlm_cus_number=:cus
+		GROUP BY 
+			dlm_dvc_type
+		</sql>
+	</item>
+</sqlItem>

@@ -1,0 +1,83 @@
+<!-- An embedded servlet engine for serving up the Admin consoles, REST and 
+	Ajax APIs and some demos Include this file in your configuration to enable 
+	ActiveMQ web components e.g. <import resource="jetty.xml"/> -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="securityLoginService" class="org.eclipse.jetty.security.HashLoginService">
+		<property name="name" value="ActiveMQRealm" />
+		<property name="config"
+			value="#{resolveAgainstClasspath.resolve('conf/activemq/internal-broker/jetty-realm.properties')}" />
+	</bean>
+
+	<bean id="resolveAgainstClasspath" class="com.hz.ResolveAgainstClasspath" />
+
+	<bean id="securityConstraint" class="org.eclipse.jetty.http.security.Constraint">
+		<property name="name" value="BASIC" />
+		<property name="roles" value="admin" />
+		<property name="authenticate" value="true" />
+	</bean>
+
+	<bean id="securityConstraintMapping" class="org.eclipse.jetty.security.ConstraintMapping">
+		<property name="constraint" ref="securityConstraint" />
+		<property name="pathSpec" value="/*" />
+	</bean>
+
+	<bean id="securityHandler" class="org.eclipse.jetty.security.ConstraintSecurityHandler">
+		<property name="loginService" ref="securityLoginService" />
+		<property name="authenticator">
+			<bean class="org.eclipse.jetty.security.authentication.BasicAuthenticator" />
+		</property>
+		<property name="constraintMappings">
+			<list>
+				<ref bean="securityConstraintMapping" />
+			</list>
+		</property>
+		<property name="handler">
+			<bean id="sec" class="org.eclipse.jetty.server.handler.HandlerCollection">
+				<property name="handlers">
+					<list>
+						<bean class="org.eclipse.jetty.webapp.WebAppContext">
+							<property name="contextPath" value="/admin" />
+							<property name="resourceBase" value="${activemq.home}/webapps/admin" />
+							<property name="logUrlOnStart" value="true" />
+						</bean>
+						<bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler">
+							<property name="serveIcon" value="false" />
+						</bean>
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="contexts"
+		class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
+	</bean>
+
+	<bean id="Server" class="org.eclipse.jetty.server.Server"
+		init-method="start" destroy-method="stop">
+		<property name="connectors">
+			<list>
+				<bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+					<property name="port" value="${amq.internal.amq.jetty.port}" />
+				</bean>
+			</list>
+		</property>
+		<property name="handler">
+			<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+				<property name="handlers">
+					<list>
+						<ref bean="contexts" />
+						<ref bean="securityHandler" />
+					</list>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>

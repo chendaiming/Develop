@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_device_type">
+		<sql>
+			SELECT 
+				dgt_cus_number,
+				dgt_grp_type_id AS id,
+				dgt_grp_type_name AS name,
+				dgt_parent_id AS pid,
+				dgt_dvc_type,
+				dgt_seq,
+				dgt_crte_time,
+				dgt_crte_user_id,
+				dgt_updt_time,
+				dgt_updt_user_id
+			FROM com_dvc_grp_type
+			WHERE dgt_cus_number =?
+		</sql>
+	</item>
+	<item id="insert_device_type">
+		<seq>com_dvc_grp_type@id@dgt_grp_type_id</seq>
+		<sql>
+			INSERT INTO com_dvc_grp_type (
+				dgt_cus_number,
+				dgt_grp_type_id,
+				dgt_grp_type_name,
+				dgt_parent_id,
+				dgt_dvc_type,
+				dgt_seq,
+				dgt_crte_time,
+				dgt_crte_user_id,
+				dgt_updt_time,
+				dgt_updt_user_id
+			) VALUES(
+				:dgt_cus_number,
+				:id,
+				:name,
+				:pid,
+				:dgt_dvc_type,
+				:dgt_seq,
+				SYSDATE,
+				:dgt_crte_user_id,
+				SYSDATE,
+				:dgt_crte_user_id
+			)
+		</sql>
+	</item>
+	<item id="update_device_type">
+		<sql>
+			UPDATE com_dvc_grp_type SET
+				dgt_cus_number    =   :dgt_cus_number,
+				dgt_grp_type_name =   :name,
+				dgt_parent_id     =   :pid,
+				dgt_dvc_type      =   :dgt_dvc_type,
+				dgt_seq           =   :dgt_seq,
+				dgt_updt_time     =   SYSDATE,
+				dgt_updt_user_id  =   :dgt_updt_user_id
+			WHERE dgt_grp_type_id   =   :id
+		</sql>
+	</item>
+	<item id="delete_device_type">
+		<sql>
+			DELETE FROM  com_dvc_grp_type
+		</sql>
+		<where id="0">
+			WHERE dgt_grp_type_id   =   :id
+		</where>
+		<where id="1">
+			WHERE dgt_parent_id   =   :id
+		</where>
+	</item>
+</sqlItem>

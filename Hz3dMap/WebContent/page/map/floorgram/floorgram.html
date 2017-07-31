@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>模型组件管理</title>
+<!-- 	<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" > -->
+<!-- 	<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" > -->
+<!-- 	<link rel="stylesheet" href="../../../css/common.css" > -->
+<style>
+html, body {padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden;}
+#showlist li{
+	height:30px;
+	line-height:30px;
+	cursor:pointer;
+	margin-top:5px;
+}
+#showlist li>a{
+	width:80%;
+}
+#showlist li:hover, #showlist li.active{
+	background:green;
+}
+</style>
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%; text-align: center; color: #FFF;">
+	<tr><td>该功能已停止使用</td></tr>
+</table>
+<div class="vbox" style="width:250px;height:320px;padding:5px 10px; visibility: hidden;" id="removeid">
+	<div class="hz-col-1" style="text-align:center;">
+		<div class="col-xs-6" style="border-right: 3px solid rgb(195, 199, 202);">
+	    	<label class="checkbox-inline">
+			  <input type="checkbox"  val='false' checked disabled="true">犯人
+			</label>	
+    	</div>
+    	<div class="col-xs-6">
+			<label class="checkbox-inline">
+			  <input type="checkbox"  val='false' disabled="true">民警
+			</label>	    	 	
+		</div>
+	</div>
+	<div class="hz-col-9" style="overflow: auto;margin-right:-10px;color: rgb(66, 168, 190);">
+		<ul id="showlist" >
+			<li v-for="l in list" v-cloak><a @click.self="locationFloor(l,$event)">{{$index+1 +'.' +l.text}}</a><span >{{l.num+'/人'}} </span></li>
+		</ul>	
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+	//requirejs(['hz/map/floorgram/floorgram'])
+</script>
+</html>

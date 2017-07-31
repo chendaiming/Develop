@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_dty_shift_base_dtls" desc="值班班次基础信息新增">
+		<seq>sbd_id@id</seq>
+		<sql>
+			INSERT  INTO
+				dty_shift_base_dtls
+				(	
+					sbd_cus_number,
+					sbd_id,
+					sbd_name,
+					sbd_stime_flag,
+					sbd_start_time,
+					sbd_etime_flag,
+					sbd_end_time,
+					sbd_category_id,
+					sbd_next_shift_id,
+					sbd_seq,
+					sbd_crte_time,
+					sbd_crte_user_id,
+					sbd_updt_time,
+					sbd_updt_user_id
+				)
+			values(
+					:sbd_cus_number,
+					:id,
+					:sbd_name,
+					:sbd_stime_flag,
+					:sbd_start_time,
+					:sbd_etime_flag,
+					:sbd_end_time,
+					:sbd_category_id,
+					:sbd_next_shift_id,
+					:sbd_seq,
+					SYSDATE,
+					:sbd_crte_user_id,
+					SYSDATE,
+					:sbd_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="select_dty_category_order_tree" desc="根据机构号查询所有类别班次树信息">
+		<sql>
+			SELECT 'c_' || cbd_id AS id,
+				   cbd_name AS name,
+				   null AS pid,
+				   'category' AS type,
+				   null AS stimeFlag,
+				   null AS startTime,
+				   null AS etimeFlag,
+				   null AS endTime,
+				   null AS nextShiftId,
+				   0 AS seq
+			  FROM (SELECT * FROM dty_category_base_dtls WHERE cbd_cus_number = ? ORDER BY cbd_seq)
+			  UNION ALL
+			SELECT 'o_' || sbd_id AS id,
+				   sbd_name AS name,
+				   'c_' || sbd_category_id  AS pid,
+				   'order' AS type,
+				   sbd_stime_flag AS stimeFlag,
+				   sbd_start_time AS startTime,
+				   sbd_etime_flag AS etimeFlag,
+				   sbd_end_time AS endTime,
+				   sbd_next_shift_id AS nextShiftId,
+				   sbd_seq AS seq
+			  FROM (SELECT * FROM dty_shift_base_dtls WHERE sbd_cus_number = ? ORDER BY sbd_seq)
+		</sql>
+    </item>
+    
+    <item id="select_dty_category_order_select" desc="查询值班班次信息">
+		<sql>
+			SELECT sbd_id AS id,
+				   sbd_name AS name
+			  FROM dty_shift_base_dtls
+		</sql>
+		<where id="0">
+			WHERE sbd_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE sbd_cus_number = ? AND
+				  sbd_category_id = ?
+		</where>
+		<order id="0">
+			ORDER BY sbd_seq
+		</order>
+    </item>
+    
+     <item id="update_dty_shift_base_dtls" desc="值班班次基础信息修改">
+    	<sql>
+			UPDATE dty_shift_base_dtls SET
+				   sbd_name = :sbd_name,
+				   sbd_stime_flag = :sbd_stime_flag,
+				   sbd_start_time = :sbd_start_time,
+				   sbd_etime_flag = :sbd_etime_flag,
+				   sbd_end_time = :sbd_end_time,
+				   sbd_next_shift_id = :sbd_next_shift_id,
+				   sbd_updt_time = SYSDATE,
+				   sbd_updt_user_id = :sbd_updt_user_id
+			 WHERE sbd_cus_number = :sbd_cus_number AND
+			 	   sbd_id = :sbd_id
+		</sql>
+	</item>
+	
+	<item id="update_dty_shift_base_orderId" desc="值班班次排序序号修改">
+    	<sql>
+			UPDATE dty_shift_base_dtls SET
+				   sbd_seq = :sbd_seq
+			 WHERE sbd_cus_number = :sbd_cus_number AND
+			 	   sbd_id = :sbd_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_shift_base_dtls" desc="值班班次基础信息删除">
+    	<sql>
+			DELETE dty_shift_base_dtls
+			 WHERE sbd_cus_number = :sbd_cus_number AND
+			 	   sbd_id = :sbd_id
+		</sql>
+	</item>
+</sqlItem>

@@ -1,0 +1,4 @@
+涉及数据库表：
+	1. com_dvc_link_mian - 设备关联主表
+	2. com_dvc_link_dtls - 设备关联从表
+	3. sys_user_operated_log - 用户操作日志表

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+	<item id="import_data_type" desc="导入数据类型">
+		<sql>
+			SELECT 
+				ctd_type_id id,
+				replace(ctd_type_name,'导入-','') name
+			FROM 
+				sys_constant_type_dtls t
+			WHERE 
+				ctd_type_id 
+			LIKE 
+				'import_%'
+		</sql>
+	</item>
+	<item id="import_talkback_base" desc="对讲机信息录入">
+		<sql>
+			INSERT INTO TBK_TALKBACK_BASE_DTLS
+			(tbd_cus_number,
+			 tbd_id,
+			 tbd_name,
+			 tbd_brand,
+			 tbd_ip,
+			 tbd_dept_id,
+			 tbd_area_id,
+			 tbd_dvc_addrs,
+			 tbd_mian_id,
+			 tbd_child_id,
+			 tbd_other_id
+			 )
+		VALUES(
+			 :tbd_cus_number,
+			 :tbd_id,
+			 :tbd_name,
+			 :tbd_brand,
+			 :tbd_ip,
+			 :tbd_dept_id,
+			 :tbd_area_id,
+			 :tbd_dvc_addrs,
+			 :tbd_mian_id,
+			 :tbd_child_id,
+			 :tbd_other_id
+			 )
+		</sql>
+	</item>
+	<item id="import_police_base" desc="警员信息录入">
+		<sql>
+			INSERT INTO PLC_POLICE_BASE_DTLS
+			(pbd_cus_number,
+			 pbd_police_id,
+			 pbd_police_name,
+			 pbd_drptmnt_id,
+			 pbd_pstn_name,
+			 pbd_sex,
+			 pbd_age,
+			 pbd_political_status,
+			 pbd_official_title,
+			 pbd_birth_date,
+			 pbd_fixed_phone,
+			 pbd_phone,
+			 pbd_short_phone,
+			 pbd_fax,
+			 pbd_talk_num,
+			 pbd_police_cmmnct,
+			 pbd_img,
+			 pbd_degree_indc,
+			 pbd_profession,
+			 pbd_job_date
+			)
+		VALUES(
+			 :pbd_cus_number,
+			 :pbd_police_id,
+			 :pbd_police_name,
+			 :pbd_drptmnt_id,
+			 :pbd_pstn_name,
+			 :pbd_sex,
+			 :pbd_age,
+			 :pbd_political_status,
+			 :pbd_official_title,
+			 :pbd_birth_date,
+			 :pbd_fixed_phone,
+			 :pbd_phone,
+			 :pbd_short_phone,
+			 :pbd_fax,
+			 :pbd_talk_num,
+			 :pbd_police_cmmnct,
+			 :pbd_img,
+			 :pbd_degree_indc,
+			 :pbd_profession,
+			 :pbd_job_date
+			)
+		</sql>
+	</item>
+	<item id="import_network_base" desc="报警器信息录入">
+		<sql>
+			INSERT INTO ALT_NETWORK_BASE_DTLS
+			(nbd_cus_number,
+			 nbd_id,
+			 nbd_name,
+			 nbd_brand,
+			 nbd_ip,
+			 nbd_port,
+			 nbd_dept_id,
+			 nbd_area_id,
+			 nbd_dvc_addrs,
+			 nbd_other_id
+			)
+		VALUES(
+			 :nbd_cus_number,
+			 :nbd_id,
+			 :nbd_name,
+			 :nbd_brand,
+			 :nbd_ip,
+			 :nbd_port,
+			 :nbd_dept_id,
+			 :nbd_area_id,
+			 :nbd_dvc_addrs
+			 :nbd_other_id
+			)
+		</sql>
+	</item>
+</sqlItem>

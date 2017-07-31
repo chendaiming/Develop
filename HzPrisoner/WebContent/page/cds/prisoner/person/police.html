@@ -1,0 +1,112 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<style>
+.hz-col-9{
+	text-align: center;
+	font-size:13px;
+	color: #f2dede;
+}
+.table-bordered>tbody>tr>td{
+	font-size:13px;
+	border:1px solid #1f699e;
+	text-align: center;
+	height:37px;
+}
+.imageview img{
+	width:140px;
+	height:140px;
+	cursor: pointer; 
+}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hz-col-9 right-con">
+		<form class="form-horizontal" id="baseinfo">
+			<table class="table table-bordered">
+				<tr>
+					<td class="col-xs-1">警号</td>
+					<td class="col-xs-2" v-text="police.policeid"></td>
+					<td class="col-xs-1">姓名</td>
+					<td class="col-xs-3" v-text="police.name"></td>
+					<td class="col-xs-2" rowspan="4">
+						<div class="imageview">
+							<img v-if="police.pbd_img" :src='police.img_face_url' >
+						</div>
+					</td>
+					<td class="col-xs-2" rowspan="4" >
+						<div class="imageview" >
+							<img v-if="police.img_url_scene" :src='police.img_url_scene' >
+						</div>
+					</td>								
+				</tr>
+				<tr>
+					
+					<td class="col-xs-1">职务</td>
+					<td class="col-xs-2" v-text="police.pbd_pstn_name"></td>
+					<td class="col-xs-1">部门</td>
+					<td class="col-xs-2" v-text="police.odd_name"></td>
+				</tr>
+				<tr>
+					<td class="col-xs-1">年龄</td>
+					<td class="col-xs-2" v-text="police.pbd_age"></td>
+					<td class="col-xs-1">性别</td>
+					<td class="col-xs-2" v-text="police.pbd_sex"></td>
+				</tr>				
+				<tr>
+					<td class="col-xs-1">出生日期</td>
+					<td class="col-xs-3" v-text="police.pbd_birth_date"></td>
+					<td class="col-xs-1">警员类型</td>
+					<td class="col-xs-2" v-text="police.pbd_police_type_indc"></td>
+						
+				</tr>
+			</table>
+			<table class="table table-bordered">
+				<tr>
+					<td class="col-xs-1">政治面貌</td>
+					<td class="col-xs-2" v-text="police.pbd_political_status"></td>
+					<td class="col-xs-1">衔称</td>
+					<td class="col-xs-2" v-text="police.pbd_official_title"></td>
+					<td class="col-xs-1">学历</td>
+					<td class="col-xs-2" v-text="police.pbd_degree_indc"></td>
+				</tr>
+				<tr>
+					<td class="col-xs-1">工作日期</td>
+					<td class="col-xs-2" v-text="police.pbd_job_date"></td>
+					<td class="col-xs-1">专业</td>
+					<td class="col-xs-2" v-text="pbd_profession"></td>
+					<td class="col-xs-1">邮箱</td>
+					<td class="col-xs-2" v-text="police.pbd_email"></td>
+				</tr>
+				
+				<tr>
+					<td class="col-xs-1">对讲</td>
+					<td class="col-xs-2" v-text="police.pbd_talk_num"></td>
+					<td class="col-xs-1">手机</td>
+					<td class="col-xs-2" v-text="police.pbd_phone"></td>
+					<td class="col-xs-1">警务通</td>
+					<td class="col-xs-2" v-text="police.pbd_police_cmmnct"></td>
+				</tr>
+				<tr>
+					<td class="col-xs-1">短号</td>
+					<td class="col-xs-2" v-text="police.pbd_short_phone"></td>
+					<td class="col-xs-1">固话</td>
+					<td class="col-xs-2" v-text="police.pbd_fixed_phone"></td>
+					<td class="col-xs-1">传真</td>
+					<td class="col-xs-2" v-text="police.pbd_fax"></td>
+					
+				</tr>
+				<tr>
+					<td class="col-xs-1">亲属号码</td>
+					<td class="col-xs-2" v-text="police.pbd_family_phone"></td>
+					<td class="col-xs-1">OA系统</td>
+					<td class="col-xs-2" v-text="police.pbd_oa_system"></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/prisoner/person/police"]);
+</script>

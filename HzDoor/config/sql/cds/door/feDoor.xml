@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="insert_dor_swipe_card_record">
+		<sql>
+			INSERT INTO dor_swipe_card_record
+			  (scr_cus_number,
+			   scr_record_id,
+			   scr_bsns_date,
+			   scr_door_id,
+			   scr_door_name,
+			   scr_dept_id,
+			   scr_dept_name,
+			   scr_area_id,
+			   scr_area_name,
+			   scr_people_id,
+			   scr_people_type,
+			   scr_people_name,
+			   scr_card_id,
+			   scr_inout_flag,
+			   scr_bsns_time,
+			   scr_status,
+			   scr_remark)
+			VALUES
+			  (?,
+			   ?,
+			   TRUNC(SYSDATE),
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   ?,
+			   TO_TIMESTAMP(?, 'yyyy-mm-dd hh24:mi:ss'),
+			   ?,
+			   ?)
+		</sql>
+	</item>
+	<item id="update_door_open_status">
+		<sql>
+			UPDATE dor_door_base_dtls
+			   SET dbd_stts_indc = ?
+			 WHERE dbd_cus_number = ?
+			   AND dbd_other_id = ?
+		</sql>
+	</item>
+</sqlItem>

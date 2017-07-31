@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<style>
+	ul.container{
+		position:absolute;
+		height:100%;
+		width:100%;
+		overflow:auto;
+		color:white;
+		padding:10px 0;
+		margin:0px;
+	}
+	ul.container li{
+	    width: 23.75%;
+	    background: url(../../../../css/images/icons/door.png);
+	    height: 90px;
+	    padding: 0 10px;
+	    background-repeat: no-repeat;
+	    float: left;
+	    margin: 10px 0 0 1%;
+	    line-height: 90px;
+	    text-align: center;
+	    border-radius: 10px;
+	    border: 1px solid #2e697e;
+	    background-position: 50% 10%;
+	    background-size: 30px 30px;
+	    cursor:pointer;
+	    position:relative;
+	}
+	ul.container li.active::after{
+		content:'';
+		background:url(../../../../css/cds/door/images/check.png);
+		position:absolute;
+		width:45px;
+		height:45px;
+		background-size:45px 45px;
+		bottom:1px;
+		right:1px;
+	}
+</style>
+<div class="vbox box-con" id="formddd">
+	<div class="vbox hz-col-1">
+		<div class="hbox" style="margin-bottom:5px;">
+			<div class="radio hz-col-1">
+			    <label>
+					<input type="checkbox" v-model="checked" @click="selectAll($event)" style="margin-right:15px;">全选
+				</label>	
+		  	</div>
+		  	<div class="input icon"  style="float:right;right:1%;margin:10px 4px 0 0;">
+			  	<input id="tab" v-model="search" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		</div>
+				
+		<div class="hz-col-9" style="position:relative;">
+			<ul class="container" v-cloak>
+				<div v-if='list.length==0' style="text-align:center;margin-top:20px;color:red;">未获取到门禁,请重试</div>
+				<li  v-for="i in list"  class="active"  data-rel="{{i.linkId}}">
+					{{i.name}}
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- 密码弹窗 -->
+	<form id="password" class="passwordd" autocomplete="false">
+            <input  type="password"  v-model="password[0]">
+           	<input  type="password"  v-model="password[1]">
+           	<input  type="password"  v-model="password[2]">
+           	<input  type="password"  v-model="password[3]">
+           	<input  type="password"  v-model="password[4]">
+           	<input  type="password"  v-model="password[5]">
+	</form>
+	<div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"  @click="opr('open')"><i class="btn_icon icon_save"></i><span>一键开门</span></a>
+				<a class="hbtn btn_primary btn_large"  @click="opr('close')"><i class="btn_icon icon_save"></i><span>一键关门</span></a>		  
+				<a class="hbtn btn_primary btn_large"  @click="reSelect()"><i class="btn_icon icon_reset"></i><span>重选</span></a>
+		</div>    
+	</div> 
+</div>
+<script type="text/javascript" src="../../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/door/doorSelect/doorSelect"]);
+</script>

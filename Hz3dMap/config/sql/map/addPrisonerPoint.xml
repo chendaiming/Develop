@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_map_panel_point_info" desc="添加MAP_面板点位信息">
+		<seq>ppi_point_id@id</seq>
+		<sql>
+			INSERT  INTO
+				map_panel_point_info
+				(	
+					ppi_cus_number,
+					ppi_point_id,
+					ppi_view_id,
+					ppi_panel_width,
+					ppi_panel_height,
+					ppi_link_type,
+					ppi_link_id,
+					ppi_pos_x,
+					ppi_pos_y,
+					ppi_pos_z,
+					ppi_rot_x,
+					ppi_rot_y,
+					ppi_rot_z,
+					ppi_point_flag,
+					ppi_distance_min,
+					ppi_distance_max,
+					ppi_line_height,
+					ppi_view_pos_x,
+					ppi_view_pos_y,
+					ppi_view_pos_z,
+					ppi_view_rot_x,
+					ppi_view_rot_y,
+					ppi_view_rot_z,
+					ppi_view_tar_x,
+					ppi_view_tar_y,
+					ppi_view_tar_z,
+					ppi_create_uid,
+					ppi_create_datetime,
+					ppi_update_uid,
+					ppi_update_datetime
+				)
+			values(
+					:ppi_cus_number,
+					:id,
+					:ppi_view_id,
+					:ppi_panel_width,
+					:ppi_panel_height,
+					:ppi_link_type,
+					:ppi_link_id,
+					:ppi_pos_x,
+					:ppi_pos_y,
+					:ppi_pos_z,
+					:ppi_rot_x,
+					:ppi_rot_y,
+					:ppi_rot_z,
+					:ppi_point_flag,
+					:ppi_distance_min,
+					:ppi_distance_max,
+					:ppi_line_height,
+					:ppi_view_pos_x,
+					:ppi_view_pos_y,
+					:ppi_view_pos_z,
+					:ppi_view_rot_x,
+					:ppi_view_rot_y,
+					:ppi_view_rot_z,
+					:ppi_view_tar_x,
+					:ppi_view_tar_y,
+					:ppi_view_tar_z,
+					:ppi_create_uid,
+					SYSDATE,
+					:ppi_update_uid,
+					SYSDATE
+        		)
+		</sql>
+   </item>
+   
+    <item id="select_panelPoint_prisoner_tree"  desc="查询罪犯信息树">
+		 <sql>
+		 	SELECT odd_id          AS   id,
+		          ''              AS   prisonerid,
+		          odd_parent_id   AS   pid,
+		          odd_name        AS   name,
+		          '../../../libs/ztree/css/zTreeStyle/img/org.png'       AS   icon,
+		          0               AS   type
+		     FROM sys_org_dept_dtls
+ 			WHERE odd_group_id  = 239
+ 			   OR odd_group_id  = 236
+		    START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id=odd_parent_id
+			UNION ALL
+		   SELECT pbd_prsnr_id   AS  id,
+		          pbd_other_id    AS  prisonerid,
+		          pbd_prsn_area_id  AS  pid,
+		          pbd_prsnr_name AS  name,
+		          '../../../libs/ztree/css/zTreeStyle/img/user.png'      AS  icon,
+		          1               AS  type
+		     FROM psr_prisoner_base_dtls
+		    WHERE pbd_cus_number = ?
+		    ORDER BY prisonerid,id	     
+		 </sql>
+     </item> 
+
+   <item id="select_panelPoint_prisoner_info" desc="查询罪犯信息">
+		 <sql>
+			SELECT a.pbd_prsnr_id   AS id,
+			       a.pbd_other_id   AS prisonerid,
+			       a.pbd_prsnr_name AS name,
+			       b.pbd_photo_path AS img_url,
+			       abi_bed_code     AS bed_code,
+			       abi_bed_name     AS bed_name
+			  FROM psr_prisoner_base_dtls a
+			  LEFT JOIN psr_photo_base_dtls b
+			    ON (a.pbd_cus_number = b.pbd_cus_number AND
+			       a.pbd_prsnr_id = b.pbd_prsnr_id)
+			  LEFT JOIN psr_bed_base_dtls
+			    ON bbd_cus_number = a.pbd_cus_number
+			   AND bbd_prsnr_id = a.pbd_prsnr_id
+			  LEFT JOIN com_area_bed_info
+			    ON bbd_cus_number = abi_cus_number
+			   AND bbd_bed_id = abi_bed_id
+		</sql>
+		<where id="0">
+		 	 WHERE a.pbd_cus_number = ?
+		</where>	
+	</item>
+</sqlItem>

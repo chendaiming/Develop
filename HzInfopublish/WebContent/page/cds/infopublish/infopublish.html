@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css">
+<link rel="stylesheet" href="../../../css/common.css">
+<style>
+.item {
+	position: relative;
+	width: 25%;
+	float: left;
+}
+
+.item>div {
+	margin: 10px;
+	height: 86px;
+	margin-top: 15px;
+	border: 1px solid #4077ae;
+	border-radius: 6px;
+	text-align: center;
+	padding-top: 38px;
+	padding-bottom: 8px;
+	font-size: 12px;
+	color: #eee;
+	cursor: pointer;
+	background-size: 25px;
+	background-position: center 6px;
+	background-repeat: no-repeat;
+}
+
+.item>div:hover {
+	background-color: #4077ae;
+}
+
+.item .status {
+	color: #11cd6e;
+	font-size: 10px;
+}
+
+.select>div {
+	color: #fff;
+	background-color: #4077ae;
+}
+
+.select>div::before {
+	content: '';
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	width: 30px;
+	height: 30px;
+	background: url('../../../css/images/icons/select.png') no-repeat;
+}
+
+.item>div {
+	background-image: url('../../../css/images/icons/xinxi(2).png');
+}
+
+.c_nav {
+	width: 16px;
+	height: 16px;
+	margin-left: 8px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-bottom: 3px;
+}
+
+.c_nav:hover {
+	width: 18px;
+	height: 18px;
+}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="form">
+	<div class="vbox hz-col-1">
+		<div class="hbox hz-col-1">
+			<div class="left-con vbox hz-col-3">
+				<div class="input icon">
+					<input placeholder="输入关键字搜索" id="input"> <span class="find"></span>
+				</div>
+				<div class="hz-col-1" style="overflow: auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="hz-col-6 vbox right-con">
+				<div class="hz-col-1 vbox">
+					<div class="hbox">
+						<div class="radio hz-col-1" @click="">
+							<label> <span>节目清单</span><span
+								v-text="remote.currentarea"></span>
+							</label>
+						</div>
+					</div>
+
+					<div class="hz-col-9" id="form" style="overflow: auto;">
+						<div v-if="program.length==0" class="empty">暂无节目清单</div>
+						<div class="col-sm-12" v-cloak id="listcontainer">
+							<div class="item" v-for="p in program" :id="p.id"
+								@click="programSelect(p)"
+								@dblclick="getprogramcontent(p.id,p.categoryName)">
+								<div>
+									<span v-text="p.name"></span> <span class="status"
+										v-text="'('+p.categoryName+')'"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+		<div class="bottom hbox">
+			<div class="hbox hz-col-1">
+				<div class="hz-col-1" style="text-align: right">
+					<a @click="programSend()" class="hbtn btn_primary btn_large"><span>发送节目</span></a>
+					<!-- 					<a @click="" class="hbtn btn_primary btn_large"><span>锁定</span></a> -->
+					<!-- 		  			<a @click="" class="hbtn btn_primary btn_large"><span>开门</span></a> -->
+					<!-- 		  			<a @click="" class="hbtn btn_primary btn_large"><span>关门</span></a> -->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+	requirejs([ 'hz/cds/infopublish/infopublish' ])
+</script>
+</html>

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_room_cameras">
+		<sql>
+			SELECT 
+				cbd_cus_number,
+				cbd_id,
+				cbd_name,
+				cbd_room_id
+			FROM cmr_camera_base_dtls
+			INNER JOIN map_model_point_info ON cbd_id = mpi_link_id
+			WHERE cbd_room_id = :roomName
+		</sql>
+	</item>
+	<item id="select_room_doors">
+		<sql>
+			SELECT 
+				dbd_cus_number,
+				dbd_id,
+				dbd_name,
+				dbd_room_id,
+				mpi_rltn_model_name AS model_name
+			FROM dor_door_base_dtls
+			INNER JOIN map_model_point_info ON dbd_id = mpi_link_id
+			WHERE dbd_room_id = :roomName
+		</sql>
+	</item>
+	<item id="select_room_talks">
+		<sql>
+			SELECT 
+				tbd_cus_number,
+				tbd_id,
+				tbd_name,
+				tbd_room_id
+			FROM tbk_talkback_base_dtls
+			WHERE tbd_room_id = :roomName
+		</sql>
+	</item>
+	<item id="update_camera_roomid">
+		<sql>
+			UPDATE cmr_camera_base_dtls SET cbd_room_id = :roomName 
+			where cbd_id = :linkId AND cbd_cus_number =:cusNum			
+		</sql>
+	</item>
+	<item id="update_door_roomid">
+		<sql>
+			UPDATE dor_door_base_dtls SET dbd_room_id = :roomName 
+			where dbd_id = :linkId AND dbd_cus_number =:cusNum			
+		</sql>
+	</item>
+	<item id="update_talk_roomid">
+		<sql>
+			UPDATE tbk_talkback_base_dtls SET tbd_room_id = :roomName 
+			where tbd_id = :linkId AND tbd_cus_number =:cusNum			
+		</sql>
+	</item>
+
+	<item id="update_network_roomid">
+		<sql>
+			UPDATE alt_network_base_dtls SET nbd_room_id = :roomName 
+			where nbd_id = :linkId AND nbd_cus_number =:cusNum			
+		</sql>
+	</item>
+
+	<item id="update_rfid_roomid">
+		<sql>
+			UPDATE dvc_rfid_base_dtls SET rbd_room_id = :roomName 
+			where rbd_id = :linkId AND rbd_cus_number =:cusNum			
+		</sql>
+	</item>
+
+	<item id="update_wireless_alarm_roomid">
+		<sql>
+			UPDATE dvc_wireless_alarm_master
+			   SET wam_room_id = :roomName
+			 where wam_cus_number = :cusNum
+			   AND wam_id = :linkId
+		</sql>
+	</item>
+
+	<item id="select_door_point_ztree">
+		<const key="icon">point_type_icon</const>
+		<sql>
+			SELECT 
+		        DISTINCT CONCAT('v_',vmi_id) AS id,
+		        vmi_cus_number AS cus_number,
+		        CONCAT('v_',vmi_pid) AS pid,
+		        vmi_name AS name,
+		        '' AS pos_x,
+		        '' AS pos_y,
+		        '' AS pos_z, 
+		        to_char(vmi_pos_x) AS v_pos_x,
+		        to_char(vmi_pos_y) AS v_pos_y,
+		        to_char(vmi_pos_z) AS v_pos_z,
+		        to_char(vmi_rot_x) AS v_rot_x,
+		        to_char(vmi_rot_y) AS v_rot_y,
+		        to_char(vmi_rot_z) AS v_rot_z,
+		        to_char(vmi_tar_x) AS v_tar_x,
+		        to_char(vmi_tar_y) AS v_tar_y,
+		        to_char(vmi_tar_z) AS v_tar_z,
+		        -1 AS point_type,
+		        -1 AS mpi_link_id,
+		        0 AS icon,
+		        2 AS type,
+		        'true' AS nocheck,
+		        'true' AS isParent
+	      	FROM map_view_menu_info
+	      	START WITH vmi_cus_number =:cusNumber AND vmi_id IN (
+		          SELECT mpi_view_id FROM map_model_point_info 
+		          WHERE mpi_cus_number =:cusNumber and mpi_link_type=2
+		          GROUP BY mpi_view_id
+	      	)
+	      	CONNECT BY PRIOR vmi_pid = vmi_id
+	      	UNION 
+	      	SELECT
+		        to_char(mpi_point_id) AS id,
+		        mpi_cus_number AS cus_number,
+		        CONCAT('v_',mpi_view_id) AS pid,
+		        mpi_point_name AS name,
+		        to_char(mpi_pos_x) AS pos_x,
+		        to_char(mpi_pos_y) AS pos_y,
+		        to_char(mpi_pos_z) AS pos_z,
+		        mpi_view_pos_x AS v_pos_x,
+				mpi_view_pos_y AS v_pos_y,
+				mpi_view_pos_z AS v_pos_z,
+				mpi_view_rot_x AS v_rot_x,
+				mpi_view_rot_y AS v_rot_y,
+				mpi_view_rot_z AS v_rot_z,
+				mpi_view_tar_x AS v_tar_x,
+				mpi_view_tar_y AS v_tar_y,
+				mpi_view_tar_z AS v_tar_z,
+		        mpi_link_type AS point_type,
+		        mpi_link_id AS link_id,
+		        mpi_link_type AS icon,
+		        2 AS type,
+		        'false' AS nocheck,
+		        'false' AS isParent
+	      	FROM map_model_point_info
+			WHERE mpi_cus_number = :cusNumber and mpi_link_type=2
+		</sql>
+	</item>
+	<item id="select_station_tree">
+		<const key="icon">point_type_icon</const>
+		<sql>
+			SELECT * FROM(
+				SELECT
+					'r_'||abd_area_id   AS id,
+					'r_'||abd_parent_id AS pid,
+					abd_area_name       AS name,
+					abd_cus_number      AS cus_number,
+					0 AS icon,
+					15 AS type,
+					'true' AS nocheck,
+		        	'true' AS isParent
+				FROM com_area_base_dtls
+				START WITH abd_cus_number =:cusNumber AND abd_area_id IN (
+			        SELECT rbd_area_id FROM dvc_rfid_base_dtls 
+			        WHERE rbd_cus_number =:cusNumber
+			        GROUP BY rbd_area_id
+	      		)
+	      		CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      		UNION ALL
+				SELECT
+					''||rbd_id         AS  id,	
+					'r_'||rbd_area_id  AS pid,
+					rbd_name	       AS name,
+					rbd_cus_number     AS cus_number,
+					15 AS icon,
+					15 AS type,
+					'false' AS nocheck,
+		        	'false' AS isParent
+				FROM
+					dvc_rfid_base_dtls
+			) t
+		</sql>
+		<where id="0">
+			WHERE t.cus_number=:cusNumber
+		</where>
+	</item>
+	<item id="select_view_point_ztree">
+		<const key="icon">point_type_icon</const>
+		<sql>
+			SELECT 
+		        DISTINCT CONCAT('v_',vmi_id) AS id,
+		        vmi_cus_number AS cus_number,
+		        CONCAT('v_',vmi_pid) AS pid,
+		        vmi_name AS name,
+		        '' AS pos_x,
+		        '' AS pos_y,
+		        '' AS pos_z, 
+		        to_char(vmi_pos_x) AS v_pos_x,
+		        to_char(vmi_pos_y) AS v_pos_y,
+		        to_char(vmi_pos_z) AS v_pos_z,
+		        to_char(vmi_rot_x) AS v_rot_x,
+		        to_char(vmi_rot_y) AS v_rot_y,
+		        to_char(vmi_rot_z) AS v_rot_z,
+		        to_char(vmi_tar_x) AS v_tar_x,
+		        to_char(vmi_tar_y) AS v_tar_y,
+		        to_char(vmi_tar_z) AS v_tar_z,
+		        -1 AS point_type,
+		        -1 AS mpi_link_id,
+		        0 AS icon,
+		        'true' AS nocheck,
+		        'true' AS isParent
+	      	FROM map_view_menu_info
+	      	START WITH vmi_cus_number =:cusNumber AND vmi_id IN (
+		          SELECT mpi_view_id FROM map_model_point_info 
+		          WHERE mpi_cus_number =:cusNumber 
+		          GROUP BY mpi_view_id
+	      	)
+	      	CONNECT BY PRIOR vmi_pid = vmi_id
+	      	UNION 
+	      	SELECT
+		        to_char(mpi_point_id) AS id,
+		        mpi_cus_number AS cus_number,
+		        CONCAT('v_',mpi_view_id) AS pid,
+		        mpi_point_name AS name,
+		        to_char(mpi_pos_x) AS pos_x,
+		        to_char(mpi_pos_y) AS pos_y,
+		        to_char(mpi_pos_z) AS pos_z,
+		        mpi_view_pos_x AS v_pos_x,
+				mpi_view_pos_y AS v_pos_y,
+				mpi_view_pos_z AS v_pos_z,
+				mpi_view_rot_x AS v_rot_x,
+				mpi_view_rot_y AS v_rot_y,
+				mpi_view_rot_z AS v_rot_z,
+				mpi_view_tar_x AS v_tar_x,
+				mpi_view_tar_y AS v_tar_y,
+				mpi_view_tar_z AS v_tar_z,
+		        mpi_link_type AS point_type,
+		        mpi_link_id AS link_id,
+		        mpi_link_type AS icon,
+		        'false' AS nocheck,
+		        'false' AS isParent
+	      	FROM map_model_point_info
+			WHERE mpi_cus_number = :cusNumber
+		</sql>
+	</item>
+	<item id="delete_view_point">
+		<sql>
+			DELETE FROM map_model_point_info WHERE mpi_point_id = :id
+		</sql>
+	</item>
+	<item id="select_view_point_byid">
+		<sql>
+			SELECT mpi_link_id FROM map_model_point_info WHERE mpi_cus_number=? AND mpi_link_id=? AND mpi_link_type=?
+		</sql>
+	</item>
+	<item id="update_view_point">
+		<sql>
+			UPDATE map_model_point_info SET
+				mpi_point_name = :mpi_point_name,
+				mpi_link_type = :mpi_link_type,
+				mpi_link_id = :mpi_link_id,
+				mpi_pos_x = :mpi_pos_x,
+				mpi_pos_y = :mpi_pos_y,
+				mpi_pos_z = :mpi_pos_z,
+				mpi_rot_x = :mpi_rot_x,
+				mpi_rot_y = :mpi_rot_y,
+				mpi_rot_z = :mpi_rot_z,
+				mpi_view_pos_x =:mpi_view_pos_x,
+				mpi_view_pos_y =:mpi_view_pos_y,
+				mpi_view_pos_z =:mpi_view_pos_z,
+				mpi_view_rot_x =:mpi_view_rot_x,
+				mpi_view_rot_y =:mpi_view_rot_y,
+				mpi_view_rot_z =:mpi_view_rot_z,
+				mpi_view_tar_x =:mpi_view_tar_x,
+				mpi_view_tar_y =:mpi_view_tar_y,
+				mpi_view_tar_z =:mpi_view_tar_z,
+				mpi_point_flag = :mpi_point_flag,
+				mpi_show_type = :mpi_show_type,
+				mpi_update_uid = :mpi_update_uid,
+				mpi_update_datetime = SYSDATE,
+				mpi_rltn_model_name = :mpi_rltn_model_name,
+				mpi_model_type = :mpi_model_type
+			WHERE mpi_point_id = :mpi_point_id AND mpi_cus_number = :mpi_cus_number		
+		</sql>
+	</item>
+    <item id="insert_view_point" desc="">
+		<seq>map_model_point_info@mpi_point_id@mpi_point_id</seq>
+		<sql>
+			INSERT INTO map_model_point_info (
+				mpi_cus_number,
+				mpi_point_id,
+				mpi_point_name,
+				mpi_view_id,
+				mpi_link_type,
+				mpi_link_id,
+				mpi_pos_x,
+				mpi_pos_y,
+				mpi_pos_z,
+				mpi_rot_x,
+				mpi_rot_y,
+				mpi_rot_z,
+				mpi_view_pos_x,
+				mpi_view_pos_y,
+				mpi_view_pos_z,
+				mpi_view_rot_x,
+				mpi_view_rot_y,
+				mpi_view_rot_z,
+				mpi_view_tar_x,
+				mpi_view_tar_y,
+				mpi_view_tar_z,
+				mpi_point_flag,
+				mpi_show_type,
+				mpi_create_uid,
+				mpi_create_datetime,
+				mpi_update_uid,
+				mpi_update_datetime,
+				mpi_rltn_model_name,
+				mpi_model_type
+			) VALUES (
+				:mpi_cus_number,
+				:mpi_point_id,
+				:mpi_point_name,
+				:mpi_view_id,
+				:mpi_link_type,
+				:mpi_link_id,
+				:mpi_pos_x,
+				:mpi_pos_y,
+				:mpi_pos_z,
+				:mpi_rot_x,
+				:mpi_rot_y,
+				:mpi_rot_z,
+				:mpi_view_pos_x,
+				:mpi_view_pos_y,
+				:mpi_view_pos_z,
+				:mpi_view_rot_x,
+				:mpi_view_rot_y,
+				:mpi_view_rot_z,
+				:mpi_view_tar_x,
+				:mpi_view_tar_y,
+				:mpi_view_tar_z,
+				:mpi_point_flag,
+				:mpi_show_type,
+				:mpi_create_uid,
+				SYSDATE,
+				:mpi_update_uid,
+				SYSDATE,
+				:mpi_rltn_model_name,
+				:mpi_model_type
+			)
+		</sql>
+    </item>
+</sqlItem>

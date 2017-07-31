@@ -1,0 +1,54 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+.left{
+    border-left: 1px solid rgb(31, 105, 158);
+   	padding: 10px;
+}
+a.listen{
+    background: url(../../../libs/ztree/css/zTreeStyle/img/listen.png);
+    background-repeat: no-repeat;
+    background-position: right;
+}
+a.broad{
+    background: url(../../../libs/ztree/css/zTreeStyle/img/broad.png);
+    background-repeat: no-repeat;
+    background-position: right;
+}
+.ztree a>span{
+	    margin-right: 16px;
+}
+</style>
+<div class="hbox box-con">
+	<div class="hz-col-12 vbox ">
+	<div class="hz-col-3 vbox left"  style="overflow: auto;">
+		<div class="input icon" >
+		  	<input id="input" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+		<div class="hz-col-4" style="overflow:auto;">
+			<ul id="tree" class="ztree"></ul>
+		</div>
+			<div id="oprbtn" class="hz-col-1 vbox " style="border-top: 1px solid rgb(31, 105, 158);text-align: center;padding-top:10px;">
+				<div class="buttons hz-col-1">
+					<a class="hbtn btn_primary btn_large" ><i class="btn_icon icon_save"></i><span>呼叫</span></a>		  
+					<a class="hbtn btn_primary btn_large" ><i class="btn_icon icon_del"></i><span>挂断</span></a>
+				</div>
+				<div class="buttons hz-col-1">
+					<a class="hbtn btn_primary btn_large" ><i class="btn_icon icon_reset"></i><span>广播</span></a>
+					<a class="hbtn btn_primary btn_large" ><i class="btn_icon icon_reset"></i><span>监听</span></a>
+				</div>
+				<div class="buttons hz-col-1">
+					<a  class="hbtn btn_primary btn_large" ><i class="btn_icon icon_save"></i><span>电脑呼叫</span></a>		  
+					<a  class="hbtn btn_primary btn_large" ><i class="btn_icon icon_del"></i><span>电脑挂断</span></a>
+				</div>				
+			</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/meetTalking/meetTalking"]);
+// require(["hz/cds/video/videoTalk"]);
+</script>

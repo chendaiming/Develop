@@ -1,0 +1,26 @@
+
+
+/* -------------------------------------------------------------------------
+ * -- 2017.04.18 新增功能菜单
+ * ------------------------------------------------------------------------- */
+
+1.点位标注管理 	page/map/mapPoint/pointLabel.html
+2.RFID人员绑定 	page/cds/rfidData/rfidData.html
+3.RFID越界管理 	page/cds/prisoner/overAlarm/areaSelect.html
+4.大楚网			page/dcw/dcwList.html
+5.越界框选记录 	page/cds/prisoner/overAlarm/frameRecord.html
+
+
+
+
+/* -------------------------------------------------------------------------
+ * -- 2017.05.18 新增功能菜单
+ * ------------------------------------------------------------------------- */
+功能菜单：
+	1. 设备报修 > 故障报修：page/cds/dailywork/faultRepair/repair.html
+	2. 设备报修 > 维修处理：page/cds/dailywork/faultRepair/service.html
+	3. 信息汇聚 > 工作汇报 > 分监区日收日解：page/cds/dailywork/dailyReceiptRecord.html
+	4. 信息汇聚 > 工作汇报 > 监区日收日解：page/cds/dailywork/dailyworkList.html
+	5. 视频监控 > 录像查询播放：page/cds/video/videoPlayInfo.html
+	6. 视频监控 > 监督推送：page/cds/video/notificationInfo.html
+	

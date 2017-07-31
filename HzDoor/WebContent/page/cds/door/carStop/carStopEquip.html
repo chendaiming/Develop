@@ -1,0 +1,133 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<div class="vbox box-con" id="form">
+    <div class="hbox hz-col-1">
+        <div class=" left-con vbox">
+            <div class="input icon" >
+                <input id="input" placeholder="输入关键字搜索">
+                <span class="find"></span>
+            </div>
+            <div class="hz-col-1" style="overflow:auto;">
+                <ul id="tree" class="ztree"></ul>
+            </div>
+        </div>
+
+        <div class="hz-col-9 right-con">
+            <form class="form-horizontal">
+
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">所属区域<span class="required">*</span></label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" disabled=true v-model="main.cai_area_name" placeholder="请选择区域">
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">所属部门<span class="required">*</span></label>
+
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="dep" disabled=true v-model="main.cai_dept_name"  placeholder="请选择所属部门">
+                            <div class="input-group-btn">
+                                <button type="button"  class="btn btn-default" >所属部门<span class="caret"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">厂商设备编号<span class="required">*</span></label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" v-model="main.cai_other_id" placeholder="请输入厂商设备编号">
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">厂商设备名称<span class="required">*</span></label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" v-model="main.cai_name" placeholder="请输入厂商设备名称">
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">设备品牌<span class="required">*</span></label>
+                    <div class="col-sm-8">
+                        <hz-select
+                                tip="设备品牌"
+                                code="CAI_BRAND"
+                                :id.sync="main.cai_brand"
+                                />
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">设备类型<span class="required">*</span></label>
+                    <div class="col-sm-8">
+                        <hz-select
+                                tip="设备类型"
+                                code="CAI_TYPE"
+                                :id.sync="main.cai_type"
+                                />
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">IP地址</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" v-model="main.cai_ip" placeholder="请输入IP地址">
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">端口</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" v-model="main.cai_port" placeholder="请输入端口">
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">安装位置</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" v-model="main.cai_addrs" placeholder="请输入安装位置">
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">设备状态<span class="required">*</span></label>
+                    <div class="col-sm-8">
+                        <hz-select
+                                tip="设备状态"
+                                code="ALARM_STATUS"
+                                :id.sync="main.cai_work_stts"
+                                />
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">设备使用状态<span class="required">*</span></label>
+                    <div class="col-sm-8">
+                        <hz-select
+                                tip="设备使用状态"
+                                code="ALARM_STATUS"
+                                :id.sync="main.cai_use_stts"
+                                />
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <label class="col-sm-2 control-label">序号</label>
+
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" v-model="main.cai_seq" placeholder="请输入序号">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div class="buttons">
+            <a class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+            <a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+            <a class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+    require(["hz/cds/door/carStop/carStopEquip"]);
+</script>

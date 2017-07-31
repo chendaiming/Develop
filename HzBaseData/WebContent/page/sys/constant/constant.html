@@ -1,0 +1,109 @@
+
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<div class="vbox box-con" id="constlist">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				<ul class="hz-col-1 list-group" style="cursor:pointer;overflow-y:scroll;margin-top:15px;border:1px solid #1e689d" id="groupconst">
+					<template  v-cloak v-for="item in list | filterBy searchTree in 'ctd_type_name'">
+						<li class="list-group-item" @click="refresh(item,this)" :value="item.ctd_type_id" >
+					  		{{item['ctd_type_name']}}
+				  		</li>
+					</template>
+				</ul>
+			</div>
+			
+			<div style="height:20px" id="groupbtn">
+				<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_mini" id="del"><i class="btn_icon icon_edit"></i><span>编辑</span></a>
+				<a class="hbtn btn_primary btn_mini" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			</div>
+		</div>
+		
+		<div class="hz-col-9 right-con">
+	       	<table id="table" ></table>
+		</div>
+	</div>
+	
+	<div class="bottom" >
+		<div class="buttons" id="oprbutton">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div> 
+	
+	<div class="vbox hz-col-1" id="constgroup" style="display:none;"><!-- 常量组添加 -->
+		<div class="hz-col-9">
+			<form class="form-horizontal"  style="margin-top:20px;overflow-x: hidden;">
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">常量组名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disalbled=true v-model="constgroup['ctd_type_name']" placeholder="请输入常量组名称">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">常量组编码</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="constgroup['ctd_type_id']" placeholder="请输入常量组编码">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">显示顺序</label>
+			        <div class="col-sm-8 ">
+			            <input type="text" class="form-control" v-model="constgroup['ctd_type_seq']" placeholder="请输入显示顺序">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div class="hz-col-1">
+		    <a class="hbtn btn_primary btn_mini pull-right" id="save"  style="margin-right:20px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+	
+	<div class="vbox hz-col-1" id="constd" style="display:none;"><!-- 常量修改新增 -->
+		<div class="hz-col-9">
+			<form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+		
+		    	<div class="form-group ">
+			        <label class="col-sm-3 control-label">常量组</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled=true v-model="constgroup['ctd_type_name']" placeholder="请输入常量组名称">
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">常量键</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="constgroup['ccd_key']" placeholder="请输入常量键">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">常量值</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="constgroup['ccd_value']" placeholder="请输入常量值">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">排列顺序</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="constgroup['ccd_seq']" placeholder="请输入排列顺序">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		 <div class="hz-col-1">
+					  <a class="hbtn btn_primary btn_mini pull-right" id="save" style="margin-right:15px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			 </div>	
+	</div>
+</div>
+
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/sys/constant/constant"]);
+</script>

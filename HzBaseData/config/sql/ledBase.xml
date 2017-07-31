@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_tbk_led_base_dtls" desc="新增LED显示器信息">
+		<seq>lbd_id@id</seq>
+		<sql>
+			INSERT  INTO
+				tbk_led_base_dtls
+				(	
+					lbd_cus_number,
+					lbd_id,	
+					lbd_other_id,
+					lbd_name,
+					lbd_brand,
+					lbd_ip,
+					lbd_chl,
+					lbd_port,
+					lbd_dept_id,
+					lbd_area_id,
+					lbd_room_id,
+					lbd_dvc_addrs,
+					lbd_dvc_stts,
+					lbd_use_stts,
+					lbd_seq,
+					lbd_crte_time,
+					lbd_crte_user_id,
+					lbd_updt_time,
+					lbd_updt_user_id,
+					lbd_width,
+					lbd_height
+				)
+			values(
+					:lbd_cus_number,
+					:id,
+					:lbd_other_id,
+					:name,
+					:lbd_brand,
+					:lbd_ip,
+					:lbd_chl,
+					:lbd_port,
+					:lbd_dept_id,
+					:lbd_area_id,
+					:lbd_room_id,
+					:lbd_dvc_addrs,
+					:lbd_dvc_stts,
+					:lbd_use_stts,
+					:lbd_seq,
+					SYSDATE,
+					:lbd_crte_user_id,
+					SYSDATE,
+					:lbd_updt_user_id,
+					:lbd_width,
+					:lbd_height
+        		)
+		</sql>
+    </item>
+    
+	<item id="select_tbk_led_base_dtls" desc="查询LED显示器信息">
+    	<sql>
+    		SELECT DISTINCT '' || lbd_id    id,
+			               '1-' || lbd_area_id pid,
+			                lbd_name name,
+			               'talk.png' icon,
+			                '1' AS type,
+			                lbd_cus_number,
+			                lbd_other_id,
+			                lbd_brand,
+			                lbd_ip,
+			                lbd_chl,
+			                lbd_port,
+			                lbd_dept_id,
+			                b.odd_name AS lbd_dept_name,
+			                lbd_area_id,
+			                a.abd_area_name AS lbd_area_name,
+			                lbd_room_id,
+			                lbd_dvc_addrs,
+			                lbd_dvc_stts,
+			                lbd_use_stts,
+			                lbd_seq,
+			                lbd_crte_user_id,
+			                lbd_updt_user_id,
+							lbd_width,
+							lbd_height
+			          FROM tbk_led_base_dtls p
+			          INNER JOIN (select abd_area_id, abd_area_name
+			               from (SELECT odd_id
+			                       FROM sys_org_dept_dtls
+			                      START WITH odd_id = ?
+			                     CONNECT BY prior odd_id = odd_parent_id)
+			              INNER JOIN com_org_area_rltn
+			                 ON oar_dept_id = odd_id
+			              INNER JOIN com_area_base_dtls
+			                 ON abd_area_id = oar_area_id
+			             ) a
+			             ON p.lbd_area_id = a.abd_area_id
+			         LEFT JOIN sys_org_dept_dtls b
+			  	     ON (lbd_cus_number = odd_parent_id AND
+			  	 	     lbd_dept_id = odd_id)
+			        UNION ALL
+			        SELECT '1-' || abd_area_id id,
+			               '1-' || abd_parent_id pid,
+			                abd_area_name name,
+			               'area.png' icon,
+			                '0' AS type,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+							null,
+							null
+			          FROM com_area_base_dtls t
+			
+		</sql>
+	</item>
+	
+	<item id="update_tbk_led_base_dtls" desc="修改LED显示器信息">
+    	<sql>
+			UPDATE tbk_led_base_dtls SET
+				   lbd_other_id = :lbd_other_id,
+				   lbd_name = :lbd_name,
+				   lbd_brand = :lbd_brand,
+				   lbd_ip = :lbd_ip,
+				   lbd_chl = :lbd_chl,
+				   lbd_port = :lbd_port,
+				   lbd_dept_id = :lbd_dept_id,
+				   lbd_area_id = :lbd_area_id,
+				   lbd_room_id = :lbd_room_id,
+				   lbd_dvc_addrs = :lbd_dvc_addrs,
+				   lbd_dvc_stts = :lbd_dvc_stts,
+				   lbd_use_stts = :lbd_use_stts,
+				   lbd_width = :lbd_width,
+				   lbd_height = :lbd_height
+			 WHERE lbd_cus_number = :lbd_cus_number AND
+			 	   lbd_id = :lbd_id
+		</sql>
+	</item>
+	
+	<item id="update_tbk_led_base_orderId" desc="修改LED显示器信息排序序号">
+    	<sql>
+			UPDATE tbk_led_base_dtls SET
+				   lbd_seq = :lbd_seq
+			 WHERE lbd_cus_number = :lbd_cus_number AND
+			 	   lbd_id = :lbd_id
+		</sql>
+	</item>
+	
+	<item id="delete_tbk_led_base_dtls" desc="删除LED显示器信息">
+    	<sql>
+			DELETE tbk_led_base_dtls
+			 WHERE lbd_cus_number = :lbd_cus_number AND
+			 	   lbd_id = :lbd_id
+		</sql>
+	</item>
+</sqlItem>

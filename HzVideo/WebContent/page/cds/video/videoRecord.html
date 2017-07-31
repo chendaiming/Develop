@@ -1,0 +1,62 @@
+<style>
+	 #container.record-content {
+    	position: relative;
+    	width: 68%;
+	}
+	#container .record-content>div {
+		padding: 5px;
+    	border-bottom: 1px solid;
+	}
+
+	@-webkit-keyframes redPulse {
+		  from { background-color: #bc330d; -webkit-box-shadow: 0 0 9px #333; }
+		  50% { background-color: #e33100; -webkit-box-shadow: 0 0 18px #e33100; }
+		  to { background-color: #bc330d; -webkit-box-shadow: 0 0 9px #333; }
+		}
+	#container .red.buttonStyle { 
+		-webkit-animation-name: redPulse; 
+		-webkit-animation-duration: 1s; 
+	}
+	#container .buttonStyle { 
+		display: inline-block; 
+		margin: 0 10px 9px 0;
+		height: 26px;
+	}
+	#container .red.buttonStyle { 
+		background-color: #e33100; 
+	}
+	#container .red.buttonStyle:hover { 
+		background-color: #872300; 
+	}
+	#container p {
+		display: inline-block;
+	    position: absolute;
+	    right: 0;
+	    top: 46%;
+	    background: transparent;
+	}
+	#container {
+		background-color: rgba(20,50,68,0.8);
+    	padding: 15px;
+	    position: absolute;
+	    width: 200px;
+	    color: #fff;
+	}
+</style>
+
+
+<div id="container" class="container-fluid">
+	<div class="row-fluid" style="width: 80%;">
+		<div class="span12 record-content">
+			<div>
+				<span id="place">测试名称</span>
+			</div>
+			<div>
+				<span id="duration">00:00:00</span>
+			</div>
+			<p>
+				<a title="停止录制" @click="stopVideo" class="btn large red buttonStyle" href="#"></a>
+			</p>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,158 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+</style>
+<div class="vbox box-con" id="ledBaseManage">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="ledBaseTree" class="ztree"></ul>
+		   		</div>
+			</div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">厂商唯一编号</label>
+
+					<div class="col-sm-9">
+						<input class="form-control" v-model="ledBase.lbd_other_id" placeholder="请输入厂商唯一编号">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">LED显示器名称</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.name" placeholder="请输入LED显示器名称" maxlength="20">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">LED显示器品牌</label>
+
+					<div class="col-sm-9 ">
+						<hz-select
+								tip="请选择LED显示器品牌"
+								code="LBD_BRAND"
+								:id.sync="ledBase.lbd_brand"
+								/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">LED显示器IP</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_ip" placeholder="请输入LED显示器IP">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">LED显示器通道号</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_chl" placeholder="请输入LED显示器通道号">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">LED显示器端口</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_port" placeholder="请输入LED显示器端口">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">所属部门</label>
+
+					<div class="col-sm-9 ">
+						<div class="input-group">
+							<input type="text" class="form-control" id="dep"
+								   v-model="ledBase.lbd_dept_name" placeholder="请选择所属部门"
+								   required="required" disabled=true/>
+
+							<div class="input-group-btn">
+								<button type="button" class="btn btn-default">
+									所属部门<span class="caret"></span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">所属区域</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_area_name" placeholder="请选择所属区域"
+							   disabled="disabled">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">设备状态</label>
+
+					<div class="col-sm-9 ">
+						<hz-select
+								tip="请选择设备状态"
+								code="LBD_DVC_STTS"
+								:id.sync="ledBase.lbd_dvc_stts"
+								/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">使用状态</label>
+
+					<div class="col-sm-9 ">
+						<hz-select
+								tip="请选择使用状态"
+								code="LBD_USE_STTS"
+								:id.sync="ledBase.lbd_use_stts"
+								/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">房间号</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_room_id" placeholder="房间号">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">高度</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_width" placeholder="高度(厘米)">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">宽度</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_height" placeholder="宽度(厘米)">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">安装位置</label>
+
+					<div class="col-sm-9 ">
+						<input class="form-control" v-model="ledBase.lbd_dvc_addrs" placeholder="请输入安装位置">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large" @click="save()"><i class="btn_icon icon_save"></i><span>保存</span></a>	
+			<a class="hbtn btn_primary btn_large" @click="del()"><i class="btn_icon icon_del"></i><span>删除</span></a>	
+			<a class="hbtn btn_primary btn_large" @click="reset()"><i class="btn_icon icon_reset"></i><span>重置</span></a>		  
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['sys/ledBase/ledBase'])
+</script>

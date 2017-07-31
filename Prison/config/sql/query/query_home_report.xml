@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="report_consult" desc="法律咨询统计SQL（饼状图）">
+		<sql>
+			select count(*) as "value", to_char(CATEGORY_) as "name" from CONSULT_CONSULTATION where CATEGORY_ is not null group by to_char(CATEGORY_)
+		</sql>
+    </item>
+    <item id="report_jos_edu" desc="执业律师统计SQL按照学历（环状图）">
+    	<sql>
+    		select count(*) as "value",to_char(education) as "name" from JOS_NORMALLAWYER where to_char(education)
+ in ('中专','大专','本科','硕士','博士','博士后') group by to_char(education)
+    	</sql>
+    </item>
+    <item id="report_jos_politic" desc="执业律师统计SQL按照政治面貌（环状图）">
+    	<sql>
+    		select count(*) as "value",to_char(POLITIC) as "name" from JOS_NORMALLAWYER where to_char(POLITIC)
+ in ('中共党员','民革委员','无党派民主人士','民盟盟员','共青团员','台盟盟员','九三学社社员','群众','党员','民进会员','农工党党员','民建会员','致公党党员','中共预备党员') group by to_char(POLITIC)
+    	</sql>
+    </item>
+    <item id="report_lawflrm_map">
+    	<sql>
+    		SELECT to_char(b.name_) as "name", count(*) as "value"
+			  FROM jos_lawfirm a
+			  LEFT JOIN jos_justicebureau b
+			    ON (to_char(a.justicebureau) = to_char(b.id))
+			  where b.name_ is not null and to_char(b.name_) !='杨浦区司法局'
+			 GROUP BY to_char(b.name_)
+    	</sql>
+    </item>
+</sqlItem>

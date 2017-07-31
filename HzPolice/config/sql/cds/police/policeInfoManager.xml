@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="insert_police_baseinfo" desc="警员基础信息新增">
+    	<seq>cds_police_base_dtls@id</seq>
+		<sql>
+			INSERT  INTO
+				plc_police_base_dtls
+				(	
+					pbd_user_id,
+					pbd_cus_number,	
+					pbd_police_id,
+					pbd_police_name,
+					pbd_drptmnt_id,
+					pbd_pstn_name,
+					pbd_sex,
+					pbd_age,
+					pbd_political_status,
+					pbd_official_title,
+	        		pbd_birth_date,
+	        		pbd_fixed_phone,
+	        		pbd_ip_phone,
+	        		pbd_phone,
+	        		pbd_short_phone,
+	        		pbd_fax,
+	        		pbd_talk_num,
+	        		pbd_email,
+	        		pbd_oa_system,
+	        		pbd_police_cmmnct,
+	        		pbd_family_phone,
+	        		pbd_police_type_indc,
+	        		pbd_degree_indc,
+	        		pbd_profession,
+	        		pbd_job_date,
+	        		pbd_in_prison,
+	        		pbd_remark,
+	        		pbd_crte_time,
+	        		pbd_crte_user_id,
+	        		pbd_updt_time,
+	        		pbd_updt_user_id
+				)
+			values(
+					:id,
+					:pbd_cus_number,
+					:policeid,
+					:name,
+					:pid,
+					:pbd_pstn_name,
+					:pbd_sex,
+					:pbd_age,
+					:pbd_political_status,
+					:pbd_official_title,
+	        		TO_TIMESTAMP(:pbd_birth_date,'YYYY-MM-DD'),
+	        		:pbd_fixed_phone,
+	        		:pbd_ip_phone,
+	        		:pbd_phone,
+	        		:pbd_short_phone,
+	        		:pbd_fax,
+	        		:pbd_talk_num,
+	        		:pbd_email,
+	        		:pbd_oa_system,
+	        		:pbd_police_cmmnct,
+	        		:pbd_family_phone,
+	        		:pbd_police_type_indc,
+	        		:pbd_degree_indc,
+	        		:pbd_profession,
+	        		TO_TIMESTAMP(:pbd_job_date,'YYYY-MM-DD'),
+	        		1,
+	        		:pbd_remark,
+	        		SYSDATE,
+	        		:user_id,
+	        		SYSDATE,
+	        		:user_id
+        		)
+		</sql>
+    </item>
+    
+	<item id="select_police_info_tree_org"  desc="警员信息查询(省级)">
+		<sql>
+		   SELECT pbd_user_id   AS  id,
+		          pbd_police_id    AS  policeid,
+		          pbd_drptmnt_id  AS  pid,
+		          pbd_police_name AS  name,
+		          'user.png'      AS  icon,
+		          1               AS  type
+		     FROM plc_police_base_dtls
+		    WHERE pbd_cus_number = ?
+		    UNION ALL
+		   SELECT odd_id          AS   id,
+		          ''              AS   policeid,
+		          odd_parent_id   AS   pid,
+		          odd_name        AS   name,
+		          'org.png'       AS   icon,
+		          0               AS   type
+		     FROM sys_org_dept_dtls
+		    WHERE odd_parent_id = ?
+		    UNION ALL
+		   SELECT odd_id          AS   id,
+		          ''              AS   policeid,
+		          odd_parent_id   AS   pid,
+		          odd_name        AS   name,
+		          'prison.png'    AS   icon,
+		          2               AS   type
+		     FROM sys_org_dept_dtls
+		    WHERE odd_id = ?
+		    ORDER BY type, policeid
+		</sql>
+	</item>  
+	
+	<item id="select_police_info_tree"  desc="警员信息查询(监狱级)">
+		<sql> 
+		   SELECT '' || pbd_user_id   AS  id,
+		          pbd_police_id    AS  policeid,
+		          '1-' || pbd_drptmnt_id  AS  pid,
+		          pbd_police_name AS  name,
+		          'user.png'      AS  icon,
+		          1               AS  type
+		     FROM plc_police_base_dtls
+		    WHERE pbd_cus_number = ?
+		    UNION ALL
+		   SELECT '1-' || odd_id          AS   id,
+		          ''              AS   policeid,
+		          '1-' || odd_parent_id   AS   pid,
+		          odd_name        AS   name,
+		          'org.png'       AS   icon,
+		          0               AS   type
+		     FROM sys_org_dept_dtls
+		    WHERE odd_use = 1
+		    START WITH odd_id= ?
+			CONNECT BY PRIOR odd_id=odd_parent_id
+		    ORDER BY policeid,id
+		</sql>
+	</item>   
+	
+	<item  id="select_if_repeat_police_id" desc="查询警员id是否重复">
+		<sql>
+			select  count(pbd_police_id)total  from plc_police_base_dtls where pbd_police_id=:plc
+		</sql>
+	</item>
+	
+    <item id="delete_police_info_byid" desc="根据警员编号删除警员信息">
+		<sql>
+			DELETE FROM plc_police_base_dtls
+		</sql>
+		<where id="0">
+			WHERE pbd_user_id = :id
+		</where>
+    </item>	
+    
+     <item id="update_police_baseinfo_byid" desc="警员基础信息更新">
+		<sql>
+			UPDATE plc_police_base_dtls 
+			   SET
+			       pbd_cus_number       = :pbd_cus_number,
+			       pbd_police_id         = :policeid,
+			       pbd_police_name      = :name,
+			       pbd_drptmnt_id       = :pid,
+			       pbd_pstn_name        = :pbd_pstn_name,
+			       pbd_sex              = :pbd_sex,
+			       pbd_age              = :pbd_age,
+			       pbd_political_status = :pbd_political_status,
+			       pbd_official_title   = :pbd_official_title,
+			       pbd_birth_date       = TO_TIMESTAMP(:pbd_birth_date, 'YYYY-MM-DD'),
+			       pbd_fixed_phone      = :pbd_fixed_phone,
+			       pbd_ip_phone         = :pbd_ip_phone,
+			       pbd_phone            = :pbd_phone,
+			       pbd_short_phone      = :pbd_short_phone,
+			       pbd_fax              = :pbd_fax,
+			       pbd_talk_num         = :pbd_talk_num,
+			       pbd_email            = :pbd_email,
+			       pbd_oa_system        = :pbd_oa_system,
+			       pbd_police_cmmnct    = :pbd_police_cmmnct,
+			       pbd_family_phone     = :pbd_family_phone,
+			       pbd_police_type_indc = :pbd_police_type_indc,
+			       pbd_degree_indc      = :pbd_degree_indc,
+			       pbd_profession       = :pbd_profession,
+			       pbd_job_date         = TO_TIMESTAMP(:pbd_job_date, 'YYYY-MM-DD'),
+			       pbd_remark           = :pbd_remark,
+			       pbd_updt_time        = SYSDATE,
+			       pbd_updt_user_id     = :user_id
+			 WHERE pbd_user_id = :id
+		</sql>
+    </item>
+    
+ 	<item id="update_police_imageurl_byid" desc="警员照片更新">
+		<sql>
+			UPDATE plc_police_base_dtls 
+			   SET
+			       pbd_img          = :pbd_img,
+			       pbd_updt_time        = SYSDATE,
+			       pbd_updt_user_id     = :user_id
+			 WHERE pbd_user_id = :id
+		</sql>
+    </item>
+   
+	<item id="select_police_info_byid"  desc="根据警员编号查询详细信息">
+		<sql>
+		   SELECT pbd_pstn_name,
+		   		  pbd_sex,
+		   		  TO_CHAR(SYSDATE,'YYYY') - TO_CHAR(pbd_birth_date, 'YYYY') AS pbd_age,
+		   		  pbd_political_status,
+		   		  pbd_official_title,
+		   		  TO_CHAR(pbd_birth_date,'YYYY-MM-DD') AS pbd_birth_date,
+		   		  pbd_fixed_phone,
+		   		  pbd_ip_phone,
+		   		  pbd_phone,
+		   		  pbd_short_phone,
+		   		  pbd_fax,
+		   		  pbd_talk_num,
+		   		  pbd_email,
+		   		  pbd_oa_system,
+		   		  pbd_police_cmmnct,
+		   		  pbd_family_phone,
+		   		  pbd_police_type_indc,
+		   		  pbd_degree_indc,
+		   		  pbd_profession,
+		   		  TO_CHAR(pbd_job_date,'YYYY-MM-DD') AS pbd_job_date,
+		   		  pbd_img,
+		   		  pbd_remark
+		     FROM plc_police_base_dtls
+		</sql>
+		<where id="0">
+			WHERE pbd_cus_number = ?
+			  AND pbd_user_id = ?
+		</where>
+	</item>  
+
+	<item id="insert_police_baseinfo_byExl"  desc="从Excel导入警员信息(测试)">
+		<sql>
+			INSERT  INTO
+				plc_police_base_dtls
+				(	
+					pbd_user_id,
+					pbd_cus_number,	
+					pbd_police_id,
+					pbd_police_name,
+					pbd_drptmnt_id,
+					pbd_pstn_name,
+					pbd_age,
+	        		pbd_crte_time,
+	        		pbd_crte_user_id,
+	        		pbd_updt_time,
+	        		pbd_updt_user_id
+				)
+			values(
+					:pbd_user_id,
+					:pbd_cus_number,
+					:pbd_police_id,
+					:pbd_police_name,
+					:pbd_drptmnt_id,
+					:pbd_pstn_name,
+					:pbd_age,
+	        		 SYSDATE,
+	        		:user_id,
+	        		SYSDATE,
+	        		:user_id
+        		)
+		</sql>
+	</item>	        
+</sqlItem>

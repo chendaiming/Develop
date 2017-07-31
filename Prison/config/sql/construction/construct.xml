@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_const_construct" desc="监内施工添加">
+		<seq>idp_prison_construction_record@pcr_record_id</seq>
+		<sql>
+			INSERT INTO
+				idp_prison_construction_record
+				(	
+					pcr_cus_number,
+					pcr_record_id,
+					pcr_worker_names,
+					pcr_addr,
+           			pcr_begin_time,
+           			pcr_end_time,
+           			pcr_create_uid,
+				    pcr_create_datetime,
+				    pcr_update_uid,
+				    pcr_update_datetime,
+				    pcr_remark,
+					pcr_worker_num
+				)
+			VALUES(
+					:pcr_cus_number,
+					:pcr_record_id,
+					:pcr_worker_names,
+					:pcr_addr,
+           			TO_TIMESTAMP(:pcr_begin_time,'yyyy-mm-dd'),
+           			TO_TIMESTAMP(:pcr_end_time,'yyyy-mm-dd'),
+           			:pcr_create_uid,
+				    SYSDATE,
+				    :pcr_update_uid,
+				    SYSDATE,
+					:pcr_remark,
+					:pcr_worker_num
+				)
+		</sql>
+	</item>
+	<item id="update_const_construct" desc="监内施工更新">
+		<sql>
+			UPDATE
+				idp_prison_construction_record
+			SET
+					pcr_worker_names=:pcr_worker_names,
+					pcr_addr=:pcr_addr,
+           			pcr_begin_time=TO_TIMESTAMP(:pcr_begin_time,'yyyy-mm-dd'),
+           			pcr_end_time=TO_TIMESTAMP(:pcr_end_time,'yyyy-mm-dd'),
+           			pcr_worker_num=:pcr_worker_num,
+           			pcr_remark=:pcr_remark,
+				    pcr_update_uid=:pcr_update_uid,
+				    pcr_update_datetime=SYSDATE
+			WHERE
+				pcr_record_id=:pcr_record_id
+		</sql>
+	</item>
+	<item id="delete_const_construct" desc="监内施工删除">
+		<sql>
+			DELETE FROM 
+				idp_prison_construction_record
+		<where id="0">
+			WHERE	
+				pcr_record_id=:pcr_record_id
+		</where>
+		</sql>
+	</item>
+    <item id="query_const_construct" desc="监内施工查询">
+    	<const key="pcr_create_us" module="user"></const>
+    	<const key="pcr_update_us" module="user"></const>
+		<sql>
+			SELECT 
+					pcr_cus_number,
+					pcr_record_id,
+					TO_CHAR(pcr_begin_time,'yyyy-mm-dd') begin_time,
+					TO_CHAR(pcr_end_time,'yyyy-mm-dd') end_time,
+					pcr_addr,
+					pcr_worker_num,
+					pcr_worker_names,
+					pcr_remark,
+           			pcr_create_uid,
+           			pcr_create_uid AS pcr_create_us,
+				    TO_CHAR(pcr_create_datetime,'yyyy-mm-dd') create_datetime,
+				    pcr_update_uid,
+				    pcr_update_uid AS pcr_update_us,
+				    TO_CHAR(pcr_update_datetime,'yyyy-mm-dd') update_datetime,
+				    odd_name
+			FROM 	
+					idp_prison_construction_record
+			INNER JOIN sys_org_dept_dtls ON pcr_cus_number = odd_id
+		</sql>
+		<where id="0">
+			WHERE 
+				pcr_record_id=:pcr_record_id
+		</where>
+		<where id="1">
+			WHERE 
+				pcr_addr LIKE concat('%',concat(:pcr_addr,'%'))
+		</where>
+		<where id="2">
+			WHERE 
+				TO_CHAR(pcr_begin_time,'yyyy-mm') = :chartData
+		</where>
+		<where id="3">
+			WHERE
+				pcr_cus_number = :pcr_cus_number
+		</where>
+		<where id="4">
+			WHERE
+				TO_CHAR(pcr_begin_time,'yyyy') = :yearData
+		</where>
+		<order id="0">
+			ORDER BY  
+				TO_CHAR(pcr_begin_time,'yyyy-mm-dd')
+		</order>
+    </item>
+    <item id="query_odd_name" desc="机构查询">
+    	<sql>
+			SELECT odd_name FROM sys_org_dept_dtls WHERE odd_id = ?
+		</sql>
+	</item>
+    <item id="query_construct_months" desc="月份查询">
+    	<sql>
+			SELECT 
+				TO_CHAR(pcr_begin_time,'yyyy-mm') begin_months,COUNT(1) begin_count
+		      FROM (SELECT pcr_begin_time
+		              FROM idp_prison_construction_record
+		             WHERE TO_CHAR(pcr_begin_time, 'yyyy') = ?)
+		     GROUP BY TO_CHAR(pcr_begin_time, 'yyyy-mm')
+		</sql>
+		<order id="0">
+			ORDER BY 	
+				TO_CHAR(pcr_begin_time,'yyyy-mm')
+		</order>
+	</item>
+	<item id="query_construct_years" desc="年份查询">
+    	<sql>
+			SELECT 
+				TO_CHAR(pcr_begin_time,'yyyy') pcr_begin_years,COUNT(1) pcr_begin_count
+			FROM 	
+				idp_prison_construction_record
+			GROUP BY TO_CHAR(pcr_begin_time,'yyyy')
+		</sql>
+		<order id="0">
+			ORDER BY 	
+				TO_CHAR(pcr_begin_time,'yyyy')
+		</order>
+	</item>
+</sqlItem>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_dty_people_moreCount" desc="值班次数统计">
+		<sql>
+			SELECT ped_id,
+				   ped_name,
+				   COUNT(ped_id) AS dtyCount
+			  FROM dty_people_dtls
+			 WHERE ped_cus_number = ? AND
+				   ped_mode_idnty = ? AND
+				   ped_dept_id = ?
+		  GROUP BY ped_id,ped_name
+		  ORDER BY ped_id
+		</sql>
+    </item>
+    <item id="select_dty_schedule_tree" desc="查询值班编排树形数据">
+		<sql>
+			 SELECT 's_' || scd_mode_idnty AS id,
+		            scd_mode_name AS name,
+		            'd_' || scd_dept_id AS pid,
+		            'schedule' AS type
+		       FROM (SELECT DISTINCT scd_mode_idnty,
+			  	 					 scd_mode_name,
+			  	 					 scd_category_id,
+			  	 					 scd_end_date,
+			  	 					 scd_dept_id
+			   		            FROM dty_schedule_dtls
+			   		           WHERE scd_cus_number = ? AND
+			   		 	             scd_dept_id = ?
+			   		        ORDER BY scd_end_date DESC)
+		</sql>
+    </item>
+</sqlItem>

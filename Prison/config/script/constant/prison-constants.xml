@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<constants>
+	<constant id="DSR_DVC_STATUS" name="设备状态" desc="设备状态记录表的设备统一分类状态">
+		<item key="0" value="正常"/>
+		<item key="1" value="故障"/>
+	</constant>
+</constants>

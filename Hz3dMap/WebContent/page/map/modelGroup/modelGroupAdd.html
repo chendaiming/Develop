@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>模型编辑</title>
+<style type="text/css">
+	div.map-func-panel.model-group-add {
+		top: 30%;
+		left: 40%;
+
+		width: 410px;
+		height: 315px;
+		display: none;
+	}
+	div.map-func-panel.model-group-add div.map-func-body {
+		position: relative;
+		box-sizing: border-box;
+		padding: 20px 15px 10px 0px;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%; text-align: center;">
+	<tr><td>该功能已停止使用</td></tr>
+</table>
+<div class="map-func-panel model-group-add" style="visibility: hidden;">
+	<a class="map-close" title="关闭面板"></a>
+	<div class="map-func-body">
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="col-xs-3 control-label">上级名称</label>
+				<div class="col-xs-9">
+			      	<div class="input icon">
+			    		<input type="text" v-model="params.pname" @click="showParent" placeholder="上级名称">
+			    		<span class="drop" @click="showParent"></span>
+			    	</div>
+			    	<div>
+			    		<div id="modelGroupPanel" class="tree-content" style="display:none">
+				  			<ul id="modelGroupTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+				  		</div>
+			    	</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="col-xs-3 control-label">分组名称</label>
+				<div class="col-xs-9">
+			      	<input class="form-control" v-model="params.name" type="text" placeholder="分组名称（必填项）">
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="col-xs-3 control-label">分组类型</label>
+				<div class="col-xs-9">
+			      	<hz-select tip="分组类型" code="MGM_GROUP_TYPE" :id.sync="params.type"/>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="col-xs-3 control-label">排序序号</label>
+				<div class="col-xs-9">
+			      	<input class="form-control" v-model="params.order" type="text" placeholder="视角排序" value="0">
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-12">
+			<div class="form-group">
+				<label class="col-xs-3 control-label">模型编号</label>
+				<div class="col-xs-9">
+			      	<input class="form-control" v-model="params.model_name" type="text" placeholder="模型类型">
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xs-12"><br>
+			<div class="bottom">
+				<div class="buttons" >
+					<a @click="save" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+					<a @click="reset" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+  //requirejs(['hz/map/modelGroup/modelGroupAdd']);
+</script>
+
+</body>
+</html>

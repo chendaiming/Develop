@@ -1,0 +1,114 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+.table-bordered tbody tr td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+}
+#modeForm table tr td{
+	vertical-align: middle;
+}
+#modeForm input{
+	width: 87px;
+}
+#modeForm .job{
+	width: 100%;
+	height: 25px;
+	float: left;
+}
+#modeForm .job input{
+	width: 100px;
+}
+#modeForm .job .close{
+	margin-top:-2px;
+	width:20px;
+	height:20px;
+	z-index:30;
+}
+#modeForm .job .close img:hover{
+	cursor: pointer;
+}
+</style>
+<div class="vbox box-con" id="modeManage">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="categoryModeTree" class="ztree"></ul>	    	
+		   		</div>
+			</div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">所属类别</label>
+	      	    	<div class="col-sm-9">
+		      	   		<input class="form-control" v-model="mode.category_name" type="text" readonly placeholder="所属类别">
+				    	<input type="hidden" v-model="mode.mbd_category_id">
+	          		</div>
+	          	</div>
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">模板名称</label>
+	      	    	<div class="col-sm-9">
+		      	   		<input class="form-control" v-model="mode.mbd_mode_name" type="text" placeholder="模板名称" maxlength="15">
+	          		</div>
+	          	</div>
+				<div class="form-group">
+			    	<label class="col-sm-2 control-label">使用部门</label>
+	      	    	<div class="col-sm-9">
+	      	    		<hz-select
+					    		tip="使用部门"
+					    		sqlid="select_dty_category_dept_select"
+					    		whereid=0
+					    		showload=true
+					    		:params=[mode.mbd_cus_number,mode.mbd_category_id]
+					    		:id.sync="mode.mbd_dept_id"
+				    	/>
+	          		</div>
+	          	</div>
+	       </form>
+           <form class="form-horizontal" role="form" id="modeForm">
+		    	<table class="table table-bordered">
+					<tr v-cloak v-if="categoryOrderList.length>0" v-for="order in categoryOrderList">
+						<td class="col-sm-4" flag="1">
+							<input type="hidden" class="orderId" value="{{order['sbd_id']}}"/>
+							<input class="orderName" value="{{order['sbd_name']}}"/>
+							<div style="width: 100%;height: 8px;"></div>
+							<input class="orderStartTime" value="{{order['sbd_start_time']}}" style="width: 39px;" readonly/> ~
+							<input class="orderEndTime" value="{{order['sbd_end_time']}}" style="width: 39px;" readonly/>
+						</td>
+						<td class="col-sm-4" flag="2">
+							<div class="job" v-cloak v-if="categoryJobList.length>0 & job['sbd_id'] == order['sbd_id']" v-for="job in categoryJobList" id="job_{{order['sbd_id']}}_{{job['jbd_id']}}">
+								<input type="hidden" class="jobId" value="{{job['jbd_id']}}"/>
+								<input class="jobName" value="{{job['jbd_name']}}"/>
+								<img class="close" id="close_{{order['sbd_id']}}_{{job['jbd_id']}}"
+									 @click="delJob(order,job)" src="image/closemin.png">
+							</div>
+						</td>
+						<td class="col-sm-3">
+							<a class="hbtn btn_primary btn_large del" @click="delOrder(order)"><i class="btn_icon icon_del"></i><span>删除</span></a>
+						</td>					
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large save"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a class="hbtn btn_primary btn_large del"><i class="btn_icon icon_del"></i><span>删除</span></a>	
+			<a class="hbtn btn_primary btn_large reset"><i class="btn_icon icon_reset"></i><span>重置模板</span></a>		  
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyMode/modeManage"]);
+</script>

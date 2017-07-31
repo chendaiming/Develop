@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_door_rltn_model_name" desc="查询门关联的模型名称">
+		<sql>
+			SELECT mpi_rltn_model_name AS model_name
+			  FROM map_model_point_info
+		</sql>
+		<where id="0">
+			 WHERE mpi_link_type = ?
+			   AND mpi_link_id = ?
+		</where>
+	</item>
+</sqlItem>

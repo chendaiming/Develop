@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title></title>
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+		 max-height: 200px;
+		  min-height: 150px;
+		  overflow: auto;
+		  z-index: 99;
+	}
+	.tablist li{
+		margin-bottom: 10px;
+		text-align: center;
+	    border-radius: 5px;
+     	-moz-border-radius: 5px; 
+    	-webkit-border-radius: 5px; 
+	    background-color: rgba(96, 110, 127, 0.29);
+	}
+	.tablist li a{
+		color:#fff;
+	}
+	.nav>li>a:hover, .nav>li>a:focus{
+	    text-decoration: none;
+	    background-color: rgba(251, 251, 251, 0.42);
+	}
+	
+</style>
+</head>
+<body>
+<div class="vbox box-con">
+<div class="hbox hz-col-1">
+	<div class="left-con vbox" style="width:280px">
+		<div class="input icon" style="margin-bottom: 20px">
+		  	<input v-model="searchDevice" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+	    <div class="hz-col-1" style="overflow:auto">
+			<ul v-cloak class="nav nav-pills nav-stacked tablist" v-for="obj in pnDeviceData">
+  				<li v-bind:data-id="obj.pnb_id" v-bind:data-cusNum="obj.pnb_cus_number" v-bind:class="{'active': $index==1,'active':chooseClassIndex==$index}" @click="choosePNDevice($index)">
+		  			<a href="#">
+						{{obj.pnb_name}}<br>
+						{{obj.power_voltage}}KV / {{obj.power_flow}}A ({{obj.pnb_stts_indc_name}})
+					</a>
+		  		</li>
+			</ul>  	
+	    </div>
+	</div>
+	<div class="hz-col-1 right-con">
+		<form class="form-horizontal" role="form" >
+			<div class="row">
+			  	<div class="hz-col-1" id="pn_voltage" style="height:270px">&nbsp;&nbsp;&nbsp;&nbsp;前置机电压数据接收中。。。</div>
+			</div>
+			<div class="row">
+			  	<div class="hz-col-1" id="pn_flow" style="height:270px">&nbsp;&nbsp;&nbsp;&nbsp;前置机电流数据接收中。。。</div>
+			</div>
+		</form>
+	</div>
+	<!-- 所属部门树形区 -->
+	<div id="deptCon" class="treeContent" style="display:none; position: absolute;">
+		<ul id="deptTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+	</div>
+</div>
+<div class="bottom">
+	<div class="buttons" >
+	</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/pn/powerNetworkInfo'])
+</script>
+</html>

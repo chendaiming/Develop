@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_alarm_handle_flow_item" desc="查询处置流程项">
+		<sql>
+			SELECT hfd_cus_number,
+			       hfd_flow_id,
+			       hfd_flow_item_id,
+			       hfd_flow_item_name,
+			       hfd_flow_order,
+			       hfd_crte_time,
+			       hfd_crte_user_id,
+			       hfd_updt_time,
+			       hfd_updt_user_id
+			  FROM alt_handle_flow_dtls
+		</sql>
+		<where id="0">
+			 WHERE hfd_cus_number = :hfd_cus_number
+			   AND hfd_flow_id = :hfd_flow_id
+		</where>
+		<where id="1">
+		 	 WHERE hfd_cus_number = :hfd_cus_number
+			   AND hfd_flow_id = :hfd_flow_id
+			   AND hfd_flow_item_name LIKE CONCAT('%',CONCAT(:hfd_flow_item_name,'%'))
+		</where>
+		<order id="0">
+			 ORDER BY hfd_flow_order
+		</order>
+	</item>
+	
+	<item id="insert_alarm_handle_flow_item" desc="添加处置流程项">
+		<seq>alt_handle_flow_dtls@hfd_flow_item_id</seq>
+		<sql>
+			INSERT INTO alt_handle_flow_dtls
+			  (hfd_cus_number,
+		       hfd_flow_id,
+		       hfd_flow_item_id,
+		       hfd_flow_item_name,
+		       hfd_flow_order,
+		       hfd_crte_time,
+		       hfd_crte_user_id,
+		       hfd_updt_time,
+		       hfd_updt_user_id)
+			VALUES
+			  (:hfd_cus_number,
+			   :hfd_flow_id,
+			   :hfd_flow_item_id,
+			   :hfd_flow_item_name,
+			   :hfd_flow_order,
+			    SYSDATE,
+			   :hfd_crte_user_id,
+			    SYSDATE,
+			   :hfd_updt_user_id)
+		</sql>
+	</item>
+	
+	<item id="update_alarm_handle_flow_item" desc="修改处置流程项">
+		<sql>
+			UPDATE alt_handle_flow_dtls
+			   SET hfd_flow_item_name    = :hfd_flow_item_name,
+			       hfd_flow_order    = :hfd_flow_order,
+			       hfd_updt_time    = SYSDATE,
+			       hfd_updt_user_id = :hfd_updt_user_id
+		</sql>
+		<where id="0">
+			WHERE hfd_cus_number = :hfd_cus_number 
+			  AND hfd_flow_item_id = :hfd_flow_item_id
+		</where>
+	</item>
+		
+	<item id="delete_alarm_handle_flow_item" desc="删除处置流程项">
+		<sql>
+			DELETE FROM alt_handle_flow_dtls
+		</sql>
+		<where id="0">	
+			WHERE hfd_cus_number = :hfd_cus_number
+			  AND hfd_flow_id = :hfd_flow_id
+		</where>
+		<where id="1">	
+			WHERE hfd_cus_number = :hfd_cus_number 
+			  AND hfd_flow_item_id = :hfd_flow_item_id
+		</where>
+	</item>
+</sqlItem>

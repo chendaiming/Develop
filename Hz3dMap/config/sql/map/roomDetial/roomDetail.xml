@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+   <item id="select_prison_in_room" desc="查询房间内的犯人">
+   	<sql>
+	  SELECT bbd_prsnr_id         code,
+	         base.pbd_prsnr_name  name,
+	         photo.pbd_photo_path image,
+	         1                    cur
+	    FROM psr_bed_base_dtls
+	   INNER JOIN psr_prisoner_base_dtls base
+	      ON (base.pbd_prsnr_id = bbd_prsnr_id)
+	    LEFT JOIN psr_photo_base_dtls photo
+	      ON (base.pbd_prsnr_id = photo.pbd_prsnr_id AND
+	         photo.pbd_photo_type = 0)
+   	</sql>
+   	<where id="0">
+   		WHERE
+   			bbd_room_id=:roomName
+   		AND
+   			bbd_cus_number=:cus
+   	</where>
+   	<order id="0">
+   		ORDER
+   			bbd_seq
+   	</order>
+   </item>
+	<item id="select_prisoner_current" desc="当前房间中实际人数">
+		<sql>
+			SELECT rmr_people_name AS name,
+			       rmr_people_id AS code,
+			       pbd_photo_path AS image,
+			       '' AS cur
+			  FROM (SELECT ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time desc) rn,
+			               rmr_people_name,
+			               rmr_people_id,
+			               pbd_photo_path
+			          FROM dvc_rfid_monitor_record
+			          LEFT JOIN psr_photo_base_dtls photo
+			            ON (rmr_people_id = pbd_prsnr_id AND pbd_photo_type = 0)
+			         WHERE rmr_monitor_flag = 1
+			           AND rmr_cus_number = :cus
+			           AND rmr_rfid_id IN
+			               (SELECT rbd_id
+			                  FROM dvc_rfid_base_dtls
+			                 WHERE rbd_room_id = :roomName))
+			 WHERE rn = 1
+		</sql>
+	</item>
+
+
+	<item id="select_count_prisoner_by_area_rfid_for_map" desc="根据区域RFID统计在当前区域的罪犯总数">
+		<sql>
+			SELECT rmr_rfid_id AS rfid_id, COUNT(rmr_rfid_id) AS count
+			  FROM (SELECT row_number() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) rn,
+			               rmr_rfid_id,
+			               rmr_people_id,
+			               rmr_monitor_flag,
+			               rmr_monitor_time
+			          FROM dvc_rfid_monitor_record
+			         WHERE rmr_cus_number = ?
+			           AND rmr_area_id = ?
+			           AND rmr_monitor_time BETWEEN TO_DATE(TO_CHAR(TRUNC(SYSDATE), 'YYYY-MM-DD') || ' 00:00:00', 'YYYY-MM-DD HH24:MI:SS') AND SYSDATE)
+			 WHERE rn = 1
+			   AND rmr_monitor_flag = 1
+			 GROUP BY rmr_rfid_id
+		</sql>
+	</item>
+</sqlItem>

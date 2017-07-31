@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_door_pwd_by_userId" desc="根据用id查询门禁密码">
+		<sql>
+		SELECT
+			 dus_rctrl_pwd  doorpwd,
+   		     dus_flag	    dooravoid
+		FROM
+			dor_door_user_set
+		</sql>
+		<where id="0">
+		WHERE
+			dus_user_id=:userId
+		AND
+			DUS_CUS_NUMBER=:cus
+		</where>
+	</item>
+	<item id="select_doorctrl_ztree" desc="所属控制器（巡更点）">
+		<sql>
+			SELECT 
+		        CONCAT('c_',odd_id) AS id,
+		        odd_seq as seq,
+		        odd_name AS name,
+		        CONCAT('c_',odd_parent_id) AS pid,
+		        null as deviceType,
+		        null AS icon
+	      	FROM sys_org_dept_dtls
+	      	WHERE odd_data_auth = 1 
+	      	START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id=odd_id
+			
+			UNION
+			
+			SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+			  	   abd_seq as seq,
+			  	   abd_area_name AS name,
+			       CONCAT('c_',abd_parent_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT dcd_area_id FROM dor_door_control_device 
+			    WHERE dcd_cus_number = :cusNumber AND dcd_target_type = 2
+			    GROUP BY dcd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      	
+	      	UNION 
+	      	
+        	SELECT 
+	           CONCAT(dcd_id,'') AS id,
+	           dcd_seq as seq,
+	           dcd_name AS name,
+	           CONCAT('c_',dcd_area_id) AS pid ,
+	           null as deviceType,
+	           'image/control.png' AS icon
+	      	FROM dor_door_control_device
+	      	WHERE dcd_cus_number = :cusNumber AND dcd_target_type = 2
+	      	
+	      	ORDER BY seq
+		</sql>
+	</item>
+	<item id="select_door_byid" desc="根据id查询门禁详情（地图上详情用）">
+		<const key="dbd_stts_indc_name">dbd_stts_indc</const>
+		<sql>
+			SELECT 
+				dbd_id,
+				dbd_name,
+				dbd_dvc_addrs,
+				dbd_stts_indc,
+				dbd_stts_indc AS dbd_stts_indc_name
+			FROM dor_door_base_dtls
+		</sql>
+		<where id="1">
+			WHERE  dbd_id = ?  AND dbd_cus_number = ?  
+		</where>
+	</item>
+	<item id="query_door_tree"  desc="区域门禁">
+		<sql>
+			SELECT 
+					'1-'||odd_id        id,
+					'1-'||odd_parent_id pid,
+					odd_name            name,
+					'org.png'           icon,
+					null  				dbd_other_id,
+			        null				dbd_ctrl_id,
+			        null				dbd_area_id,
+			        null				dbd_type,
+			        null				dbd_brand,
+			        null				dbd_stts_indc,
+			        null				dbd_ctrl_chl,
+			        null				dbd_dvc_addrs,
+					null 				dbd_dvc_stts,
+			        null				orgid,
+			        null				dbd_dept_id,
+			        0					type,
+			        odd_seq 			seq
+			FROM sys_org_dept_dtls
+			
+			WHERE level &lt; ?
+			START WITH odd_id=? CONNECT BY PRIOR odd_id = odd_parent_id 
+			UNION ALL	
+			SELECT
+				id,
+				pid,
+				name,
+				icon,
+				dbd_other_id         ,
+				dbd_ctrl_id          ,
+				dbd_area_id          ,
+				dbd_type             ,
+				dbd_brand            ,
+				dbd_stts_indc        ,
+				dbd_ctrl_chl         ,
+				dbd_dvc_addrs        ,
+				dbd_dvc_stts 		 ,
+				orgid,
+        		dbd_dept_id          ,
+        		type,
+        		seq
+			FROM
+			(
+			SELECT 
+				''||dbd_id           id,
+				'1-'||dbd_area_id    pid,
+				dbd_name             name,
+				'door.png'			 icon,
+				dbd_other_id         ,
+				dbd_ctrl_id          ,
+				dbd_area_id          ,
+				dbd_type             ,
+				dbd_brand            ,
+				dbd_stts_indc        ,
+				dbd_ctrl_chl         ,
+				dbd_dvc_addrs        ,
+				dbd_dvc_stts 		 ,
+				dbd_cus_number       orgid,
+        		dbd_dept_id          ,
+        		1					type,
+        		dbd_seq  			seq
+			FROM 
+				dor_door_base_dtls
+			UNION ALL
+			SELECT 
+				'1-'||abd_area_id      id,
+				'1-'||abd_parent_id	  pid,
+				abd_area_name         name,
+				'area.png'			  icon,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				abd_cus_number        orgid  ,
+        		null					     ,
+        		0					  type	 ,
+        		abd_seq   			  seq
+			FROM
+				com_area_base_dtls
+			)t
+		</sql>
+		<where id="0" desc="非省局用户登录">
+			 where t.orgid=?
+		</where>
+		<order id="0">
+			 ORDER　By seq
+		</order>
+	</item>
+	
+	<item id="update_door_door">
+		<sql>
+			UPDATE
+				dor_door_base_dtls
+			SET
+				dbd_name             =:name,
+				dbd_other_id         =:dbd_other_id,
+				dbd_ctrl_id          =:dbd_ctrl_id,
+				dbd_type             =:dbd_type,
+				dbd_brand            =:dbd_brand,
+				dbd_stts_indc        =:dbd_stts_indc,
+				dbd_ctrl_chl         =:dbd_ctrl_chl,
+				dbd_dvc_addrs        =:dbd_dvc_addrs,
+				dbd_dvc_stts      	 =:dbd_dvc_stts,
+        		dbd_area_id      	 =:pid,
+        		dbd_dept_id			 =:dbd_dept_id,
+        		dbd_updt_user_id	 =:user_id,
+        		dbd_updt_time		 =sysdate
+        	WHERE
+        		dbd_id          =:id
+		</sql>
+	</item>
+	<item id="insert_door_door">
+		<seq>dor_door_base_dtls@id@dbd_id</seq>
+		<sql>
+			INSERT  INTO
+				dor_door_base_dtls
+				(	
+					dbd_id				,
+					dbd_name            ,
+					dbd_other_id        ,
+					dbd_ctrl_id         ,
+					dbd_area_id         ,
+					dbd_type            ,
+					dbd_brand           ,
+					dbd_stts_indc       ,
+					dbd_ctrl_chl        ,
+					dbd_dvc_addrs       ,
+					dbd_dvc_stts        ,
+	        		dbd_dept_id      	,
+	        		dbd_crte_user_id	,
+	        		dbd_crte_time		,
+	        		dbd_seq				,
+	        		dbd_cus_number	
+				)
+			VALUES(
+					:id,
+					:name,
+					:dbd_other_id,
+					:dbd_ctrl_id,
+					:pid,
+					:dbd_type,
+					:dbd_brand,
+					:dbd_stts_indc,
+					:dbd_ctrl_chl,
+					:dbd_dvc_addrs,
+					:dbd_dvc_stts,
+	        		:dbd_dept_id,
+	        		:user_id,
+	        		SYSDATE,
+	        		:id,
+	        		:cusnumber
+        		)
+		</sql>
+	</item>
+<!-- 	<item id="" desc="部门用户">
+		<sql>
+			SELECT 
+				* 
+			FROM 
+				dor_door_base_dtls
+			WHERE 
+				dbd_dept_id in dbd_dept_id
+			UNION ALL
+			SELECT
+				*
+			FROM
+				com_area_base_dtls
+			WHERE
+				oar_dept_id IN (SELECT DISTINCT(oar_area_id) from COM_ORG_AREA_RLTN where OAR_DEPT_ID in ?)
+		</sql>
+	</item> -->
+	
+	<item id="query_door_control">
+		<sql>
+		 SELECT 
+				'1-'||odd_id        id,
+				'1-'||odd_parent_id pid,
+				odd_name            name,
+				null				cus,
+				null				otherid,
+		        null				dcd_ip_addrs,
+		        null				dcd_port,
+		        null				dcd_user_name,
+              	null				dcd_user_password,
+              	null				dcd_dept_id,
+              	'org.png' 			icon,
+              	0					type,
+              	odd_seq 			seq,
+              	-1 					target
+	    FROM sys_org_dept_dtls
+	    WHERE LEVEL &lt; ?
+	    START WITH odd_id=? CONNECT BY PRIOR odd_id = odd_parent_id 
+	    UNION ALL
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					''||dcd_id          id,	
+					'1-'||dcd_area_id   pid,
+					dcd_name	        name,
+					dcd_cus_number      cus,
+					dcd_other_id		otherid,
+					dcd_ip_addrs      ,
+					dcd_port		  ,
+					dcd_user_name	  ,
+					dcd_user_password ,
+					dcd_dept_id		  ,
+					'control.png'     icon,
+					1			  	  type,
+					dcd_seq			  seq,
+					dcd_target_type	  target
+				FROM
+					dor_door_control_device
+				UNION ALL
+				SELECT
+					'1-'||abd_area_id   id,
+					'1-'||abd_parent_id pid,
+					abd_area_name       name,
+					abd_cus_number      cus,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					'area.png'          icon,
+					0			        type,
+					abd_seq   			seq,
+					-1					target
+				FROM
+					com_area_base_dtls
+			)t
+		<where id="0">
+			WHERE
+					t.cus=?
+		</where>
+		<order id="0">
+			ORDER BY
+					seq
+		</order>
+		</sql>
+	</item>
+	
+	<item id="insert_control_control">
+		<seq>dor_door_control_device@id@dcd_id</seq>
+		<sql>
+			INSERT INTO dor_door_control_device
+			  (dcd_cus_number,
+			   dcd_id,
+			   dcd_name,
+			   dcd_ip_addrs,
+			   dcd_port,
+			   dcd_user_name,
+			   dcd_user_password,
+			   dcd_dept_id,
+			   dcd_area_id,
+			   dcd_crte_time,
+			   dcd_crte_user_id,
+			   dcd_other_id,
+			   dcd_target_type
+			   )
+			VALUES
+			  (:cusnumber,
+			   :id,
+			   :name,
+			   :dcd_ip_addrs,
+			   :dcd_port,
+			   :dcd_user_name,
+			   :dcd_user_password,
+			   :dcd_dept_id,
+			   :pid,
+			   sysdate,
+			   :user_id,
+			   :otherid,
+			   :target
+			   )
+
+		</sql>
+	</item>
+	
+	<item id="update_control_control">
+		<sql>
+			UPDATE dor_door_control_device
+			   SET dcd_name          = :name,
+			       dcd_ip_addrs      = :dcd_ip_addrs,
+			       dcd_port          = :dcd_port,
+			       dcd_user_name     = :dcd_user_name,
+			       dcd_user_password = :dcd_user_password,
+			       dcd_dept_id       = :dcd_dept_id,
+			       dcd_area_id       = :pid,
+			       dcd_updt_time     = SYSDATE,
+			       dcd_updt_user_id  = :user_id,
+			       dcd_other_id      =:otherid,
+			       dcd_target_type	 =:target
+			 WHERE dcd_id = :id
+		</sql>
+	</item>
+	
+	<item id="delete_control_control">
+		<sql>
+			DELETE FROM
+				dor_door_control_device
+			WHERE
+				dcd_id=:id
+		</sql>
+	</item>
+	<item id="delete_door_door">
+		<sql>
+			DELETE FROM
+				dor_door_base_dtls
+		</sql>
+		<where id="0">
+			WHERE
+				dbd_id=:id
+		</where>
+		<where id="1">
+			WHERE
+				dbd_ctrl_id=:id
+		</where>
+	</item>
+</sqlItem>

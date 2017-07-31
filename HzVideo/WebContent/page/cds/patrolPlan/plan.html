@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+	div.layui-layer-content{
+		color:#fff;
+	}
+	ul.container *{
+		 font-family: cursive;
+	}
+	ul.container{
+		height:100%;
+		width:100%;
+	    overflow: auto;
+		position: relative;
+		color:#fff;
+	}
+	ul.container::before{
+    	content: '';
+	    border: 1px solid #fcfcfc;
+	    position: fixed;
+	    left: 190px;
+        top: 0px;
+    	bottom: 57px;
+	}
+	ul.container>li{
+	    min-height: 150px;
+	    margin: 10px 10px 60px 220px;
+	    position:relative;
+	    border-bottom:1.5px dashed #62c9fa;
+        background: #babab4;
+    	border-radius: 10px;
+	}
+	ul.container>li::after{
+	    content:'';
+	    width: 0;   
+		height: 0;   
+		border-top: 15px solid transparent;   
+		border-right: 15px solid #62c9fa;
+		border-bottom: 15px solid transparent;  
+	    top: 5%;
+	    position: absolute;
+	    left: -15px;
+	}
+	ul.container>li::before{
+	    content: '';
+	    width: 20px;
+	    height: 20px;
+	    background-color: #c4dffa;
+	    position: absolute;
+	    left: -39px;
+	    top: 8%;
+	    border-radius: 100%;
+	    cursor:pointer;
+	}
+	ul.container>li:hover::before{
+	    background:url(../../../css/image/remove.png);
+        background-size: 20px 20px;
+	}
+	ul.container>li>div{
+		border-radius:10px;
+		border:1px solid #62c9fa;
+		position:relative;
+	}
+	ul.container>li>div:last-child{
+		min-height:50px;
+		margin:10px 0px 7px 87px;
+	    background: #afafaf;
+	    position:relative;
+	    border-top-left-radius:0px;
+	}
+	ul.container>li>div:first-child::after{
+        content: "执行人";
+	    position: absolute;
+	    height: 35px;
+	    width: 70px;
+	    bottom: -46px;
+	    left: 15px;
+	    border-radius: 10px 0px 0px 10px;
+	    background: rgb(175, 175, 175);
+	    text-align:center;
+	    line-height:35px;
+        background: rgb(197, 153, 153);
+	}
+	
+	ul.container>li>div:last-child::before{
+	    content: " ";
+	    border-left: 10px solid rgba(0, 0, 0, 0);
+	    border-bottom: 10px solid rgb(175, 175, 175);
+	    border-right: 10px solid rgba(0, 0, 0, 0);
+	    top: 2px;
+	    position: absolute;
+	    left: -62px;
+	}
+	ul.container>li>div:last-child>span{
+	    height: 35px;
+	    width: 18%;
+        background: rgb(169, 125, 125);
+	    border-radius: 10px;
+	    margin: 4px 0 4px 1.6%;
+	    float:left;
+        text-align: center;
+    	line-height: 35px;
+	}
+	div.title{
+		margin:5px;
+	}
+	input{
+	    min-height: 30px;
+	    border: 1px solid rgb(7, 100, 144);
+	    border-radius: 10px;
+    	color: rgb(255, 255, 255);
+    	outline:none;
+   	    padding-left: 10px;
+   	    background:#1f272d;
+	}
+	div.content{
+		position:relative;
+	}
+	div.content::after,ul.container>li>div:last-child::after{
+		content: "";
+		display: block;
+		clear: both;
+	}
+	div.content >p{
+		float:left;
+		width:22.5%;
+		background-color:rgba(89, 115, 134, 0.99);
+		border-radius:10px;
+		margin:7px 0 7px 2%;
+		text-align:center;
+		position:relative;
+	}
+	div.content >p:hover{
+		background-image: url(../../../libs/ztree/css/zTreeStyle/img/play.png);
+	    background-repeat: no-repeat;
+        background-position: 98% 90%;
+        cursor: pointer;
+	}
+	ul.container>li>div:last-child>span:hover{
+		background-image: url(../../../css/image/remove.png);
+	    background-repeat: no-repeat;
+        background-position: 97% 3px;;
+        cursor: pointer;
+	}
+	ul.container>li>div:last-child>span:hover{
+		background-size: auto;
+	}
+	div.content >p:hover::before{
+        content: '';
+	    background: url(../../../libs/ztree/css/zTreeStyle/img/locate.png);
+	    width: 20px;
+	    height: 20px;
+	    cursor: pointer;
+	    position: absolute;
+	    bottom: 5px;
+	    left: 5px;
+	}
+	div.content >p:hover::after{
+        content: '';
+	    background: url(../../../css/image/remove.png);
+	    width: 19px;
+	    height: 19px;
+	    cursor: pointer;
+	    position: absolute;
+	    right: -7px;
+	    top: -8px;
+        background-size: 19px 19px
+	}
+	div.content span{
+		margin-top:10px;
+		width:100%;
+	}
+	div.content label{
+	    color: rgb(230, 190, 150);
+	}
+	li:hover div.title::before{
+		content:'';
+	    position: absolute;
+	    width: 25px;
+	    height: 25px;
+	    background-image: url(../../../css/images/add.png);
+	    left: 50%;
+	    top: 0px;
+	    cursor: pointer;
+	}
+	div.detail{
+	    position: absolute;
+	    bottom: 0px;
+	    width: 100%;
+	    height: 0%;
+	    z-index: 2;
+	    border-radius: 10px;
+	    background: rgba(29, 56, 84, 0.62);
+	    transition:height 0.9s;
+        overflow: hidden;
+	}
+	div.detail  input{
+	    height: 30px;
+	    border: 1px solid rgb(64, 119, 174);
+	    border-radius: 10px;
+	    outline:none;
+	    color:#fff;
+	}
+	span.time{
+        position: absolute;
+	    left: -220px;
+	    top: 20px;
+	    width: 190px;
+	    text-align: center;
+	    color: rgb(241, 213, 5);
+	}
+	div.icon:first-child{
+		width:90px;
+	}
+	div.icon{
+	    width: 150px;
+	    border: none;
+	    display: inline-block;
+	    height: 30px;
+	}
+	div.icon>input{
+	    height: 30px;
+    	padding: 0px !important;
+    	background:#1f272d;
+   	    text-align: center;
+	}
+	div.icon>input:first-child{
+		text-align:left;
+		padding-left:5px !important;
+	}
+	ul.container input.wait{
+		border-color:red;
+	}
+	ul div.combox_panel{
+		position:absolute;
+	}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="container">
+	<div class="hz-col-1" style="position:relative;overflow:auto;">
+		<ul class="container" @click="hide()" v-cloak>
+			<li v-for="item in planList" @click.stop.prevent="editPlan($event,item,$index)">
+				<div><!-- 计划名称，执行时间，关联的摄像机 -->
+					<span class="time">{{fre[item['vpp_frequenes']]}}&nbsp;{{item['vpp_excute_time']}}</span>
+					<div  class="title">
+						<hz-select tip="执行频率" :list="freList" :id.sync="item['vpp_frequenes']">  
+					  	</hz-select >
+					  	<hz-time tip="执行时间" :val.sync="item['vpp_excute_time']" format=H:i:S >
+					    </hz-time>
+						<input v-model="item['vpp_name']" placeholder="请输入计划名称" style="float:right;"/>
+					</div>
+					<div class="content">
+						<p v-for="c in item.cameras"  @click.self="editC($event,item.cameras,c,$index,item)">
+							<span>{{c.name}}</span>
+							<label>{{c.status}}</label>
+						</p>
+					</div>
+				</div>
+				<div><!-- 计划执行人 -->
+					<span v-for="u in item.users" @click.stop="editU($event,item.users,u,$index,item)">{{u.name}}</span>
+				</div>
+			</li>
+		</ul>
+		<!-- 设备树，用户树 -->
+		<div class="detail hbox" id="detailDiv">
+			<div class="hz-col-1 left-con vbox" >
+				<div class="hz-col-1"><input v-model='search.camera' placeholder="输入关键字搜索摄像机"/></div>
+				<div class="hz-col-8" style="overflow:auto;"><ul id="camera" class="ztree"></ul></div>
+			</div>
+			<div class="hz-col-1 vbox" style="padding:0 10px;margin:10px 0;">
+				<div class="hz-col-1"><input v-model='search.user' placeholder="输入关键字搜索执行人"/></div>
+				<div class="hz-col-8" style="overflow:auto;"><ul id="user" class="ztree"></ul></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons">
+			<a  @click="add" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>新增</span></a>
+			<a  @click="save" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/patrolPlan/plan']);
+</script>
+</html>

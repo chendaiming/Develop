@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_people_over_alarm_config" desc="">
+		<sql>
+			SELECT poa_cus_number AS cus_number,
+			       rbd_id         AS rfid_id,
+			       rbd_name       AS rfid_name,
+			       abd_area_name  AS rfid_area_name,
+			       pbd_prsnr_id   AS people_id,
+			       pbd_prsnr_name AS people_name
+			  FROM prison_over_alarm
+			 INNER JOIN dvc_rfid_base_dtls
+			    ON poa_cus_number = rbd_cus_number
+			   AND poa_rfid = rbd_id
+			 INNER JOIN com_area_base_dtls
+			    ON rbd_cus_number = abd_cus_number
+			   AND rbd_area_id = abd_area_id
+			 INNER JOIN psr_prisoner_base_dtls
+			    ON poa_cus_number = pbd_cus_number
+			   AND poa_prisoner_id = pbd_prsnr_id
+		</sql>
+		<where id="0">
+			 WHERE poa_cus_number = :poa_cus_number
+		</where>
+		<where id="1">
+			 WHERE poa_cus_number = :poa_cus_number
+			   AND poa_rfid = :poa_rfid
+		</where>
+		<where id="2">
+			 WHERE poa_cus_number = :poa_cus_number
+			   AND poa_prisoner_id = :poa_prisoner_id
+		</where>
+	</item>
+
+	<item id="delete_people_over_alarm_config" desc="删除越界配置">
+		<sql>
+			DELETE FROM prison_over_alarm
+			 WHERE poa_cus_number = :poa_cus_number
+		</sql>
+		<where id="0">
+			   AND poa_rfid = :poa_rfid
+			   AND poa_prisoner_id = :poa_prisoner_id
+		</where>
+		<where id="1">
+			   AND poa_rfid = :poa_rfid
+		</where>
+		<where id="2">
+			   AND poa_prisoner_id = :poa_prisoner_id
+		</where>
+	</item>
+</sqlItem>

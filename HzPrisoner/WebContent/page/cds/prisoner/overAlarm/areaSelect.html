@@ -1,0 +1,105 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<style>
+	div.content>p{
+	    float: left;
+	    min-height: 60px;
+	    line-height:60px;
+	    width: 14.3%;
+	    border-radius: 10px;
+	    margin: 7px 0 7px 2%;
+	    text-align: center;
+	    background-repeat: no-repeat;
+	    position: relative;
+	    background-position: center 5px;
+	    cursor: pointer;
+	    border: 1px solid #4077ae;
+	    background-image: url(../../../../libs/ztree/css/zTreeStyle/img/prisoner.png);
+	}
+	div.content>p:hover{
+	    background-color: #4077ae;
+	}
+	div.content>p >span{
+	    display: initial;
+	}
+	div.content>p::after{
+	    content: '';
+	    position: absolute;
+	    top: 0px;
+	    right: 0px;
+	    width: 30px;
+	    height: 30px;
+	    background-image: url(../../../../css/images/icons/select.png);
+	}
+	div.content>p.select::after{
+		content:initial;
+	}
+	div.arealist{
+	    background: #115874;
+        margin: 5px 0 0 10px;
+        padding:10px;
+        overflow:auto;
+        border-radius:10px;
+	}
+	div.arealist span{
+	    width: 100px;
+	    height: 40px;
+	    background: #47afd8;
+	    text-align: center;
+	    line-height: 40px;
+	    border-radius: 10px;
+	    cursor:pointer;
+	    margin:10px;
+	    position:relative;
+	}
+	div.arealist span:hover >a{
+	    width: 20px;
+	    height: 20px;
+	    top: -5px;
+	    right: -5px;
+	    background-repeat: no-repeat;
+	    position: absolute;
+	    background-image: url(../../../../css/image/remove.png);
+	    background-position: center;
+	}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" style="width:450px;">
+				<div class="input icon" >
+				  	<input v-model="key" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				<div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+		<div class="vbox hz-col-9 right-con" style="display:none;margin:10px 0px;">
+			<div class="hz-col-1 vbox" style="position:relative;">
+					<p style="margin:0 0 5px 15px;"><label>可活动区域:</label></p>
+					<div class="arealist hz-col-3">
+							<span v-for="t in RFID">{{t.name}}<a @click="remove(t)"></a></span>
+					</div>
+					<p style="margin:5px 0 5px 15px;"><label>受限罪犯:</label></p>
+					<div class="hz-col-7" style="overflow:auto;margin:5px 0 0 10px;border:1px dashed red;border-radius:10px;" >
+						  
+						  <div class="content" v-cloak>
+						  	<p v-for="t in prisons" @click="choose($event,t)"><span>{{t.name}}</span></p>
+						  </div>
+					</div>
+			</div>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"  @click="save"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large"  @click="reset"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/prisoner/overAlarm/areaAlarm"]);
+</script>

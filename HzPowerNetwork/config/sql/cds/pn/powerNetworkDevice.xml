@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_pn_device_area_tree" desc="电网设备 区域树的查询">
+		<sql>
+			SELECT abd_cus_number,
+			       abd_area_id AS id,
+			       abd_area_name AS name,
+			       abd_parent_id AS pid
+			FROM com_area_base_dtls
+		</sql>
+		<where id="0">
+			WHERE abd_cus_number=? and abd_area_id=?
+			ORDER BY abd_seq
+		</where>
+		<where id="1">
+			WHERE abd_cus_number = ?
+		</where>
+    </item>
+
+	<item id="select_pn_device_tree" desc="电网设备信息查询">
+		<const key="pnb_stts_indc_name">PN_STATUS</const>
+		<sql>
+			SELECT DISTINCT 
+			 	pnbd.pnb_id,
+			    pnbd.pnb_cus_number,
+	    		pnbd.pnb_other_id, 
+	    		pnbd.pnb_name,
+	    		pnbd.pnb_brand,
+	    		pnbd.pnb_ip,
+	    		pnbd.pnb_port,
+	    		pnbd.pnb_addrs,
+	    		pnbd.pnb_dprtmnt,
+	    		pnbd.pnb_area,
+	    		pnbd.pnb_max_voltage,
+	    		pnbd.pnb_min_voltage,
+	    		pnbd.pnb_max_flow,
+	    		pnbd.pnb_min_flow,
+	    		pnbd.pnb_a_box_voltage,
+	    		pnbd.pnb_b_box_voltage,
+	    		pnbd.pnb_power_source_voltage,
+	    		pnbd.pnb_a_box_power_flow,
+	    		pnbd.pnb_b_box_power_flow,
+	    		pnbd.pnb_power_source_flow,
+	    		pnbd.pnb_time,
+	    		pnbd.pnb_stts_indc,
+	    		pnbd.pnb_remark,
+	    		pnbd.pnb_crte_time,
+	    		pnbd.pnb_crte_user_id,
+	    		pnbd.pnb_updt_time,
+	    		pnbd.pnb_updt_user_id,
+    			pnbd.pnb_id AS id,
+    			pnbd.pnb_seq,
+    			pnbd.pnb_stts_indc AS pnb_stts_indc_name,
+    			pnbd.pnb_name AS name,
+    			pnbd.pnb_area AS pid,
+    			a.abd_area_name AS pnb_area_name
+			FROM pnw_power_network_base_dtls pnbd
+			INNER JOIN (select abd_area_id, abd_area_name
+			               from (SELECT odd_id
+			                       FROM sys_org_dept_dtls
+			                      START WITH odd_id = :cusNumber
+			                     CONNECT BY prior odd_id = odd_parent_id)
+			              INNER JOIN com_org_area_rltn
+			                 ON oar_dept_id = odd_id
+			              INNER JOIN com_area_base_dtls
+			                 ON abd_area_id = oar_area_id
+			             ) a
+		    ON pnbd.pnb_area = a.abd_area_id
+		</sql>
+		<where id="0">
+			WHERE pnbd.pnb_cus_number = :cusNumber
+			ORDER BY pnbd.pnb_seq
+		</where>
+	</item>
+	
+	<item id="select_pn_device_tree_byid" desc="根据id查询电网设备信息查询">
+		<sql>
+			SELECT  
+			 	pnb_id,
+			    pnb_cus_number,
+	    		pnb_max_voltage,
+	    		pnb_min_voltage,
+	    		pnb_max_flow,
+	    		pnb_min_flow,
+	    		pnb_power_source_voltage,
+	    		pnb_power_source_flow
+			FROM pnw_power_network_base_dtls
+			WHERE pnb_cus_number = ? 
+			AND	pnb_id = ?
+		</sql>
+	</item>
+	
+	<item id="insert_pn_device" desc="新增电网设备">
+    	<seq>pnw_power_network_base_dtls@id@pnb_id</seq>
+    	<sql>
+	    	INSERT INTO pnw_power_network_base_dtls(
+	    		pnb_cus_number,
+	    		pnb_id,
+	    		pnb_name,
+	    		pnb_brand,
+	    		pnb_ip,
+	    		pnb_port,
+	    		pnb_addrs,
+	    		pnb_dprtmnt,
+	    		pnb_area,
+	    		pnb_max_voltage,
+	    		pnb_min_voltage,
+	    		pnb_max_flow,
+	    		pnb_min_flow,
+	    		pnb_time,
+	    		pnb_stts_indc,
+	    		pnb_crte_time,
+	    		pnb_crte_user_id,
+	    		pnb_updt_time,
+	    		pnb_updt_user_id,
+	    		pnb_seq
+	    	) VALUES (
+	    		:pnb_cus_number,
+	    		:id,
+	    		:pnb_name,
+	    		:pnb_brand,
+	    		:pnb_ip,
+	    		:pnb_port,
+	    		:pnb_addrs,
+	    		:pnb_dprtmnt,
+	    		:pnb_area,
+	    		:pnb_max_voltage,
+	    		:pnb_min_voltage,
+	    		:pnb_max_flow,
+	    		:pnb_min_flow,
+	    		sysdate,
+	    		:pnb_stts_indc,
+	    		sysdate,
+	    		:pnb_crte_user_id,
+	    		sysdate,
+	    		:pnb_updt_user_id,
+	    		:id
+	    	)
+    	</sql>
+    </item>
+	
+	<item id="update_pn_device" desc="更新电网设备信息">
+	  	<sql>
+		  	UPDATE pnw_power_network_base_dtls SET
+		  		pnb_name=:pnb_name,
+		  		pnb_brand=:pnb_brand,
+		  		pnb_port=:pnb_port,
+		  		pnb_ip=:pnb_ip,
+		  		pnb_dprtmnt=:pnb_dprtmnt,
+		  		pnb_area=:pnb_area,
+		  		pnb_stts_indc=:pnb_stts_indc,
+		  		pnb_addrs=:pnb_addrs,
+		  		pnb_min_voltage=:pnb_min_voltage,
+		  		pnb_max_voltage=:pnb_max_voltage,
+		  		pnb_min_flow=:pnb_min_flow,
+		  		pnb_max_flow=:pnb_max_flow,
+		  		pnb_updt_time=sysdate,
+		  		pnb_updt_user_id=:pnb_updt_user_id
+	  	</sql>
+	  	<where id="0">
+	  		where pnb_id=:pnb_id
+	  	</where>
+	</item>
+	
+	<item id="select_pn_org_dept" desc="根据机构号查询所有部门">
+		<sql>
+			SELECT 
+				odd_id AS id,
+				odd_name AS name,
+				odd_parent_id  AS pid
+			FROM sys_org_dept_dtls 
+		</sql>
+		<where id="0">
+			WHERE odd_use = 1 
+			START WITH odd_id= ?
+			CONNECT BY PRIOR odd_id=odd_parent_id
+		</where>
+    </item>
+	
+    <item id="delete_pn_device" desc="删除电网设备">
+    	<sql>
+	    	DELETE FROM  pnw_power_network_base_dtls WHERE pnb_id = ?
+    	</sql>
+    </item>
+    
+</sqlItem>

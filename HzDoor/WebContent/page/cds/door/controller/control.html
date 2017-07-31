@@ -1,0 +1,98 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class=" left-con vbox">
+				<div class="input icon" >
+				  	<input id="input" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				 <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+		
+		<div class="hz-col-9 right-con">
+			<form class="form-horizontal">
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">所属区域<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled=true v-model="control['area']" placeholder="请输入所属区域">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">所属部门<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <div class="input-group">
+			            	<input type="text" class="form-control" id="dep"  disabled=true v-model="control['dep']"  placeholder="请选择所属部门">
+							<div class="input-group-btn">
+								<button type="button"  class="btn btn-default" >所属部门<span class="caret"></span></button>
+							</div>
+						</div>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">名称<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="control['name']" placeholder="请输入控制器名称">
+			        </div>
+			    </div>
+			     <div class="form-group ">
+			        <label class="col-sm-2 control-label">出厂编号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="control['otherid']" placeholder="请输入出厂编号">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">控制对象<span class="required">*</span></label>
+			        <div class="col-sm-8">
+			            <hz-select 
+					  			tip="控制对象类型" 
+					  			code="CONTROLLER_TYPE"
+					  			:id.sync="control['target']"
+					  			/>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">IP地址</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="control['dcd_ip_addrs']" placeholder="请输入IP地址">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">端口</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="control['dcd_port']" placeholder="请输入端口">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">用户名</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="control['dcd_user_name']" placeholder="请输入用户名">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-2 control-label">密码</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="control['dcd_user_password']" placeholder="请输入密码">
+			        </div>
+			    </div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/door/controller/control"]);
+</script>

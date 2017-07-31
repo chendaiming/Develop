@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_alt_link_dvc_rltn" desc="查询报警联动项">
+	    <const key="dvc_type_cn">LDR_DVC_TYPE</const>
+		<sql>
+			SELECT ldr_cus_number,
+			       ldr_alertor_type,
+			       ldr_dvc_type		AS dvc_type_cn,
+			       ldr_alertor_id,
+			       ldr_dvc_type,
+			       ldr_dvc_id,
+			       ldr_dvc_act,
+			       ldr_seq,
+			       ldr_crte_time,
+			       ldr_crte_user_id,
+			       ldr_updt_time,
+			       ldr_updt_user_id
+			  FROM alt_link_dvc_rltn
+		</sql>
+		<where id="1">
+			 WHERE ldr_cus_number = ?
+			   AND ldr_alertor_type = ?
+			   AND ldr_alertor_id = ?
+		</where>
+		<order id="1">
+			  ORDER BY ldr_dvc_type,ldr_seq
+		</order>
+	</item>
+	<item id="select_alarm_link_view_menu_info" desc="查询报警联动视角">
+		<sql>
+			SELECT mpi_link_id,
+			       mpi_link_type,
+			       vmi_cus_number,
+			       vmi_id,
+			       vmi_pid,
+			       vmi_name,
+			       vmi_type,
+			       vmi_icon_url,
+			       vmi_host_key,
+			       vmi_status,
+			       vmi_order,
+			       vmi_is_default,
+			       vmi_model_group_id,
+			       vmi_pos_x,
+			       vmi_pos_y,
+			       vmi_pos_z,
+			       vmi_rot_x,
+			       vmi_rot_y,
+			       vmi_rot_z,
+			       vmi_tar_x,
+			       vmi_tar_y,
+			       vmi_tar_z
+			  FROM map_model_point_info mpi
+			 INNER JOIN map_view_menu_info vmi
+			    ON (mpi_cus_number = vmi_cus_number AND mpi_view_id = vmi_id)
+		</sql>
+		<where id="1">
+			 WHERE mpi.mpi_cus_number = ?
+			   AND mpi.mpi_link_id = ?
+			   AND mpi.mpi_link_type = ?
+		</where>
+	</item>
+	<item id="select_in_prisoner_police_info" desc="查询在监民警信息">
+		<sql>
+			SELECT pbd_cus_number,
+			       pbd_user_id,
+			       pbd_police_id,
+			       pbd_police_name,
+			       pbd_drptmnt_id,
+			       pbd_pstn_name,
+			       pbd_fixed_phone,
+			       pbd_ip_phone,
+			       pbd_phone,
+			       pbd_short_phone,
+			       pbd_fax,
+			       pbd_talk_num,
+			       pbd_police_cmmnct,
+			       pbd_family_phone,
+			       pbd_img,
+			       pbd_police_type_indc,
+			       pbd_job_type_indc,
+			       pbd_is_leader,
+			       pbd_in_prison
+			  FROM plc_police_base_dtls
+		</sql>
+		<where id="0">
+			 WHERE pbd_cus_number = ?
+			   AND pbd_drptmnt_id = ?
+			   AND pbd_in_prison = 0
+		</where>
+		<order id="0">
+			   ORDER BY pbd_police_id
+		</order>
+	</item>
+
+
+	<item id="select_police_info_for_alarm" desc="查询在监民警信息">
+		<sql>
+			SELECT pbd_cus_number,
+			       pbd_user_id,
+			       pbd_police_id,
+			       pbd_police_name,
+			       pbd_drptmnt_id,
+			       pbd_pstn_name,
+			       pbd_fixed_phone,
+			       pbd_ip_phone,
+			       pbd_phone,
+			       pbd_short_phone,
+			       pbd_talk_num,
+			       pbd_img,
+			       pbd_is_leader
+			  FROM plc_police_base_dtls
+		</sql>
+		<where id="1">
+			 WHERE pbd_cus_number = ?
+			   AND pbd_drptmnt_id = ?
+			   AND pbd_in_prison = 0
+		</where>
+		<order id="1">
+			   ORDER BY pbd_police_id
+		</order>
+	</item>
+
+
+	<item id="select_prisoner_base_dtls"  desc="根据罪犯编号查询详细信息">
+		 <sql>
+			SELECT a.pbd_cus_number,
+			       a.pbd_prsnr_id AS id,
+			       a.pbd_other_id AS prisonerid,
+			       a.pbd_prsnr_name AS name,
+			       a.pbd_prsn_area_id AS pid,
+			       a.pbd_crtfcts_type,
+			       a.pbd_crtfcts_id,
+			       a.pbd_sex_indc,
+			       TO_CHAR(a.pbd_birth_date, 'YYYY-MM-DD') AS pbd_birth_date,
+			       a.pbd_cltre_level,
+			       a.pbd_mrrge_stts,
+			       a.pbd_arrst_cmpny,
+			       a.pbd_nation,
+			       a.pbd_native_addrs,
+			       a.pbd_home_addrs,
+			       a.pbd_detain_type,
+			       a.pbd_charge_type,
+			       a.pbd_sprt_mnge,
+			       a.pbd_accstn,
+			       a.pbd_sntn_type,
+			       a.pbd_sntn_term,
+			       TO_CHAR(a.pbd_sntn_start_date, 'YYYY-MM-DD') AS pbd_sntn_start_date,
+			       TO_CHAR(a.pbd_sntn_end_date, 'YYYY-MM-DD') AS pbd_sntn_end_date,
+			       TO_CHAR(a.pbd_entry_prisoner_date, 'YYYY-MM-DD') AS pbd_entry_prisoner_date,
+			       a.pbd_serious_prsnr,
+			       a.pbd_type_indc,
+			       a.pbd_sntn_dprvtn_term,
+			       a.pbd_stts_indc,
+			       a.pbd_prsnr_stts,
+			       a.pbd_grp_name,
+			       a.pbd_grp_leader_indc,
+			       a.pbd_remark,
+			       b.pbd_photo_path AS pbd_img
+			  FROM psr_prisoner_base_dtls  a 
+		 LEFT JOIN psr_photo_base_dtls b
+			   ON (a.pbd_prsnr_id = b.pbd_prsnr_id) 			  
+		 </sql>
+		 <where id="1">
+		 	WHERE a.pbd_cus_number = ?
+			  AND a.pbd_prsn_area_id = ? 
+			  AND a.pbd_type_indc=1  
+		 </where>		 
+     </item>
+
+
+	<item id="select_prisoner_simple_info_for_alarm"  desc="根据罪犯编号查询详细信息">
+		 <sql>
+			SELECT a.pbd_cus_number AS cus_number,
+			       a.pbd_prsnr_id   AS id,
+			       a.pbd_other_id   AS prisonerid,
+			       a.pbd_prsnr_name AS name,
+			       a.pbd_accstn,
+			       a.pbd_type_indc  AS type_indc,
+			       b.pbd_photo_path AS pbd_img
+			  FROM psr_prisoner_base_dtls a
+			  LEFT JOIN psr_photo_base_dtls b
+			    ON a.pbd_prsnr_id = b.pbd_prsnr_id
+		 </sql>
+		 <where id="0">
+			 WHERE a.pbd_cus_number = ?
+			   AND a.pbd_prsn_area_id = ?
+			   AND a.pbd_stts_indc = 1
+		 </where>
+     </item>
+
+     <item id="select_level_handle_set">
+    	<sql>
+			SELECT lhs_alertor_id AS dvc_id,
+			       lhs_dvc_type AS dvc_type,
+			       TO_CHAR(lhs_start_time, 'YYYY-MM-DD HH24:MI:SS') AS bdate,
+			       TO_CHAR(lhs_end_time, 'YYYY-MM-DD HH24:MI:SS') AS edate,
+			       lhs_level AS lvl,
+			       lhs_receive_dept_id AS receive_dept_id,
+			       lhs_handle_btime AS btime,
+			       lhs_handle_etime AS etime,
+			       lhs_alarm_type AS alarm_type,
+			       notice_dept_ids
+			  FROM alt_level_handle_set
+			  LEFT JOIN (SELECT WM_CONCAT(anr_notice_dept_id) AS notice_dept_ids,
+			                    anr_handle_id
+			               FROM alt_alert_notice_rltn
+			              GROUP BY anr_handle_id) anr
+			    ON lhs_id = anr_handle_id
+    	</sql>
+    	<where id="0">
+			 WHERE lhs_cus_number = ?
+			   AND lhs_dvc_type = ?
+			   AND lhs_alertor_id = ?
+			   AND (lhs_alarm_type = ? OR lhs_alarm_type IS NULL)
+			   AND lhs_start_time #= TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS')
+			   AND lhs_end_time >= TO_TIMESTAMP(?, 'YYYY-MM-DD HH24:MI:SS')
+    	</where>
+    	<order id="0">
+			ORDER BY lhs_level
+    	</order>
+    </item>
+    <item id="insert_alt_alert_record_dtls">
+    	<seq>alt_alert_record_dtls@ard_record_id</seq>
+		<sql>
+			INSERT INTO alt_alert_record_dtls
+			  (ard_cus_number,
+			   ard_alert_date,
+			   ard_record_id,
+			   ard_alertor_id,
+			   ard_alertor_name,
+			   ard_alert_addrs,
+			   ard_alert_level,
+			   ard_dvc_type,
+			   ard_alert_reason,
+			   ard_alert_time,
+			   ard_alert_stts,
+			   ard_remark,
+			   ard_img_src,
+			   ard_crte_time,
+			   ard_crte_user_id,
+			   ard_updt_time,
+			   ard_updt_user_id)
+			VALUES
+			  (:ard_cus_number,
+			   TRUNC(SYSDATE),
+			   :ard_record_id,
+			   :ard_alertor_id,
+			   :ard_alertor_name,
+			   :ard_alert_addrs,
+			   :ard_alert_level,
+			   :ard_dvc_type,
+			   :ard_alert_reason,
+			   TO_TIMESTAMP(:ard_alert_time, 'YYYY-MM-DD HH24:MI:SS'),
+			   :ard_alert_stts,
+			   :ard_remark,
+			   :ard_img_src,
+			   SYSDATE,
+			   0,
+			   SYSDATE,
+			   0)
+		</sql>
+	</item>
+</sqlItem>

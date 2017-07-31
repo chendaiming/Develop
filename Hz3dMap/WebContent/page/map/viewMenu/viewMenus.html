@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>首页</title>
+<style type="text/css">
+.view-menu {
+	position: absolute;
+	left: 10px;
+	top: 245px;
+	width: 50px;
+	height: 50px;
+	opacity: .9;
+}
+
+.view-menu * {
+	box-sizing: border-box;
+	white-space:nowrap;
+}
+
+.view-menu .pos-abs {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+.view-menu .vm-menu {
+	width: 50px;
+	height: 50px;
+	border-radius: 50px;
+	z-index: 2;
+}
+
+.view-menu .vm-menu .vm-icon {
+	width: 100%;
+	height: 100%;
+	border-radius: 50px;
+	border: 1px solid #F2F2F2;
+	background: url(css/images/view/location.png) 9px 6px no-repeat rgba(12, 34, 48, 0.98);
+	z-index: 2;
+	transition: all .5s;
+	box-shadow: 1px 1px 5px #000;
+}
+.view-menu .vm-menu .vm-wave {
+	width: 100%;
+	height: 100%;
+	border-radius: 50px;
+	border: 1px solid rgba(255,255,255,.9);
+	z-index: 1;
+}
+
+
+.view-menu .vm-body {
+	top: 50%;
+	margin-top: -17px;
+	margin-left: 20px;
+	padding: 0 6px 0 34px;
+	width: 0px;
+	height: 34px;
+	display: table;
+	transition: all .5s;
+}
+.view-menu .vm-body .vm-title {
+ 	position: absolute;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+	padding: 0 6px 0 34px;
+    border: 1px solid #FFF;
+    border-left: 0 none;
+    border-radius: 20px 5px 5px 20px;
+    background-color: rgba(12, 34, 48, 0.98);
+    display: table;
+    text-align: center;
+    z-index: 1;
+    transition: all .5s;
+    box-shadow: 1px 1px 5px #000;
+    cursor: default;
+}
+.view-menu .vm-body .vm-title >span {
+	display: table-cell;
+	vertical-align: middle;
+	transition: all .5s;
+}
+
+.view-menu .vm-body .vm-root {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.view-menu .vm-ul {
+	position: absolute;
+	left: 0px;
+	top: 100%;
+	width: 100%;
+	padding-left: 1px;
+	display: none;
+	transition: all .5s;
+}
+
+.view-menu .vm-ul.child {
+	left: 100%;
+	top: 0px;
+}
+
+.view-menu .vm-ul .vm-li {
+	position: relative;
+	padding: 10px 20px 6px 12px;
+	background-color: rgba(12,34,48,.98);
+	border-left: 2px solid rgba(255,136,0,0);
+	text-align: center;
+   	cursor: pointer;
+}
+.view-menu .vm-ul .vm-li.catalog {
+	background: url(css/images/view/catalog.png) right -3px bottom 1px no-repeat rgba(12,34,48,.98);
+}
+.view-menu .vm-ul .vm-li:hover {
+	border-left-color: #e74c3c;
+	background-color: rgba(34,52,65,.98);
+}
+
+.view-menu .vm-ul .vm-li >span {
+	width: 100%;
+	text-align: center;
+	text-overflow:ellipsis;
+   	overflow: hidden;
+   	transition: all .5s;
+}
+.view-menu .vm-ul .vm-li:hover >span {
+	color: #e74c3c;
+}
+
+.view-menu .vm-ul .vm-li:hover >.vm-ul {
+	display: block;
+}
+
+.view-menu:hover .vm-menu .vm-icon,
+.view-menu.hover .vm-menu .vm-icon,
+.view-menu.expand .vm-menu .vm-icon {
+	border-color: #e74c3c;
+	box-shadow: 0 0 5px #e74c3c;
+}
+.view-menu.expand .vm-body {
+	width: 180px;
+}
+
+.view-menu:hover .vm-body .vm-title,
+.view-menu.hover .vm-body .vm-title, 
+.view-menu.expand .vm-body .vm-title {
+	border-color: #e74c3c;
+	box-shadow: 1px 0 5px #e74c3c;
+}
+.view-menu.hover .vm-body .vm-title >span,
+.view-menu.expand .vm-body .vm-title >span {
+	color: #e74c3c;
+}
+.view-menu.hover .vm-menu .vm-wave.hover,
+.view-menu.expand .vm-menu .vm-wave.hover {
+	left: -8px;
+	top: -8px;
+	width: 66px;
+	height: 66px;
+	border: 1px solid rgba(255,255,255,0);
+	transition: all 1s;
+}
+.view-menu.expand .vm-body.expand .vm-root >.vm-ul {
+	display: block;
+	transition: all .3s;
+}
+
+</style>
+</head>
+<body>
+<div class="view-menu">
+	<div class="vm-menu pos-abs" title="视角定位">
+		<div class="vm-icon pos-abs"></div>
+		<div class="vm-wave pos-abs"></div>
+	</div>
+	<div class="vm-body pos-abs">
+		<div class="vm-title"><span>视角定位</span></div>
+		<div class="vm-root"><span>视角定位</span>
+			<ul class="vm-ul">
+				<li :class="T.children.length > 0 ? 'vm-li catalog' : 'vm-li'" v-for="T in rootMenus" @click="clickMenu(T)">
+					<span>{{T.name}}</span>
+					<ul class="vm-ul child" v-if="T.children.length > 0">
+						<li :class="T.children.length > 0 ? 'vm-li catalog' : 'vm-li'" v-for="T in T.children" @click="clickMenu(T)">
+							<span>{{T.name}}</span>
+							<ul class="vm-ul child" v-if="T.children.length > 0">
+								<li :class="T.children.length > 0 ? 'vm-li catalog' : 'vm-li'" v-for="T in T.children" @click="clickMenu(T)">
+									<span>{{T.name}}</span>
+									<ul class="vm-ul child" v-if="T.children.length > 0">
+										<li :class="T.children.length > 0 ? 'vm-li catalog' : 'vm-li'" v-for="T in T.children" @click="clickMenu(T)">
+											<span>{{T.name}}</span>
+											<ul class="vm-ul child" v-if="T.children.length > 0">
+												<li :class="T.children.length > 0 ? 'vm-li catalog' : 'vm-li'" v-for="T in T.children" @click="clickMenu(T)">
+													<span>{{T.name}}</span>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+</body>
+</html>

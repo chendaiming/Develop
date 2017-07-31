@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+
+    <item id="insert_call_roll_record_master" desc="">
+    	<seq>cds_call_roll_record_master@crm_record_id</seq>
+		<sql>
+			INSERT INTO cds_call_roll_record_master
+			  (crm_cus_number,
+			   crm_record_id,
+			   crm_serial_code,
+			   crm_batch_code,
+			   crm_dprt_id,
+			   crm_dprt_name,
+			   crm_police_id,
+			   crm_police_name,
+			   crm_predict_num,
+			   crm_fact_num,
+			   crm_begin_time)
+			VALUES
+			  (:crm_cus_number,
+			   :crm_record_id,
+			   :crm_serial_code,
+			   :crm_batch_code,
+			   :crm_dprt_id,
+			   :crm_dprt_name,
+			   :crm_police_id,
+			   :crm_police_name,
+			   :crm_predict_num,
+			   :crm_fact_num,
+			   TO_DATE(:crm_begin_time, 'YYYY-MM-DD HH24:MI:SS'))
+		</sql>
+    </item>
+
+    <item id="update_call_roll_record_master" desc="">
+		<sql>
+			UPDATE cds_call_roll_record_master
+			   SET crm_end_time = TO_DATE(:crm_end_time, 'YYYY-MM-DD HH24:MI:SS'),
+			       crm_fact_num = :crm_fact_num
+			 WHERE crm_cus_number = :crm_cus_number
+			   AND crm_record_id = :crm_record_id
+		</sql>
+    </item>
+
+    <item id="select_call_roll_record_master" desc="">
+		<sql>
+			SELECT crm_cus_number,
+			       crm_record_id,
+			       crm_serial_code,
+			       crm_batch_code,
+			       crm_dprt_id,
+			       crm_dprt_name,
+			       crm_police_id,
+			       crm_police_name,
+			       crm_predict_num,
+			       crm_fact_num,
+			       TO_CHAR(crm_begin_time, 'HH24:MI:SS') AS crm_begin_time,
+			       TO_CHAR(crm_end_time, 'HH24:MI:SS') AS crm_end_time
+			  FROM cds_call_roll_record_master
+		</sql>
+		<where id="0">
+			 WHERE crm_cus_number = ?
+			   AND crm_record_id = ?
+		</where>
+    </item>
+
+    <item id="insert_call_roll_record_dtls" desc="">
+		<sql>
+			INSERT INTO cds_call_roll_record_dtls
+			  (crd_cus_number,
+			   crd_record_id,
+			   crd_prisoner_id,
+			   crd_prisoner_name,
+			   crd_dprt_id,
+			   crd_dprt_name,
+			   crd_police_id,
+			   crd_time,
+			   crd_status,
+			   crd_update_time)
+			VALUES
+			  (:crd_cus_number,
+			   :crd_record_id,
+			   :crd_prisoner_id,
+			   :crd_prisoner_name,
+			   :crd_dprt_id,
+			   :crd_dprt_name,
+			   :crd_police_id,
+			   TO_DATE(:crd_time, 'YYYY-MM-DD HH24:MI:SS'),
+			   :crd_status,
+			   SYSDATE)
+		</sql>
+    </item>
+
+    <item id="select_call_roll_record_dtls" desc="">
+		<sql>
+			SELECT crd_cus_number,
+			       crd_record_id,
+			       crd_prisoner_id,
+			       crd_prisoner_name,
+			       crd_dprt_id,
+			       crd_dprt_name,
+			       crd_police_id,
+			       TO_CHAR(crd_time, 'HH24:MI:SS') AS crd_time,
+			       crd_status,
+			       TO_CHAR(crd_update_time, 'HH24:MI:SS') AS crd_update_time
+			  FROM cds_call_roll_record_dtls
+		</sql>
+		<where id="0">
+			 WHERE crd_cus_number = ?
+			   AND crd_record_id = ?
+			   AND crd_prisoner_id = ?
+		</where>
+    </item>
+
+    <item id="select_area_by_dprt_for_location" desc="">
+		<sql>
+			SELECT oar_cus_number AS cus_number,
+			       oar_dept_id    AS dept_id,
+			       odd_name       AS dept_name,
+			       oar_area_id    AS area_id,
+			       abd_area_name  AS area_name
+			  FROM com_org_area_rltn
+			 INNER JOIN com_area_base_dtls
+			    ON abd_cus_number = oar_cus_number
+			   AND abd_area_id = oar_area_id
+			 INNER JOIN sys_org_dept_dtls
+			    ON odd_id = oar_dept_id
+		</sql>
+		<where id="0">
+			 WHERE oar_cus_number = ?
+			   AND oar_dept_id = ?
+		</where>
+    </item>
+    
+    <item  id="select_no_call_roll_list" desc="">
+    	<sql>
+    		SELECT 
+				   crd_record_id        ,
+				   crd_prisoner_id      ,
+				   crd_prisoner_name    ,
+				   crd_dprt_id          ,
+				   crd_dprt_name        ,
+				   crd_police_id        ,
+				   crd_time             ,
+				   crd_status           ,
+				   crd_update_time      
+		   FROM cds_call_roll_record_dtls
+    	</sql>
+    	<where id="0">
+   		 WHERE crd_cus_number = ?
+			   AND crd_record_id = ?
+			   AND  crd_status=0
+    	</where>
+    </item>
+	<item id="select_permission_dep">
+		<sql>
+			SELECT 
+				wm_concat(distinct(odd_id)) child
+
+			  FROM SYS_ORG_DEPT_DTLS t
+			
+			 START WITH odd_id = ?
+			
+			CONNECT BY NOCYCLE prior odd_id = odd_parent_id
+		</sql>
+	</item>
+	
+	<item  id="select_call_roll_hository">
+		<sql>
+			SELECT 
+				crm_cus_number,
+				crm_record_id,
+				crm_serial_code,
+				crm_batch_code,
+				crm_dprt_id,
+				crm_dprt_name,
+				crm_police_id,
+				crm_police_name,
+				crm_predict_num,
+				crm_fact_num,
+				crm_type,
+				to_char(crm_begin_time,'hh24:mi:ss')crm_begin_time,
+				to_char(crm_end_time,'hh24:mi:ss')crm_end_time,
+				1  flag
+			FROM
+			  	cds_call_roll_record_master t
+			 INNER JOIN
+			 (SELECT odd_id
+			    FROM sys_org_dept_dtls
+			   START WITH odd_id = :cus
+			  CONNECT BY PRIOR odd_id = odd_parent_id) z
+			    ON z.odd_id = t.CRM_DPRT_ID
+			 WHERE crm_begin_time > TRUNC(SYSDATE, 'dd')
+			ORDER BY crm_begin_time
+		</sql>
+	</item>
+	<item id="select_call_roll_point_history">
+		<sql>
+			SELECT
+				crd_cus_number，
+				crd_dprt_id，
+				crd_dprt_name，
+				crd_police_id，
+				crd_prisoner_id，
+				crd_prisoner_name，
+				crd_record_id，
+				crd_status，
+				to_char(crd_time,'hh24:mi:ss')crd_time，
+				to_char(crd_update_time,'hh24:mi:ss')crd_update_time
+			FROM CDS_CALL_ROLL_RECORD_DTLS t
+			RIGHT JOIN cds_call_roll_record_master
+			ON crd_record_id = crm_record_id
+			WHERE crd_record_id = :id
+			AND CRM_BEGIN_TIME > TRUNC(SYSDATE, 'dd')
+			ORDER BY crd_time
+		</sql>
+	</item>
+</sqlItem>

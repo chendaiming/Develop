@@ -1,0 +1,114 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<style>
+.item{
+	margin:10px;
+}
+.item>label{
+	width: 70px; text-align: right;
+}
+.item>span{
+	margin-left: 10px;
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:32%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 15px;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+.combox_panel{
+	max-height:90px;
+}
+.condition>input:focus {outline: none;} 
+ul.cardlist{
+    position: absolute;
+    width: 100%;
+    overflow:auto;
+    top:0px;
+    bottom: 0px;
+}
+.cardlist div{
+	padding:1px;
+}
+.conditionslid{
+	max-height:180px ;
+}
+.hz-col-5.line::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 100%;
+    border-style: dotted;
+    border: 1px dashed #699ead;
+    margin-left: -3px;
+}
+div.line>.dateline::before{
+	border-style: none;
+}
+</style>
+<div class="vbox box-con" id="record" >
+	<div class="hbox hz-col-1" >
+		<div class="left-con hz-col-2 vbox">
+				<div class="hz-col-1" style="margin-right:6px;">
+				  		<hz-date 
+					      		tip="选择查询日期" 
+					      		:val.sync="today"
+					      	 	format=Y-m-d
+					      	/>
+			    </div>
+				<div class="hz-col-9 vbox" style="overflow:auto;color:rgb(255, 255, 255);">
+					<div class="hz-col-1 item" v-cloak>
+						<label style="color:green;">进：{{enter}}</label>
+						<label style="color:red;">出：{{out}}</label>
+					</div>
+					<div class="hz-col-8" id="tableshow"></div>
+				</div>
+		</div>
+		<div class="hz-col-5 line" style="overflow:hidden;position:relative;" >
+			<div class="condition" style="right:1%"><input placeholder="刷卡门禁搜索" class="find" id="address" v-model="address" style="background-image:url(../../../../css/images/address.png)"></div>
+			<div  v-if="records.length==0" class="empty" >暂无记录</div>
+			<ul v-cloak class="dateline cardlist" id="scroll">
+				<li  v-for="record in records">
+					<div>
+						<p class="item"><label >门禁:</label><span >{{record.door}}</span></p>
+						<p class="item"><label >操作人:</label><span >{{record.plc}}</span></p>
+					</div>
+					<span>{{record.type}}</span>
+					<a>{{record.time}}</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons" style="float:left">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>导出</span></a>
+		</div>
+		<div class="buttons"  @click="query">
+				<a  class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>查询</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/door/record/oprRecord"]);
+</script>

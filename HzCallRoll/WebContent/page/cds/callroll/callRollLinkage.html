@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>点名主表信息</title>
+<style type="text/css">
+	html, body {width: 100%; height: 100%; padding: 0px; margin: 0px;}
+	html * {font-size: 13px; color: #FFF; cursor:default;}
+
+	div.tab-cell {
+		display: table-cell;
+    	vertical-align: middle;
+	}
+
+	div.linkage {
+		width: 100%;
+	    height: 100%;
+	    padding: 0px 8px;
+	    background-color: rgba(42,61,83,0.9);
+	    box-sizing: border-box;
+	    overflow: hidden;
+	}
+	div.linkage-head {
+		position: relative;
+		width: 100%;
+	    height: 35px;
+	    display: table;
+	    text-align: center;
+	}
+
+	div.linkage-head span {
+		color: #FFF;
+		font-size: 15px;
+	}
+	a.linkage-head-close {
+		position: absolute;
+		right: 0px;
+		top: 50%;
+		margin-top: -10px;
+		width: 20px;
+		height: 20px;
+		background: url(../../../css/images/close.png) center no-repeat;
+		background-size: 100%;
+		cursor: pointer;
+	}
+	div.linkage-body {
+		width: 100%; 
+		height: 100%;
+		border-top: 1px solid #FFF;
+	}
+	div.linkage-body-tip {
+		width: 100%;
+	    height: 28px;
+	    background-color: rgba(255,255,255,0.35);
+	    text-align: center;
+	    display: table;
+	}
+	div.linkage-body-tip span {
+	    font-size: 14px;
+		color: #FF9900;
+	}
+
+	ul.linkage-body-areas {
+		list-style: none;
+	    margin: 0px;
+	    padding: 0px;
+	    width: 100%;
+	}
+	ul.linkage-body-areas li {
+		margin-top: 1px;
+	    height: 28px;
+	    line-height: 28px;
+	    background-color: rgba(255,255,255,0.15);
+	    text-align: center;
+	    cursor: pointer;
+	    overflow: hidden;
+	}
+	ul.linkage-body-areas li:hover {
+		background-color: rgba(102,204,255,0.15);
+	}
+</style>
+</head>
+<body>
+<div class="linkage">
+	<div class="linkage-head">
+		<div class="tab-cell">
+			<span>联动区域列表</span>
+		</div>
+		<a class="linkage-head-close" title="关闭联动" @click="cancelLinkage()"></a>
+	</div>
+	<div class="linkage-body">
+		<div class="linkage-body-tip">
+			<div class="tab-cell"><span>请选择联动区域</span></div>
+		</div>
+		<ul class="linkage-body-areas">
+			<li v-for="T in linkAreas" @click="linkageMap(T)" :title="{T.area_name}">{{T.area_name}}</li>
+		</ul>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/callroll/callRollLinkage"]);
+</script>
+</html>

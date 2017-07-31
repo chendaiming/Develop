@@ -1,0 +1,14 @@
+<style>
+
+</style>
+<p></p>
+<ul id="doorlist"><!-- 提示列表 -->
+	<li v-for="c in prisonList">
+		<div style="padding-top: 5px;">
+			<p><label>罪犯名称:</label>{{c.doorId}}</p>
+			<p><label>当前区域:</label>{{c.cardId}}</p>
+			<p><label>越界时间:</label>{{c.brushCardTime}}</p>
+		</div>
+	</li>
+</ul>
+<a></a>

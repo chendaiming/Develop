@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_broadcast_base_dtls">
+		<sql>
+			SELECT bbd_cus_number,
+			       bbd_id,
+			       bbd_other_id,
+			       bbd_name,
+			       bbd_brand,
+			       bbd_ip,
+			       bbd_port,
+			       bbd_dept_id,
+			       bbd_area_id,
+			       bbd_dvc_addrs,
+			       bbd_dvc_stts,
+			       bbd_use_stts,
+			       bbd_seq
+			  FROM bct_broadcast_base_dtls
+		</sql>
+		<where id="1">
+			WHERE bbd_cus_number = ?
+			    AND bbd_id= ?
+		</where>
+		<where id="2">
+			WHERE bbd_cus_number = ?
+		</where>
+	</item>
+
+	<item id="select_broadcast_base_info_for_cache">
+		<sql>
+			SELECT bbd_cus_number AS cus_number,
+			       bbd_id         AS id,
+			       bbd_name       AS name,
+			       bbd_dept_id    AS dept_id,
+			       bbd_dvc_addrs  AS addrs
+			  FROM bct_broadcast_base_dtls
+		</sql>
+		<where id="0">
+			 WHERE bbd_cus_number = ?
+		</where>
+	</item>
+</sqlItem>

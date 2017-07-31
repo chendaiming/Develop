@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title>设备预案类型</title>
+</head>
+<body>
+<div class="vbox box-con">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" style="width:280px;">
+			<div class="input icon" >
+			  	<input v-model="searchTree" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		    <div class="hz-col-1" style="overflow:auto">
+				<ul id="deviceTypeTree" class="ztree"></ul>
+		    </div>
+		</div>
+		<div class="hz-col-1 vbox right-con">
+			<form class="form-horizontal" role="form">
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">上级类型</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="dt.pname" type="text" readonly placeholder="上级类型">
+					       	<input type="hidden" v-model="dt.pid">
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">类型名称</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="dt.name" type="text"  placeholder="类型名称">
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">设备类型</label>
+					    <div class="col-xs-10">
+					       	<hz-select 
+					       		tip="设备类型"
+					       		code="DGT_DVC_TYPE"
+					       		:id.sync="dt.dgt_dvc_type"
+					       	/>
+					    </div>
+					  </div>
+			   	  </div>
+  	  			  <!-- <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">排序号</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="dt.dgt_seq" type="number" min="0" max="100" placeholder="排序">
+					    </div>
+					  </div>
+			   	  </div> -->
+	   	  	</form>
+		</div>		
+	</div>
+	<div class="bottom">
+		<div class="buttons" >
+			<a @click="saveType" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a @click="delType" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			<a @click="reset" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['sys/device/deviceType'])
+</script>
+</html>

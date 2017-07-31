@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>   
+ 	<item id="update_camera_status" desc="摄像机状态更新">
+		<sql>
+			UPDATE cmr_camera_base_dtls 
+			   SET cbd_stts_indc       = :device_status,
+			       cbd_updt_time       = SYSDATE
+			 WHERE cbd_cus_number      = :cusNumber
+			   AND cbd_id              = :device_id
+		</sql>
+    </item>	 
+ 
+  	<item id="update_alertor_status" desc="报警器设备状态更新">
+		<sql>
+			UPDATE alt_network_base_dtls 
+			   SET nbd_stts       = :device_status,
+			       nbd_updt_time       = SYSDATE
+			 WHERE nbd_cus_number      = :cusNumber
+			   AND nbd_id              = :device_id
+		</sql>
+    </item>	
+ 
+   	<item id="update_door_status" desc="门禁设备状态更新">
+		<sql>
+			UPDATE dor_door_base_dtls 
+			   SET dbd_dvc_stts        = :device_status,
+			       dbd_updt_time       = SYSDATE
+			 WHERE dbd_cus_number      = :cusNumber
+			   AND dbd_other_id        = :device_id
+		</sql>
+    </item>	
+   
+    <item id="update_talkback_stts" desc="对讲机设备状态更新">
+		<sql>
+		    UPDATE dvc_talkback_base_dtls
+			   SET tbd_stts_indc  = :device_status,
+			       tbd_updt_time  =  SYSDATE
+			 WHERE tbd_cus_number = :cusNumber
+			   AND tbd_idnty      = :device_id	   
+		</sql>
+    </item>	  
+   
+    <item id="update_broadcast_device_stts" desc="更新广播设备状态">
+    	<sql>
+			UPDATE bct_broadcast_base_dtls 
+		       SET bbd_dvc_stts   =  :device_status,
+		           bbd_updt_time  =  SYSDATE
+		     WHERE bbd_cus_number =  :cusNumber
+			   AND bbd_id         =  :device_id
+    	</sql>
+    </item>        
+    
+     <item id="update_patrol_device_stts" desc="更新巡更设备状态">
+    	<sql>
+			UPDATE ptl_patrol_point_dtls 
+		       SET ppi_dvc_stts   =  :device_status,
+		           ppi_updt_time  =  SYSDATE
+		     WHERE ppi_cus_number =  :cusNumber
+			   AND ppi_id         =  :device_id
+    	</sql>
+    </item>   
+</sqlItem>

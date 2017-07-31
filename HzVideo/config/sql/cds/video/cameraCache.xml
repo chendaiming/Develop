@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_camera_base_dtls">
+		<sql>
+			SELECT cbd.cbd_cus_number,
+			       cbd.cbd_id,
+			       cbd.cbd_name,
+			       cbd.cbd_area_id,
+			       cbd.cbd_other_id,
+			       cbd.cbd_type,
+			       cbd.cbd_type,
+			       cbd.cbd_brand,
+			       cbd.cbd_ip_addrs,
+			       cbd.cbd_dept_id,
+			       cbd.cbd_area_id,
+			       cbd.cbd_dvc_addrs,
+			       cbd.cbd_stts_indc,
+			       cbd.cbd_stream_type,
+			       cbd.cbd_playnow_type,
+			       cbd.cbd_playback_type,
+			       cbd.cbd_seq,
+			       cvr.cvr_device_id,
+			       cvr.cvr_chnnl_code,
+			       cbd.cbd_capacity_id
+			  FROM cmr_camera_base_dtls cbd
+			  LEFT JOIN cmr_camera_video_rltn cvr
+			    ON (cbd.cbd_cus_number = cvr.cvr_cus_number AND
+			       cbd.cbd_id = cvr.cvr_camera_id)
+		</sql>
+		<where id="1">
+			WHERE cbd.cbd_cus_number = ?
+			    AND cbd.cbd_id= ?
+		</where>
+		<where id="2">
+			WHERE cbd.cbd_cus_number = ?
+		</where>
+		<order id="0">
+			ORDER BY cbd.cbd_seq
+		</order>
+	</item>
+	<item id="select_video_device_dtls">
+		<sql>
+			SELECT cvr.cvr_camera_id,
+			       cvr.cvr_chnnl_code,
+			       vdd.vdd_cus_number,
+			       vdd.vdd_device_id,
+			       vdd.vdd_device_name,
+			       vdd.vdd_area_id,
+			       vdd.vdd_other_id,
+			       vdd.vdd_device_type,
+			       vdd.vdd_device_brand,
+			       vdd.vdd_device_mode,
+			       vdd.vdd_ip_addrs,
+			       vdd.vdd_port,
+			       vdd.vdd_ip_addrs2,
+			       vdd.vdd_port2,
+			       vdd.vdd_user_name,
+			       vdd.vdd_user_password,
+			       vdd.vdd_dept_id,
+			       vdd.vdd_area_id,
+			       vdd.vdd_dvc_addrs,
+			       vdd.vdd_stts_indc,
+			       vdd.vdd_seq
+			  FROM cmr_camera_video_rltn cvr
+			 INNER JOIN cmr_video_device_dtls vdd
+			    ON (cvr.cvr_cus_number = vdd.vdd_cus_number AND
+			       cvr.cvr_device_id = vdd.vdd_device_id)
+		</sql>
+		<where id="0">
+			WHERE vdd.vdd_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE vdd.vdd_cus_number = ?
+				AND vdd.vdd_device_id = ?
+		</where>
+	</item>
+</sqlItem>

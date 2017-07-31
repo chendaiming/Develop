@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_alarm_area_tree"  desc="区域门禁">
+		<const key="devstatus">ALARM_STATUS</const>
+		<sql>
+			SELECT '1-' || odd_id id,
+			       '1-' || odd_parent_id pid,
+			       odd_id gid,
+			       odd_name name,
+			       'org.png' icon,
+			       odd_id org,
+			       null nbd_other_id,
+			       null nbd_brand,
+			       null nbd_ip,
+			       null nbd_port,
+			       null nbd_dept_id,
+			       null nbd_dvc_addrs,
+			       null	devstatus,
+			       null nbd_stts,
+			       odd_id cus,
+			       '-1' type,
+			       odd_seq seq
+			  FROM sys_org_dept_dtls
+			
+			 WHERE level &lt; :type
+			 START WITH odd_id = :org
+			CONNECT BY PRIOR odd_id = odd_parent_id
+			UNION ALL
+			SELECT id,
+			       pid,
+			       gid,
+			       name,
+			       icon,
+			       org,
+			       nbd_other_id,
+			       nbd_brand,
+			       nbd_ip,
+			       nbd_port,
+			       nbd_dept_id,
+			       nbd_dvc_addrs,
+			       nbd_stts devstatus,
+			       nbd_stts,
+			       cus,
+			       type,
+			       seq
+			  FROM (SELECT '' || nbd_id id,
+			               '1-' || nbd_area_id pid,
+			               nbd_area_id gid,
+			               nbd_name name,
+			               'alarm.png' icon,
+			               nbd_cus_number org,
+			               nbd_other_id,
+			               nbd_brand,
+			               nbd_ip,
+			               nbd_port,
+			               nbd_dept_id,
+			               nbd_dvc_addrs,
+			               nbd_stts devstatus,
+			               nbd_stts,
+			               nbd_cus_number cus,
+			               '1' type,
+			               nbd_seq seq
+			          FROM alt_network_base_dtls
+			        UNION ALL
+			        SELECT '1-' || abd_area_id id,
+			               '1-' || abd_parent_id pid,
+			               abd_area_id gid,
+			               abd_area_name name,
+			               'area.png' icon,
+			               abd_cus_number org,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               0 type,
+			               abd_cus_number cus,
+			               '0' type,
+			               abd_seq seq
+			          FROM com_area_base_dtls) t
+
+		</sql>
+		<where id="0" desc="非省局用户登录">
+			 WHERE t.org=:org
+		</where>
+		<order id="0">
+			 ORDER　By seq
+		</order>
+	</item>
+	
+	<item id="update_alarm">
+		<sql>
+			UPDATE alt_network_base_dtls
+			SET
+               nbd_area_id    =:gid,
+               nbd_name  	  =:name,
+               nbd_cus_number =:cus,
+               nbd_other_id	  =:nbd_other_id,	
+               nbd_brand	  =:nbd_brand,	
+               nbd_ip		  =:nbd_ip,	
+               nbd_port		  =:nbd_port,	
+               nbd_dept_id	  =:nbd_dept_id,	 
+               nbd_dvc_addrs  =:nbd_dvc_addrs,
+               nbd_stts		  =:nbd_stts,	
+               nbd_updt_time  =SYSDATE,
+               nbd_updt_user_id =:userid
+            WHERE
+               nbd_id          =:id
+		</sql>
+	</item>
+	<item id="insert_alarm">
+		<seq>alt_network_base_dtls@nbd_id</seq>
+		<sql>
+			INSERT INTO  alt_network_base_dtls
+				(	
+				   nbd_id		  ,
+				   nbd_area_id    ,
+	               nbd_name  	  ,
+	               nbd_cus_number ,
+	               nbd_other_id	  ,	
+	               nbd_brand	  ,	
+	               nbd_ip		  ,	
+	               nbd_port		  ,	
+	               nbd_dept_id	  ,	 
+	               nbd_dvc_addrs  ,
+	               nbd_stts		  ,	
+	               nbd_seq 		  ,
+	               nbd_crte_time  ,
+	               nbd_updt_user_id 
+				)
+				VALUES(
+				   :nbd_id	  ,
+				   :gid       ,
+	               :name  	  ,
+	               :cus       ,
+	               :nbd_other_id  ,	
+	               :nbd_brand	  ,	
+	               :nbd_ip		  ,	
+	               :nbd_port	  ,	
+	               :nbd_dept_id	  ,	 
+	               :nbd_dvc_addrs ,
+	               :nbd_stts	  ,	
+	               :nbd_id 	      ,
+	               SYSDATE        ,
+	               :userid 
+				)
+		</sql>
+	</item>
+	<item id="delete_alarm_byid">
+		<sql>
+			DELETE FROM alt_network_base_dtls
+			WHERE nbd_id=:id
+		</sql>
+	</item>
+	<item id="query_org_dep_alarm" desc="根据用户当前所属类别查询机构">
+		<sql>
+			SELECT 
+				odd_id AS id,
+				odd_name AS name,
+				odd_parent_id  AS pid,
+				'org.png'	   AS icon
+			FROM sys_org_dept_dtls 
+		
+			WHERE odd_use = 1 
+			START WITH odd_id= :org
+			CONNECT BY PRIOR odd_id=odd_parent_id
+			ORDER BY  odd_seq
+		</sql>
+	</item>
+	
+</sqlItem>

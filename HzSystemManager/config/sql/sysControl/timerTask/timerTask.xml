@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="insert_com_user_timer_task_info" desc="插入定时任务信息">
+    	<seq>com_user_timer_task@utt_task_id</seq>
+    	<sql>
+			INSERT INTO com_user_timer_task
+				  (utt_cus_number,
+				   utt_task_id,
+				   utt_task_name,
+				   utt_user_id,
+				   utt_task_type,
+				   utt_device_id,
+				   utt_device_name,
+				   utt_exec_week,
+				   utt_exec_time,
+				   utt_remind_time,
+				   utt_play_file,
+				   utt_task_status,
+				   utt_crte_time,
+				   utt_crte_user_id,
+				   utt_updt_time,
+				   utt_updt_user_id)
+				   VALUES
+				  (:utt_cus_number,
+				   :utt_task_id,
+				   :utt_task_name,
+				   :utt_user_id,
+				   :utt_task_type,
+				   :utt_device_id,
+				   :utt_device_name,
+				   :utt_exec_week,
+				   TO_TIMESTAMP(:utt_exec_time,'HH24:mi:ss'),
+				   :utt_remind_time,
+				   :utt_play_file,
+				   :utt_task_status,
+				   SYSDATE,
+				   :userId,
+				   SYSDATE,
+				   :userId)
+    	</sql>
+    </item> 
+
+  	<item id="update_com_user_timer_task_info" desc="更新定时任务信息">
+		<sql>
+			UPDATE com_user_timer_task 
+			   SET
+			       utt_task_name       = :utt_task_name,
+			       utt_user_id         = :utt_user_id,
+			       utt_task_type       = :utt_task_type,
+			       utt_device_id       = :utt_device_id,
+			       utt_device_name     = :utt_device_name,
+			       utt_exec_week       = :utt_exec_week,
+			       utt_exec_time       = TO_TIMESTAMP(:utt_exec_time,'HH24:mi:ss'),
+			       utt_remind_time     = :utt_remind_time,
+			       utt_play_file       = :utt_play_file,
+			       utt_task_status     = :utt_task_status,
+			       utt_updt_time       = SYSDATE,
+				   utt_updt_user_id    = :userId
+			 WHERE utt_cus_number      = :utt_cus_number
+			   AND utt_task_id         = :utt_task_id
+		</sql>
+    </item>
+ 
+   	<item id="select_com_user_timer_task_info" desc="查询定时任务信息">
+   		<const key="task_type">TIMER_TASK_TYPE</const>
+   		<const key="task_status">TIMER_TASK_STATUS</const>
+		<sql>
+			SELECT utt_cus_number,
+				   utt_task_id,
+				   utt_task_name,
+				   utt_user_id,
+				   utt_task_type AS task_type,
+				   utt_task_type, 
+			   	   utt_device_id,
+			   	   utt_device_name,
+			       utt_exec_week,
+			       TO_CHAR(utt_exec_time,'HH24:mi') AS utt_exec_time,
+			       utt_remind_time,
+			       utt_play_file,
+			       utt_task_status AS task_status,
+			       utt_task_status
+			 FROM  com_user_timer_task     
+		</sql>
+		<where id="0" desc="根据用户查询定时任务信息">
+			WHERE utt_cus_number = :utt_cus_number
+			  AND utt_user_id = :utt_user_id
+		</where>
+		<where id="1" desc="根据用户查询定时任务信息">
+			WHERE utt_cus_number = :utt_cus_number
+			  AND utt_user_id = :utt_user_id
+			  AND (utt_task_name LIKE CONCAT('%',CONCAT(:search,'%'))
+			       OR  utt_device_name LIKE CONCAT('%',CONCAT(:search,'%'))
+			      ) 
+		</where>
+		<where id="2" desc="根据用户查询启用状态的定时任务信息">
+			WHERE utt_cus_number = :utt_cus_number
+			  AND utt_user_id = :utt_user_id
+			  AND utt_task_status = 1
+		</where>		
+		<order id="0">
+		  ORDER BY  utt_exec_time 
+		</order> 			
+    </item>
+ 
+     <item id="delete_timer_task_info_byid" desc="根据任务编号删除定时任务信息">
+		<sql>
+			DELETE FROM com_user_timer_task
+		</sql>
+		<where id="0">
+			WHERE utt_task_id = :id
+		</where>
+    </item>	          
+</sqlItem> 

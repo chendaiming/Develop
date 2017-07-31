@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+
+    
+    <item id="insert_org_org" desc="机构新增">
+    	<seq>sys_org_dept_dtls@id@odd_id</seq>
+		<sql>
+			INSERT INTO 
+			sys_org_dept_dtls
+				(
+					odd_id         ,
+					odd_name       ,
+					odd_parent_id  ,
+					odd_group_id   ,
+					odd_seq        ,
+					odd_use        ,
+					odd_remark     ,
+					odd_data_auth  ,
+					odd_crte_user_id ,
+					odd_crte_time    
+				)
+			VALUES
+			(
+				:id,
+				:name,
+				:pid,
+				:groupid,
+				:id,
+				:use,
+				:remark,
+				:auth,
+				:odd_crte_user_id,
+				sysdate
+			)
+		</sql>
+    </item>
+    
+    <item id="delete_org_org" desc="机构查询">
+		<sql>
+			DELETE FROM 	
+				sys_org_dept_dtls
+			WHERE 
+				odd_id=:id
+		</sql>
+    </item>
+    
+    <item id="query_org_group_byid" desc="机构树和分类树">
+		<sql>
+			SELECT  odd_id || agd_id id,
+					agd_id		 gid,
+			        '' || odd_id pid,
+			        agd_name name,
+			        'orgs.png' icon,
+			        null auth,
+			        null use,
+			        null remark,
+			       '0' type
+			  FROM 
+		</sql>
+		<where id="0">
+			(SELECT odd_id ,odd_group_id FROM sys_org_dept_dtls  	 START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id = odd_parent_id), sys_auth_group_dtls
+			 WHERE odd_group_id = agd_parent_id  AND   agd_type=1
+			
+			UNION ALL
+				SELECT odd_parent_id || agd_id id,
+				   	agd_id		 gid,
+			       '' pid,
+			       agd_name name,
+			       'orgs.png' icon,
+			        null auth,
+			        null use,
+			        null remark,
+			       '0' type
+			  FROM sys_auth_group_dtls
+			
+			 INNER JOIN sys_org_dept_dtls
+			
+			    ON odd_group_id = agd_id
+			 WHERE odd_id = ?
+			
+			UNION ALL
+			SELECT '' || odd_id id,
+					odd_parent_id		 gid,
+			       odd_parent_id || odd_group_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       odd_data_auth auth,
+			       odd_use       use,
+			       odd_remark	 remark,
+			       '1' type
+			  FROM sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_id
+			 START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id = odd_parent_id
+		</where>
+		<where id='1'>
+			sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_parent_id AND   agd_type=1
+			UNION ALL
+			SELECT '' || odd_id id,
+				   odd_parent_id		 gid,
+			       odd_parent_id || odd_group_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			      	odd_data_auth auth,
+			       	odd_use       use,
+			       	odd_remark	 remark,
+			       '1' type
+			  FROM sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_id
+			UNION ALL
+			SELECT 
+					''||agd_id id,
+				   agd_id		 gid,
+			       '' pid,
+			       agd_name name,
+			       'orgs.png' icon,
+			        null auth,
+			        null use,
+			        null remark,
+			       '0' type
+			FROM  sys_auth_group_dtls
+			WHERE agd_parent_id=-1
+			AND   agd_type=1
+		</where>
+    </item>
+    
+    
+    <item id="update_org_org" desc="机构查询">
+		<sql>
+			UPDATE 	
+				sys_org_dept_dtls
+			SET 
+					odd_name       =:name,
+					odd_parent_id  =:pid,
+					odd_group_id   =:groupid,    
+					odd_use        =:use,
+					odd_remark     =:remark,
+					odd_data_auth  =:auth,
+					odd_updt_user_id =:odd_updt_user_id,
+					odd_updt_time    =sysdate
+			WHERE 
+					odd_id=:id 
+		</sql>
+    </item>
+    
+    
+    
+    <item id="query_group_by_pid">
+    	<sql>
+    		SELECT  odd_id||agd_id as id,
+			        agd_name as name,
+			        agd_id  gid,
+			        odd_id pid,
+			       '0' type,
+			       'orgs.png' icon
+			  FROM sys_auth_group_dtls, sys_org_dept_dtls
+			 	
+				WHERE odd_id=? AND agd_parent_id=? AND agd_type=1
+				
+				
+    	</sql>
+    </item>
+    <item id="select_cusNumber"  desc="查询所有监狱">
+		<sql>
+			SELECT odd_id, odd_name
+			  FROM sys_org_dept_dtls
+			 INNER JOIN sys_auth_group_dtls
+			    ON (odd_group_id = agd_id AND agd_key = 'org_0104')
+		</sql>
+	</item>  
+</sqlItem>

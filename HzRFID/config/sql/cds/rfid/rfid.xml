@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+      <item id="select_prisoner_rfid_info"  desc="查询rfid信息">
+	     <sql>
+			SELECT rbd_id,
+			       rbd_name,
+			       rbd_dept_id,
+			       rbd_area_id,
+			       odd_name,
+			       abd_area_name,
+			       rbd_stts
+			  FROM dvc_rfid_base_dtls r
+			 INNER JOIN com_area_base_dtls a
+			    ON a.abd_area_id = r.rbd_area_id
+			 INNER JOIN sys_org_dept_dtls d
+			    ON r.rbd_dept_id = d.odd_id
+		 </sql>  	 
+		 <where id="0">
+		 	 WHERE rbd_id = :rfid
+		 	   AND rbd_cus_number = :cusNumber
+		 </where>
+		 <where id="1">
+		 	 WHERE rbd_cus_number = :cusNumber
+		 	   AND rbd_other_id = :otherId
+		 </where>
+     </item>
+
+	<item id="select_rfid_link_dvc_list"  desc="">
+		<sql>
+			SELECT dlm_cus_number,
+			       dlm_link_id,
+			       dlm_link_purpose,
+			       dlm_dvc_type,
+			       dlm_dvc_id,
+			       dlm_dvc_name,
+			       dlm_seq,
+			       dlm_remark,
+			       dlm_crte_time,
+			       dlm_crte_user_id,
+			       dlm_updt_time,
+			       dlm_updt_user_id,
+			       dld_dvc_id,
+			       dld_dvc_name
+			  FROM com_dvc_link_dtls
+			 INNER JOIN com_dvc_link_mian
+			    ON dlm_cus_number = dld_cus_number
+			   AND dlm_link_id = dld_link_id
+			   AND dlm_dvc_type = :mainDvcType
+			 INNER JOIN dvc_rfid_base_dtls
+			    ON rbd_cus_number = dlm_cus_number
+			   AND rbd_id = dlm_dvc_id
+			   AND rbd_other_id = :rfidDvcId
+			 WHERE dld_cus_number = :cusNumber
+			   AND dld_dvc_type = :linkDvcType
+			 ORDER BY dld_seq
+		</sql>
+     </item>
+     
+    <item  id="select_prisoner_for_control">
+		<sql>
+			SELECT 
+				   '1-' || odd_id id,
+			       '1-' || odd_parent_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       odd_id cus,
+			       -1     type,
+			       'true' nocheck
+			  FROM sys_org_dept_dtls
+			 START WITH odd_id = :org
+			CONNECT BY PRIOR odd_id = odd_parent_id
+			UNION ALL
+			SELECT
+				 '' || pbd_prsnr_id id,
+				 '1-' || pbd_prsn_area_id pid,
+				 pbd_prsnr_name name,
+				 'prisoner.png' icon,
+				 pbd_cus_number cus,
+				 1 type,
+				 'false' nocheck
+			  FROM psr_prisoner_base_dtls
+			 WHERE
+			 	pbd_cus_number=:org
+		</sql>
+	</item>
+	
+	<item id="insert_prisoner_over_alarm">
+		<seq>prison_over_alarm@poa_id</seq>
+		<sql>
+			INSERT INTO
+				prison_over_alarm
+			(
+			   poa_cus_number      ,
+			   poa_id              ,
+			   poa_rfid            ,
+			   poa_prisoner_id
+			)
+			VALUES
+			(
+			   :poa_cus_number      ,
+			   :poa_id              ,
+			   :poa_rfid            ,
+			   :poa_prisoner_id
+			)
+		</sql>
+	</item>
+
+	<item id="select_prisoner_is_overArea">
+		<sql>
+			SELECT WM_CONCAT(poa_rfid) rfid
+			  FROM prison_over_alarm
+			 WHERE poa_cus_number = :cus
+			   AND poa_prisoner_id = :prisoner
+		</sql>
+	</item>
+
+	<item id="select_rfid_name_by_id">
+		<sql>
+			SELECT
+				rbd_name name
+			FROM
+				dvc_rfid_base_dtls
+			RIGHT JOIN 
+			(
+				SELECT 
+					regexp_substr(:rfids,'[^,]+',1,LEVEL)rid
+				FROM 
+					DUAL
+				CONNECT BY LEVEL  &lt;=length(:rfids)-length(replace(:rfids,','))+1;	
+			)t
+			ON
+				t.rid=rbd_id
+		</sql>
+	</item>
+
+	<item id="select_rfid_label_bind_prisoner_info"  desc="查询rfid绑定人员信息">
+		<sql>
+			SELECT pbd_prsnr_id, 
+			       pbd_prsnr_name
+			  FROM dvc_rfid_label_people_bind
+			 INNER JOIN psr_prisoner_base_dtls
+			    ON pbd_cus_number = rpb_cus_number
+			   AND pbd_prsnr_id = rpb_people_id
+		</sql>
+		<where id="0">
+			 WHERE rpb_cus_number = :cusNumber
+			   AND rpb_label_id = :labelId
+			   AND rpb_people_type = :peopleType
+		</where>
+     </item>
+</sqlItem>

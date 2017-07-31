@@ -1,0 +1,588 @@
+html, body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	position: relative;
+	background-color: #4f7f9b;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#4f7f9b), to(#293c55));
+	background-image: -webkit-linear-gradient(top, #4f7f9b, #293c55);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#4f7f9b), to(#293c55));
+	background-image: linear-gradient(to bottom, #4f7f9b, #293c55);
+	background-repeat: repeat-x;
+	background-size: 100% 100%;
+	line-height: normal !important;
+}
+
+@font-face {
+	font-family: 'home';
+	src: url('../font/home.ttf') format('truetype')
+}
+
+.icon {
+	font-family: "home" !important;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-stroke-width: 0.2px;
+	-moz-osx-font-smoothing: grayscale;
+	color: #fff;
+	vertical-align: middle;
+}
+
+.flip {
+	animation-fill-mode: forwards !important;
+	animation-timing-function: linear;
+	overflow: hidden !important;
+}
+
+.flip>a {
+	margin: 0px 30px;
+	position: absolute;
+	top: 4px;
+	border-radius: 100%;
+	border: none;
+	height: 30px;
+	width: 30px;
+	background: url('../../css/images/pause.png') center !important;
+}
+
+.mapopr>a {
+	display: block !important;
+	transform: rotateY(0deg);
+}
+
+.mapopr {
+	border-radius: 10px !important;
+	width: 800px !important;
+}
+
+.mapopr>.layui-layer-title {
+	background: rgba(65, 129, 178, 0.19) !important;
+}
+
+.mapopr>.layui-layer-title>span, .mapopr>.layui-layer-setwin {
+	display: none !important;
+}
+
+@keyframes toleft1 { 
+	0% {transform: rotateY(0deg);}
+	100% {transform:rotateY(-90deg);}
+}
+
+@keyframes toright1 { 
+	0% {transform: rotateY(-180deg);}
+	100%{transform: rotateY(-90deg);}
+}
+
+@keyframes toleft2 { 
+	0% {transform: rotateY(-90deg);}
+	100% {transform: rotateY(-180deg);}
+}
+
+@keyframes toright2 { 
+	0% {transform: rotateY(-90deg);}
+	100% {transform: rotateY(0deg);}
+}
+
+@keyframes slidup { 
+	0% {height: 600px;}
+	100% {height: 83px;}
+}
+
+@keyframes sliddown { 
+	0% {height: 40px;}
+	100% {height: 600px;}
+}
+
+@keyframes videoplay { 
+	0% {background: red;}
+	50% {background:blue;}
+	100% {background :red;}
+}
+
+.transa>a {
+	transform: rotateY(-180deg) !important;
+}
+
+.flip>a.play {
+	background: url('../../css/images/play.png') center !important;
+}
+
+.flip>a.over {
+	background: url('../../css/images/over.png') center !important;
+	float: left;
+}
+
+.flip>ul {
+	position: absolute;
+	top: 43px;
+	display: inline-block;
+	width: 20000%;
+	background: rgb(181, 170, 142);
+	height: 40px;
+	line-height: 40px;
+	color: rgb(243, 228, 190);
+	transition: left 0.8s;
+}
+
+.flip>ul:before {
+	content: '';
+	width: 100%;
+	border: 1px dashed rgba(0, 118, 173, 0.12);
+	display: block;
+	top: 50%;
+	position: absolute;
+}
+
+.flip>ul>li {
+	padding: 0px 10px;
+	float: left;
+	height: 30px;
+	margin-right: 20px;
+	border-radius: 20px;
+	background: rgb(87, 125, 120);
+	text-align: center;
+	font-size: xx-small;
+	margin-top: 5px;
+	line-height: 30px;
+}
+
+#doorRecord {
+	position: absolute;
+	width: 300px;
+	right: 70px;
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
+	float: right;
+	top: 36px;
+	overflow: hidden;
+	max-height: 7px;
+}
+
+section.slidown {
+	max-height: 346px !important;
+}
+
+section.slidown>ul {
+	max-height: 326px;
+}
+
+section.slidown>ul>li {
+	height: 158px;
+}
+
+section.slidown>p {
+	height: 20px;
+}
+
+section.doorRecord>p {
+	border: 3px dashed rgb(30, 11, 90);
+	margin: 0px 30px;
+	border-top-style: none;
+	border-bottom-style: none;
+}
+
+section.doorRecord>ul {
+	transition: height .5s;
+	margin-right: -3.5px;
+	border-radius: 10px;
+	overflow: scroll;
+}
+
+section.doorRecord>ul:after {
+	content: '';
+}
+
+section.doorRecord li {
+	height: 0px;
+	background: rgba(9, 33, 78, 0.78);
+	border-radius: 10px;
+	margin-bottom: 5px;
+	overflow: hidden;
+}
+
+section.doorRecord>a {
+	height: 12px;
+	width: 50px;
+	position: absolute;
+	bottom: 0px;
+	left: 46%;
+	cursor: pointer;
+	background: url(../../css/images/slidup.png);
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+section.doorRecord label {
+	margin-right: 20px;
+	width: 30%;
+	text-align: right;
+}
+
+section.doorRecord a {
+	text-decoration: none;
+	float: right;
+	margin: -5px 5px;
+	cursor: pointer;
+	border-radius: 10px;
+	padding: 0px 10px;
+}
+
+section.doorRecord div {
+	padding: 5px 5px;
+	border-bottom: 1px solid rgba(246, 246, 255, 0.58);
+	margin-bottom: 10px;
+	color: rgb(87, 251, 207);
+}
+
+section.doorRecord li>a.active {
+	animation: videoplay 1s infinite;
+}
+
+#passwordd:hover::after {
+	content: '';
+	background: url('../image/remove.png');
+	width: 15px;
+	height: 15px;
+	position: fixed;
+	top: -5px;
+	right: -5px;
+	cursor: pointer;
+}
+
+section.diagramck {
+	float: right;
+	top: 30px;
+	right: 80px;
+	width: 220px;
+	padding-top: 20px;
+	display: none;
+}
+
+section.diagramck * {
+	width: 100%;
+	height: 100%;
+}
+
+section.diagramck>ul {
+	perspective: 1400px;
+	color: #FFF;
+}
+
+section.diagramck ul>li {
+	position: absolute;
+	width: 190px;
+	height: 35px;
+	background-color: rgba(51, 102, 153, .9);
+	border: 1px solid #FFF;
+	transform: skew(-45deg);
+	box-shadow: 5px 5px 5px rgba(0, 0, 0, .8);
+	cursor: pointer;
+}
+
+section.diagramck>ul p {
+	width: 100%;
+	height: 20px;
+	margin-top: 13px;
+	padding: 2px 10px;
+	transform: skew(45deg);
+}
+
+section.diagramck>ul p>span {
+	width: 50%;
+	float: left;
+}
+
+section.diagramck ul>li:hover, section.diagramck ul>li.active {
+	background-color: rgba(255, 153, 51, .9);
+	transform: skew(-45deg) scale(1.1);
+	text-shadow: 0 1px 1px #000;
+}
+
+section.diagramck ul>li:hover span, section.diagramck ul>li.active span
+	{
+	color: #006699;
+}
+
+section.diagramck:hover::after {
+	content: '';
+	right: 0%;
+	position: absolute;
+	background: url(../../css/image/remove.png);
+	width: 15px;
+	height: 15px;
+	cursor: pointer;
+	top: 0px;
+}
+
+section.searchAll {
+	top: 8%;
+	width: 30%;
+	border: 1px solid rgb(5, 59, 105);
+	left: 31%;
+	height: 4%;
+	border-radius: 40px;
+	background-color: rgba(6, 41, 78, 0.37);
+	position: absolute;
+	display: none;
+}
+
+section.searchAll:before {
+	content: '';
+	width: 10px;
+	height: 10px;
+	border-radius: 5px;
+	background: rgb(34, 43, 95);
+	position: absolute;
+	top: 93px;
+	right: 25.75%;
+}
+
+section.searchAll:after {
+	content: '';
+	position: absolute;
+}
+
+section.searchAll>div {
+	width: 364px;
+	height: 182px;
+	z-index: 1;
+	background: 0 0;
+	position: absolute;
+	left: 50%;
+	margin-left: -182px;
+	text-align: center;
+	border: 1px dashed rgb(34, 43, 95);
+	border-top: none;
+	border-bottom-left-radius: 182px;
+	border-bottom-right-radius: 182px;
+}
+
+section.searchAll input:hover, section.searchAll input:focus {
+	border: 1px solid rgb(105, 116, 179)
+}
+
+section.searchAll input {
+	height: 100%;
+	width: 100%;
+	background: rgba(21, 24, 68, .5);
+	display: inline-block;
+	width: 100%;
+	color: rgb(255, 255, 255);
+	box-sizing: border-box;
+	border-radius: 40px;
+	text-align: center;
+	font-size: 18px !important;
+	transition: all .4s;
+	outline: none;
+}
+
+section.searchAll li {
+	margin-top: 20px;
+	background: rgba(39, 48, 78, 0.68);
+	height: 30px;
+	line-height: 30px;
+	border-radius: 40px;
+}
+
+section.searchAll li:hover, section.searchAll li:first-child {
+	background: rgb(30, 38, 66);
+	color: red;
+	cursor: pointer;
+}
+
+section.searchAll ul {
+	max-height: 150px;
+	overflow: auto;
+}
+
+div.logo {
+	position: absolute;
+	top: 5px;
+	left: -12px;
+	width: 610px;
+	height: 85px;
+	background: url(../image/logo.png) 0 center no-repeat;
+	z-index: 2;
+}
+
+.config-panel {
+	position: absolute;
+	z-index: 3;
+}
+
+.simple-panel {
+	background-color: rgba(10, 28, 38, 0.75);
+	border-radius: 3px;
+}
+
+.simple-panel .title {
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+	color: #fff;
+	font-size: 15px;
+	position: relative;
+	background: rgba(39, 119, 30, 0.71);
+}
+
+.simple-panel .title img {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: 22px;
+	height: 22px;
+	z-index: 2;
+	cursor: pointer;
+}
+
+.pushmenu {
+	overflow-x: hidden;
+	position: relative;
+	left: 0;
+}
+
+.push {
+	-webkit-transition: all 0.2s ease;
+	-moz-transition: all 0.2s ease;
+	transition: all 0.2s ease;
+}
+
+#addPointPanel,
+#talkbackMini,
+#schedulingMini {
+	display: none;
+	position: absolute;
+	z-index: 101;
+	background: rgba(10, 28, 38, 0.85);
+}
+
+#pointInfoPanel {	
+	position: absolute;
+	padding: 5px 10px;
+	background: rgba(10, 28, 38, 0.95);
+	border-radius: 4px;
+	z-index: 99;
+	display: none;
+}
+
+#pointInfoPanel .rm {
+	padding: 5px 10px;
+	color: #F2F2F2;
+}
+
+#pointInfoPanel >ul {
+	padding: 5px;
+	float: left;
+}
+#pointInfoPanel >ul li {
+	padding: 3px 5px;
+}
+
+
+#choseBoxSelect {
+	width: 220px;
+	position: absolute;
+	top: 80px;
+	left: 30px;
+	color: #fff;
+	padding: 8px;
+	background: rgba(10, 28, 38, 0.75);
+	z-index: 2;
+}
+
+#choseBoxSelect div {
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	font-size: 13px;
+	border: 1px dashed #bbb;
+	cursor: pointer;
+}
+
+#choseBoxSelect div.active {
+	background: #22621E;
+}
+
+#addVideoPlanPanel {
+	display: none;
+	width: 400px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -200px;
+	margin-top: -105px;
+	background: rgba(10, 28, 38, 0.75);
+	padding: 0 0 15px 0;
+}
+
+#addVideoPlanPanel img {
+	width: 24px;
+	height: 24px;
+	float: right;
+	margin-right: 5px;
+	margin-top: 5px;
+	cursor: pointer;
+}
+
+#roomDetail {
+	width: 800px;
+	height: 650px;
+	background: rgba(27, 30, 35, 0.9);
+	z-index: 2;
+	position: absolute;
+	padding: 0 0 10px 0;
+	border-radius: 6px;
+	overflow: hidden;
+	display: none;
+}
+
+.plan_camera {
+	position: relative;
+	display: block;
+	padding: 0 10px;
+	border: 1px solid #bbb;
+	color: #bbb;
+	height: 30px;
+	line-height: 30px;
+}
+
+#connectionTip {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(11, 10, 49, 0.85) !important;
+	display: none;
+	z-index: 999999999999999;
+}
+
+#connectionTip div.tip-tab {
+	display: table;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+}
+
+#connectionTip div.tip-tab div.tip-tab-cell {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#connectionTip div.tip-tab div.tip-tab-cell span {
+	padding: 50px 80px;
+	color: #000;
+	font-size: 24px;
+	background-color: #F2F2F2;
+	border-radius: 5px;
+	box-shadow: 0px 0px 5px 3px rgba(57, 206, 204, 0.19);
+}
+
+div#indexDiv {
+	display: inline;
+}

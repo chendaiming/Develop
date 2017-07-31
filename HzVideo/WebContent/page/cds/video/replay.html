@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+	.layoutContent{
+		display:none;
+		position:absolute;
+		width:520px;
+		background-color:#0a2a46;
+	}
+	.layoutimg{
+		height:60px;
+		width:96px;
+	}
+	.layouttxt{
+		display:block;
+		text-align:center;
+		padding-top:6px;
+	}
+	.layoutitem:hover{
+		color:yellow;
+		cursor: pointer;
+	}
+	.layoutitem.selected{
+		color:yellow;
+	}
+	.layout-table{
+		height:100%;width:100%;border-color:#4077ae;text-align:center
+	}
+	.layout-table td{
+		position:relative;
+	}
+	.layout-table td span{
+		font-weight:bold;
+	}
+	.layout-table td .start-time{
+		position:absolute;left:5px;bottom:5px;color:#bbb;font-size:12px;
+	}
+	.layout-table td .end-time{
+		position:absolute;right:5px;bottom:5px;color:#bbb;font-size:12px;
+	}
+	.td4{
+		height:50%;
+		width:50%;
+	}
+	.td9{
+		height:33%;
+		width:33%;
+	}
+</style>
+</head>
+<body>
+<div class="vbox box-con">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" style="width:350px;">
+			<div class="input icon" >
+			  	<input v-model="searchTree" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		    <div class="hz-col-1" style="overflow:auto">
+				<ul id="areaTree" class="ztree"></ul>
+		    </div>
+		</div>
+		<div class="right-con hz-col-1 vbox">
+			<form class="form-horizontal vbox" role="form">
+				<div class="hbox" style="margin-bottom:15px">
+					<div class="hz-col-1" style="text-align:center;padding:7px 15px 0 15px;font-weight:bolder">
+						回放模式
+					</div>
+					<div class="hz-col-5 hbox">
+						<div class="hz-col-2" style="margin-right:6px;">
+					      	<hz-select
+					      		tip="选择回放模式"
+					      		code="REPLAY_MODE"
+					      		:id.sync="replayMode"
+					      	/>
+						</div>
+						<div class="hz-col-2" style="margin:0 6px;"></div>
+						<div class="hz-col-1"></div>
+					</div>
+				</div>
+				<div class="hbox">
+					<div class="hz-col-1" style="text-align:center;padding:7px 15px 0 15px;font-weight:bolder">
+						回放时段
+					</div>
+					<div class="hz-col-5 hbox">
+						<div class="hz-col-2 select3hide" style="margin-right:6px;">
+					      	<hz-date 
+					      		tip="选择开始时段" 
+					      		:val.sync="starttime"
+					      		maxdate="today"
+					      	 	enabletime=1
+					      	 	enablesecond = 1
+					      	/>
+						</div>
+						<div class="hz-col-2 select3hide" style="margin:0 6px;">
+					      	<hz-date 
+					      		tip="选择结束时段"
+					      	 	:val.sync="endtime"
+					      	 	maxdate="today"
+					      	 	enabletime=1
+					      	 	enablesecond = 1
+					      	 />
+						</div>
+						<div class="hz-col-1">
+							<a id="layoutBtn" @click="showAndHideLayout()" class="hbtn btn_primary btn_large" style="margin-top:2px;"><span v-text="layout+'画面'"></span></a>
+							<div id="layout" class="layoutContent">
+								<div class="row" style="padding:10px;">
+									<div @click="setLayout(item)" class="col-xs-3 layoutitem" v-bind:class="{'selected':item == layout}" style="padding:10px;text-align:center" v-for="item in layouts">
+										<img class="layoutimg" v-bind:src="'image/layout-'+item+'.png'">
+										<span class="layouttxt" v-text="item+'画面'"></span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+		    </form>
+		    <div id="layout"  class="hz-col-1 hbox" style="margin:20px 40px;">
+		    	<table v-if="layout == 1" class="layout-table" border="1">
+		    		<tbody>
+		    			<tr>
+		    				<td index="0" style="height:100%;width:100%">
+		    					<span v-text="layoutCameras[0].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[0].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[0].endtime"></span>		    					
+		    				</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    	<table v-if="layout == 4" class="layout-table" border="1">
+		    		<tbody>
+		    			<tr>
+		    				<td index="0" class="td4">
+		    					<span v-text="layoutCameras[0].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[0].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[0].endtime"></span>		    					
+		    				</td>
+		    				<td index="1" class="td4">
+		    					<span v-text="layoutCameras[1].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[1].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[1].endtime"></span>
+		    				</td>
+		    			</tr>
+		    			<tr>
+		    				<td index="2" class="td4">
+		    					<span v-text="layoutCameras[2].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[2].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[2].endtime"></span>
+		    				</td>
+		    				<td index="3" class="td4">
+		    					<span v-text="layoutCameras[3].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[3].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[3].endtime"></span>
+		    				</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    	<table v-if="layout == 7" class="layout-table" border="1">
+		    		<tbody>
+		    			<tr>
+		    				<td index="0" class="td4" colspan="2" rowspan="2">
+		    					<span v-text="layoutCameras[0].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[0].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[0].endtime"></span>		    					
+		    				</td>
+		    				<td index="1" class="td4" colspan="2" rowspan="2">
+		    					<span v-text="layoutCameras[1].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[1].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[1].endtime"></span>
+		    				</td>
+		    			</tr>
+		    			<tr>
+		    				
+		    			</tr>
+		    			<tr>
+		    				<td index="2" class="td4" colspan="2" rowspan="2">
+		    					<span v-text="layoutCameras[2].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[2].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[2].endtime"></span>
+		    				</td>
+		    				<td index="3" style="width:25%;height:25%;">
+		    					<span v-text="layoutCameras[3].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[3].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[3].endtime"></span>
+		    				</td>
+		    				<td index="4" style="width:25%;height:25%;">
+		    					<span v-text="layoutCameras[4].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[4].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[4].endtime"></span>
+		    				</td>
+		    			</tr>
+		    			<tr>
+		    				<td index="5" style="width:25%;height:25%;">
+		    					<span v-text="layoutCameras[5].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[5].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[5].endtime"></span>
+		    				</td>
+		    				<td index="6">
+		    					<span v-text="layoutCameras[6].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[6].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[6].endtime"></span>
+		    				</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    	<table v-if="layout == 9" class="layout-table" border="1">
+		    		<tbody>
+		    			<tr>
+		    				<td index="0" class="td9">
+		    					<span v-text="layoutCameras[0].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[0].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[0].endtime"></span>		    					
+		    				</td>
+		    				<td index="1" class="td9">
+		    					<span v-text="layoutCameras[1].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[1].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[1].endtime"></span>
+		    				</td>
+		    				<td index="2" class="td9">
+		    					<span v-text="layoutCameras[2].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[2].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[2].endtime"></span>
+		    				</td>
+		    			</tr>
+		    			<tr>
+		    				<td index="3" class="td9">
+		    					<span v-text="layoutCameras[3].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[3].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[3].endtime"></span>
+		    				</td>
+		    				<td index="4" class="td9">
+		    					<span v-text="layoutCameras[4].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[4].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[4].endtime"></span>
+		    				</td>
+		    				<td index="5" class="td9">
+		    					<span v-text="layoutCameras[5].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[5].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[5].endtime"></span>
+		    				</td>
+		    			</tr>
+		    			<tr>
+		    				<td index="6" class="td9">
+		    					<span v-text="layoutCameras[6].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[6].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[6].endtime"></span>
+		    				</td>
+		    				<td index="7" class="td9">
+		    					<span v-text="layoutCameras[7].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[7].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[7].endtime"></span>
+		    				</td>
+		    				<td index="8" class="td9">
+		    					<span v-text="layoutCameras[8].name"></span>
+			    				<span class="start-time" v-text="layoutCameras[8].starttime"></span>
+			    				<span class="end-time" v-text="layoutCameras[8].endtime"></span>
+		    				</td>
+		    			</tr>
+		    		</tbody>
+		    	</table>
+		    </div>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+			<a @click="replay()" class="hbtn btn_primary btn_large"><span>回放</span></a>
+		</div>
+	</div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/video/replay'])
+</script>
+</html>

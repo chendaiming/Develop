@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css">
+<style>
+</style>
+</head>
+<body>
+	<div  class="vbox hz-col-1">
+	<!-- 查询定时任务 -->
+		<div  class="toolbar">
+<!-- 				<a class="hbtn btn_primary btn_large" id="btnSearch" @click=""><i class="btn_icon icon_search"></i><span>查询</span></a> -->
+				<a class="hbtn btn_primary btn_large" id="btnAdd" @click="showCreate('create')"><i class="btn_icon icon_add"></i><span>新建</span></a>
+				<a class="hbtn btn_primary btn_large" id="btnEdit" @click="showEdit(selectedRow)"><i class="btn_icon icon_edit"></i><span>编辑</span></a>
+				<a class="hbtn btn_primary btn_large" id="btnDel" @click="deleteTask()"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>	
+		<div id="tableDiv">	
+		<table id="table" ></table>
+		</div>
+	</div>
+	<!-- 添加定时任务 -->
+	<div class="vbox hz-col-1" id="addTask_dialog" style="display: none;">
+				<form class="form-horizontal" style="overflow-y:auto;overflow-x:hidden;">
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">任务名称</label>
+						<div class="col-xs-8">
+							<input type="text" class="form-control"
+								v-model="playTask.utt_task_name" />
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">任务类型</label>
+						<div class="col-xs-8">
+						<hz-select tip="请选择任务类型"
+							showload=true
+				    		code="TIMER_TASK_TYPE"
+				    		:id.sync="playTask.utt_task_type" />
+						</div>
+					</div>					
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">关联设备</label>
+						<div class="col-xs-8">
+						<hz-checktree tip="请选择关联设备" sqlid="select_broadcast_checktree"
+							:params= [playTask.utt_cus_number,playTask.utt_cus_number]
+							:ids.sync="playTask.utt_device_id" 
+							:sname.sync="playTask.utt_device_name"/>
+						</div>
+					</div>
+					<div class="form-group" id="play_file">
+						<label class="col-xs-3 control-label">播放文件</label>
+						<div class="col-xs-8">
+							<hz-select tip="播放文件" :list="audioListData" :sname.sync="playTask.utt_play_file"/>
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">重复</label>
+						<div class="col-xs-8">
+							<label class="checkbox-inline"> <input type="checkbox"
+								id="never" v-model="everyDay">每天
+							</label> <label class="checkbox-inline" style="padding-left: 34px;"> <input type="checkbox"
+								v-model="weekCheck[1]"> 每周一
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[2]"> 每周二
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[3]"> 每周三
+							</label> <label class="checkbox-inline" style="padding-left: 10px;">
+								<input type="checkbox" v-model="weekCheck[4]"> 每周四
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[5]"> 每周五
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[6]"> 每周六
+							</label> <label class="checkbox-inline"> <input type="checkbox"
+								v-model="weekCheck[0]"> 每周日
+							</label>
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">播放时间</label>
+						<div class="col-xs-8">
+							<!--  -->
+							<hz-time tip="选择播放时间"
+								:val.sync="playTask.utt_exec_time"  enablesecond=false format="H:i" />
+						</div>
+					</div>
+					<div class="form-group ">
+						<label class="col-xs-3 control-label">是否启用</label>
+						<div class="col-xs-8">
+							<label class="radio-inline"> <input type="radio"
+								name="enable" value="1" v-model="playTask.utt_task_status" checked="checked"> 是
+							</label> <label class="radio-inline"> <input type="radio"
+								name="enable" value="0" v-model="playTask.utt_task_status"> 否
+							</label>								
+						</div>
+					</div>					
+				</form>
+				<div class="bottom">
+						<a class="hbtn btn_primary btn_mini pull-right" id="cancel" 
+							@click="resetTask()"><i class="btn_icon icon_reset" ></i><span>取消</span></a> 
+						<a  class="hbtn btn_primary btn_mini pull-right" id="save"
+							@click="addTask()"><i class="btn_icon icon_save"></i><span>保存</span></a>
+				</div>
+			</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/syscontrol/timerTask/timerTaskManager"]);
+</script>

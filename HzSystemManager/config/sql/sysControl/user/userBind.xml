@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+      <item id="query_user_org_byidb_bind" desc="机构树和分类树">
+		<sql>
+			WITH t AS
+			 (SELECT odd_id, odd_group_id, odd_parent_id FROM sys_org_dept_dtls)
+			
+			SELECT id, pid, name, icon, ubd_pass, ubd_expre_date, ubd_use, flag, type,plc_id,plc_name,ubd_nick_name
+			  FROM (SELECT odd_id || agd_id id,
+			               '' || odd_id pid,
+			               odd_id || t.odd_group_id,
+			               agd_name name,
+			               'orgs.png' icon,
+			               null ubd_pass,
+			               null ubd_expre_date,
+			               null ubd_use,
+			               agd_key flag,
+			               '0' type,
+			                '' plc_id,
+			      		 null plc_name,
+			      		 null ubd_nick_name
+			          FROM t, sys_auth_group_dtls
+			         WHERE odd_group_id = agd_parent_id
+			           AND agd_type = 1)
+			
+			 INNER JOIN (SELECT DISTINCT odd_parent_id || (odd_group_id) zid from t) z
+			    ON z.zid = id
+			
+			UNION ALL
+			SELECT '' || odd_id id,
+			       odd_parent_id || odd_group_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       null flag,
+			       '2' type,
+			        '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_id
+			
+			UNION ALL
+			SELECT '' || agd_id id,
+			       '' pid,
+			       agd_name name,
+			       'orgs.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       agd_key flag,
+			       '0' type,
+			       '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_auth_group_dtls
+			 WHERE agd_parent_id = -1 AND agd_type = 1
+		</sql>
+		<where id="0">
+			UNION ALL
+			SELECT '1-' || ubd_id id,
+             	   '' || ubd_dept_id pid,
+             	   ubd_name name,
+             	   case when ubd_id in(select ubi_uid from sys_user_bind_info) then 'userBind.png'
+               	   else 'user.png' end icon,
+             	   ubd_pass,
+             	   TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+             	   ubd_use,
+             	   null flag,
+             	   '1' type,
+             	   '' plc_id,
+			 	   '' plc_name,
+			 	   ubd_nickname ubd_nick_name
+             FROM sys_user_base_dtls 
+       		WHERE  ubd_id!=?
+		</where>
+		<where id="1">
+			UNION ALL
+		    SELECT '1-' || ubd_id id,
+             	   '' || ubd_dept_id pid,
+             	   ubd_name name,
+             	   decode(pbd_user_id,null,'user.png','userBind.png') icon,
+             	   ubd_pass,
+             	   TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+             	   ubd_use,
+             	   null flag,
+             	   '1' type,
+             	   ''||pbd_user_id plc_id,
+			       ''||pbd_police_name plc_name,
+			       ubd_nickname ubd_nick_name
+             FROM sys_user_base_dtls u
+        INNER JOIN 
+        	 sys_user_bind_info b
+        ON
+        	 b.ubi_uid = u.ubd_id
+        INNER  JOIN
+          	 plc_police_base_dtls p
+        ON
+        	 p.pbd_user_id=b.ubi_people_id
+       	WHERE ubd_id!=?
+		</where>
+		<where id="2">
+			UNION ALL
+			SELECT '1-' || ubd_id id,
+             	   '' || ubd_dept_id pid,
+             	   ubd_name name,
+             	   'user.png' icon,
+             	   ubd_pass,
+             	   TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+             	   ubd_use,
+             	   null flag,
+             	   '1' type,
+             	   '' plc_id,
+			       '' plc_name,
+			       ubd_nickname ubd_nick_name
+             FROM sys_user_base_dtls u
+       	 	WHERE ubd_id not in(select ubi_uid from sys_user_bind_info) AND ubd_id!=?
+		</where>
+    </item>
+    
+     <item id="query_user_org_byid_bind" desc="机构树和分类树">
+		<sql>
+			WITH t AS
+			 (SELECT odd_id, odd_group_id, CONNECT_BY_ISLEAF flag, odd_parent_id
+			    FROM sys_org_dept_dtls
+			   START WITH odd_id = ?
+			  CONNECT BY PRIOR odd_id = odd_parent_id)
+			SELECT id, pid, name, icon, ubd_pass, ubd_expre_date, ubd_use, flag, type,plc_id,plc_name,ubd_nick_name
+			  FROM (SELECT odd_id || agd_id id,
+			               '' || odd_id pid,
+			               odd_id || t.odd_group_id,
+			               agd_name name,
+			               'orgs.png' icon,
+			               null ubd_pass,
+			               null ubd_expre_date,
+			               null ubd_use,
+			               agd_key flag,
+			               '0' type,
+			        		'' plc_id,
+			       			null plc_name,
+			       			null ubd_nick_name
+			          FROM t, sys_auth_group_dtls
+			         WHERE odd_group_id = agd_parent_id
+			           AND agd_type = 1
+			           AND t.flag = 0)
+			 INNER JOIN (SELECT DISTINCT odd_parent_id || (odd_group_id) zid from t) z
+			    ON z.zid = id
+			UNION ALL
+			SELECT odd_parent_id || agd_id id,
+			       '' pid,
+			       agd_name name,
+			       'orgs.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       agd_key flag,
+			       '0' type,
+			       '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_auth_group_dtls
+			
+			 INNER JOIN sys_org_dept_dtls
+			
+			    ON odd_group_id = agd_id
+			 WHERE odd_id = ?
+			UNION ALL
+			SELECT '' || odd_id id,
+			       odd_parent_id || odd_group_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       null ubd_pass,
+			       null ubd_expre_date,
+			       null ubd_use,
+			       null flag,
+			       '2' type,
+			       '' plc_id,
+			       null plc_name,
+			       null ubd_nick_name
+			  FROM sys_org_dept_dtls, sys_auth_group_dtls
+			 WHERE odd_group_id = agd_id
+			 START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id = odd_parent_id
+		</sql>
+		<where id="0">
+			UNION ALL
+			SELECT '1-' || ubd_id id,
+             	   '' || ubd_dept_id pid,
+             	   ubd_name name,
+             	   case when ubd_id in(select ubi_uid from sys_user_bind_info) then 'userBind.png'
+               	   else 'user.png' end icon,
+             	   ubd_pass,
+             	   TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+             	   ubd_use,
+             	   null flag,
+             	   '1' type,
+             	   null plc_id,
+			 	   null plc_name,
+			 	   ubd_nickname ubd_nick_name
+             FROM sys_user_base_dtls 
+             INNER JOIN t
+			    ON ubd_cus_number = t.odd_id
+       		WHERE  ubd_id!=?
+		</where>
+		<where id="1">
+			UNION ALL
+		    SELECT '1-' || ubd_id id,
+             	   '' || ubd_dept_id pid,
+             	   ubd_name name,
+             	   decode(pbd_user_id,null,'user.png','userBind.png') icon,
+             	   ubd_pass,
+             	   TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+             	   ubd_use,
+             	   null flag,
+             	   '1' type,
+             	   ''||pbd_user_id plc_id,
+			       ''||pbd_police_name plc_name,
+			       ubd_nickname ubd_nick_name
+             FROM sys_user_base_dtls u
+        INNER JOIN 
+        	 sys_user_bind_info b
+        ON
+        	 b.ubi_uid = u.ubd_id
+        INNER  JOIN
+          	 plc_police_base_dtls p
+        ON
+        	 p.pbd_user_id=b.ubi_people_id
+       	INNER JOIN t
+		ON   u.ubd_cus_number = t.odd_id
+       	WHERE ubd_id!=?
+		</where>
+		<where id="2">
+			UNION ALL
+			SELECT '1-' || ubd_id id,
+             	   '' || ubd_dept_id pid,
+             	   ubd_name name,
+             	   'user.png' icon,
+             	   ubd_pass,
+             	   TO_CHAR(ubd_expre_date, 'yyyy-mm-dd') ubd_expre_date,
+             	   ubd_use,
+             	   null flag,
+             	   '1' type,
+             	   '' plc_id,
+			       '' plc_name,
+			       ubd_nickname ubd_nick_name
+             FROM sys_user_base_dtls u, t
+       	 	WHERE ubd_id not in(select ubi_uid from sys_user_bind_info) AND ubd_id!=? and ubd_cus_number = t.odd_id
+		</where>
+    </item>
+</sqlItem>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_telephone_for_map_point" desc="地图上的电话机点位">
+		<sql>
+			SELECT DISTINCT CONCAT('c_', odd_id) AS id,
+			                odd_seq as seq,
+			                odd_name AS name,
+			                CONCAT('c_', odd_parent_id) AS pid,
+			                null as deviceType,
+			                null AS icon
+			  FROM (SELECT odd_id, odd_name, odd_parent_id, odd_seq
+			          FROM sys_org_dept_dtls
+			         START WITH odd_id = :cusNumber
+			        CONNECT BY PRIOR odd_id = odd_parent_id)
+			 START WITH odd_id IN (SELECT sab_dept_id
+			                         FROM shd_address_book
+			                        WHERE sab_cus_number = :cusNumber
+			                        GROUP BY sab_dept_id)
+			CONNECT BY PRIOR odd_parent_id = odd_id
+			UNION
+			SELECT CONCAT(sab_id, '') AS id,
+			       sab_id as seq,
+			       sab_name AS name,
+			       CONCAT('c_', sab_dept_id) AS pid,
+			       '95' as deviceType,
+			       'libs/ztree/css/zTreeStyle/img/telephone.png' AS icon
+			  FROM shd_address_book
+			 WHERE sab_cus_number = :cusNumber
+			 ORDER BY seq
+		</sql>
+	</item>
+	
+	<item id="select_telephone_detail_for_map"  desc="在地图上显示电话机的纤细信息">
+		<sql>
+			SELECT
+				sab_other_id,
+				sab_name,
+				sab_phone,
+				sab_dept_name
+			FROM
+				shd_address_book
+		</sql>
+		<where id="1">
+			WHERE
+				sab_id=?
+			AND
+				sab_cus_number=?
+		</where>
+	</item>
+	<item  id="select_telephone_tree_all" desc="电话机维护">
+		<sql>
+			SELECT 
+					odd_id        id,
+					odd_parent_id pid,
+					odd_name            name,
+					'org.png'           icon,
+					null  				sab_other_id,
+			        null				sab_phone,
+			        null				sab_dept_id,
+			        null				dep,
+			        null				sab_remark,
+			        0					type
+			FROM sys_org_dept_dtls
+			
+			START WITH odd_id=:cus CONNECT BY PRIOR odd_id = odd_parent_id 
+			
+			UNION ALL	
+			
+			SELECT
+			   sab_id               id,
+			   sab_dept_id		    pid,
+			   sab_name             name,
+			   'telephone.png'      icon,
+			   sab_other_id         ,
+			   sab_phone            ,
+			   sab_dept_id          ,
+			   sab_dept_name        ,
+			   sab_remark           ,
+			   1					type
+			FROM
+					shd_address_book
+		</sql>
+	</item>
+	
+	<item  id="select_telephone_map_all" desc="电话机列表">
+		<sql>
+			SELECT
+			   sab_id,
+			   sab_phone
+			FROM
+			   shd_address_book
+		</sql>
+		<where id="0">
+			WHERE sab_cus_number=?
+		</where>
+	</item>
+	
+	<item id="update_telephone_by_id" desc="更新电话机">
+		<sql>
+			UPDATE
+				shd_address_book
+			SET
+			    sab_name             =:name,
+			    sab_other_id         =:sab_other_id,
+			    sab_phone            =:sab_phone,
+			    sab_dept_id          =:pid,
+			    sab_dept_name        =:dep,
+			    sab_remark           =:sab_remark,
+			    sab_updt_time        =SYSDATE ,
+			    sab_updt_user_id	 =:user
+			    
+			WHERE
+				sab_id               =:id
+		</sql>
+	</item>
+	<item  id="delete_telephone_by_id"  desc="">
+		<sql>
+			DELETE FROM  
+				shd_address_book
+			WHERE
+				sab_id               =:id
+				
+		</sql>
+	</item>
+	<item id="insert_telephone_all" desc="">
+		<seq>shd_address_book@id@dbd_id</seq>
+		<sql>
+			INSERT INTO
+				shd_address_book
+				(
+				   sab_cus_number       ,
+				   sab_id               ,
+				   sab_other_id         ,
+				   sab_name             ,
+				   sab_phone            ,
+				   sab_dept_id          ,
+				   sab_dept_name        ,
+				   sab_remark           ,
+				   sab_crte_time        ,
+				   sab_crte_user_id     ,
+				   sab_updt_time        ,
+				   sab_updt_user_id     
+				)
+			VALUES(
+				   :cus                  ,
+				   :id               	 ,
+				   :sab_other_id         ,
+				   :name                 ,
+				   :sab_phone            ,
+				   :pid		             ,
+				   :dep                  ,
+				   :sab_remark           ,
+				   SYSDATE		         ,
+				   :user			     ,
+				   SYSDATE		         ,
+				   :user    
+			)
+			
+		</sql>
+	</item>
+</sqlItem>

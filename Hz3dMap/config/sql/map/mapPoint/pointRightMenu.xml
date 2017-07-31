@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="select_rfid_base_for_map_detail" desc="">
+    	<const key="stts_cn">RBD_STTS</const>
+		<sql>
+			SELECT rbd_id, 
+			       rbd_name, 
+			       rbd_dvc_addrs, 
+			       rbd_stts, 
+			       rbd_stts AS stts_cn
+			  FROM dvc_rfid_base_dtls
+		</sql>
+		<where id="1">
+			 where rbd_id = ?
+			   AND rbd_cus_number = ?
+		</where>
+    </item>
+
+    <item id="select_patrol_point_for_map_detail" desc="">
+    	<const key="stts_cn">PPI_DVC_STTS</const>
+		<sql>
+			SELECT ppi_id,
+			       ppi_name,
+			       ppi_dvc_addrs,
+			       ppi_dvc_stts,
+			       ppi_dvc_stts AS stts_cn
+			  FROM ptl_patrol_point_dtls
+		</sql>
+		<where id="1">
+			 WHERE ppi_id = ?
+			   AND ppi_cus_number = ?
+		</where>
+    </item>
+
+    <item id="select_prisoner_point_for_map_detail" desc="">
+    	<const key="type_cn">pbd_type_indc</const>
+		<sql>
+			SELECT pbd_prsnr_id,
+			       pbd_prsnr_name,
+			       pbd_other_id,
+			       pbd_prsn_area_id,
+			       odd_name,
+			       pbd_sprt_mnge,
+			       pbd_type_indc,
+			       pbd_type_indc AS type_cn
+			  FROM psr_prisoner_base_dtls
+			  LEFT JOIN sys_org_dept_dtls
+			    ON odd_id = pbd_prsn_area_id
+		</sql>
+		<where id="1">
+			 WHERE pbd_prsnr_id = ?
+			   AND pbd_cus_number = ?
+		</where>
+    </item>
+
+
+    <item id="select_link_cameras_by_dvc" desc="">
+		<sql>
+			SELECT dld_dvc_id AS dvc_id
+			  FROM com_dvc_link_mian
+			 INNER JOIN com_dvc_link_dtls
+			    ON dld_cus_number = dlm_cus_number
+			   AND dld_link_id = dlm_link_id
+			   AND dld_dvc_type = 1
+		</sql>
+		<where id="0">
+			 WHERE dlm_link_purpose = 1
+			   AND dlm_cus_number = ?
+			   AND dlm_dvc_type = ?
+			   AND dlm_dvc_id = ?
+		</where>
+		<order id="0">
+			 ORDER BY dld_seq
+		</order>
+    </item>
+
+
+    <item id="select_ffe_detail_for_map_detail" desc="">
+    	<const key="ffb_type">mci_type_97</const>
+    	<const key="ffdm_type">FIRE_FIGHTING_DVC_TYPE</const>
+		<sql>
+			SELECT ffb_id,
+			       ffb_code,
+			       ffb_name,
+			       ffb_type,
+			       ffb_address,
+			       ffb_asset_code,
+			       ffdm_code,
+			       ffdm_name,
+			       ffdm_type
+			  FROM dvc_fire_fighting_box
+			  LEFT JOIN dvc_fire_fighting_devices_mng
+			    ON ffdm_cus_number = ffb_cus_number
+			   AND ffdm_ffb_id = ffb_id
+		</sql>
+		<where id="1">
+			 WHERE ffb_id = ?
+			   AND ffb_cus_number = ?
+		</where>
+    </item>
+</sqlItem>

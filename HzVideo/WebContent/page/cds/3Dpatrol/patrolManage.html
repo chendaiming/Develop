@@ -1,0 +1,293 @@
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+
+<style>
+ul{
+	overflow:auto;
+    border-top: 1px solid rgb(31, 105, 158);
+}
+
+li>*{
+	color:white;
+}
+li{
+	margin:10px 0px;
+	line-height:30px;
+}
+li:hover{
+    background: rgb(56, 77, 93);
+}
+input{
+	width:15px;
+	height:15px;
+    margin-bottom: 5px;
+}
+p{
+    width: 92%;
+    float: right;
+    height: 30px;
+    font-size: small;
+    margin-bottom:5px;
+    line-height:30px;
+}
+label{
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    margin-left: 10px;
+    float: left;
+    margin-right: 10px;
+    color: rgb(255, 255, 255);
+    margin-top: 10px;
+    width:20%;
+}
+.nam{
+    width: 72%;
+    float: left;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+.layui-layer-content{
+	color:white;
+}
+.layui-layer-content p{
+	transform:rotateY(-180deg);
+}
+.route>li>p::before{
+    content: '';
+    background: url('../../../css/images/routes.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 30px;
+    height: 25px;
+    float: left;
+    margin-right: 10px;
+}
+.camera>li>p::before{
+    content: '';
+    background-image: url(../../../libs/ztree/css/zTreeStyle/img/cam0.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
+    float: left;
+}
+.camera>li>p:hover::after{
+    content: '';
+    background-image: url(../../../libs/ztree/css/zTreeStyle/img/play.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
+    float: right;
+    cursor: pointer;
+}
+.camera>li>p.camera0:before{
+	background-image: url(../../../libs/ztree/css/zTreeStyle/img/cam0.png);
+}
+.camera>li>p.camera1:before{
+	background-image: url(../../../libs/ztree/css/zTreeStyle/img/cam1.png);
+}
+.camera>li>p.camera2:before{
+	background-image: url(../../../libs/ztree/css/zTreeStyle/img/cam2.png);
+}
+div.nam>input{
+    height: 25px;
+    line-height: 25px;
+    border-radius: 10px;
+}
+label.seach input{
+	border: 1px solid rgb(31, 105, 158);
+    width: 290px;
+    height: 30px;
+    bottom: 0px;
+    border-radius: 10px;
+    outline:none;
+    padding:10px;
+    color:white;
+}
+label.seach{
+	position: absolute;
+    color: rgb(255, 255, 255);
+    margin-left: 23px;
+    top: -1px;
+}
+p.self{
+    color: #ffb6b6;
+}
+</style>
+<div id="modelcontainer">
+	<div class="vbox box-con">
+		<div class="vbox hz-col-1">
+			<div class="hz-col-1" style="margin:5px;">
+				<div class="input icon" >
+					  	<input placeholder="输入关键字搜索" id="search">
+					  	<span  class="find"></span>
+			    </div>
+			</div>
+			<div class="hz-col-9 vbox" style="margin-left:5px;">
+				<p><input type="checkbox" id="checkall" style="height:29px;"/></p>
+				<ul  v-cloak title="双击进入巡视，单击进入编辑" class="route" style="overflow-y:scroll;">
+					<div v-if="patrol.length==0" class="empty">暂无记录</div>
+					<li v-for="c in patrol" >
+						<input type="checkbox" value="{{c.id}}" data-speed="{{c.speed}}"  data-height="{{c.height}}" data-radius="{{c.radius}}"/><p >{{c.name}}</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="bottom" style="height:30px">
+			<div class="buttons" id="oprs">
+					<a class="hbtn btn_primary btn_mini" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+					<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_save"></i><span>新增</span></a>
+					<ul style="display:none;"></ul>		  
+			</div>
+		</div> 
+	</div>
+	<div class="vbox box-con" id="editmap" style="display:none;transform:rotateY(-180deg);" >
+		<div class="vbox hz-col-1">
+			<div class="hz-col-6 vbox" style="margin:10px 0 0 5px;border-bottom: 1px solid rgb(31, 105, 158);">
+				<p style="width:100%;"><input type="checkbox" id="checkboxd" style="height:29px;"/> <label class="seach"><input v-model="cameraSeach" placeholder="搜索摄像机名称"/></label><span style="float:right;color:rgb(0, 232, 116);">{{count.selects}}/{{count.total}}个</span></p>
+				<ul v-cloak  class="camera" style="overflow-y:scroll;">
+					<div v-if="camera.length==0" class="empty">未关联设备</div>
+					<li v-for="c in camera">
+						<input type="checkbox" id="{{c.id}}" value="{{c.linkId}}" data-type="{{c.type}}" data-x="{{c.searchPos.x}}" data-y="{{c.searchPos.y}}" data-z="{{c.searchPos.z}}" data-rdl_link_type="{{c.rdl_link_type}}"/>
+						<p @click.self="play($event,c)" class="camera{{c.modelType}} {{c.rdl_link_type==1?'self':''}}">{{c.name}}</p>
+					</li>
+				</ul>
+			</div>
+			<div class="hz-col-3" style="margin-bottom:5px;">
+				<label>线路名称</label>
+				<div class="input icon nam" >
+					  	<input placeholder="线路名称"  v-model="name">
+			    </div>
+			    <label>视角高度</label>
+				<div class="input icon nam" >
+					  	<input placeholder="视角高度"  v-model="view.height">
+			    </div>
+			    <label>巡视速度</label>
+				<div class="input icon nam" >
+					  	<input placeholder="巡视速度"  v-model="view.speed">
+			    </div>
+			    <label>搜索范围</label>
+				<div class="input icon nam" >
+					  	<input placeholder="搜索范围"  v-model="view.radius">
+			    </div>
+			</div>
+		</div>
+		<div class="bottom" style="height:30px">
+			<div class="buttons" id="editopr">
+					<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_save"></i><span>预览</span></a>
+					<a class="hbtn btn_primary btn_mini" name="save" data-type='1'><i class="btn_icon icon_save"></i><span>保存个人线路</span></a>
+					<a class="hbtn btn_primary btn_mini" name="save" data-type='0'><i class="btn_icon icon_save"></i><span>保存公共线路</span></a>  
+					<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_del"></i><span>返回</span></a>
+			</div>
+		</div> 
+	</div>
+
+	<div id="mainopr"  style="display:none;" >
+	    <!-- 关闭按钮 -->
+		<a class="hbtn btn_primary btn_mini pause" title="暂停"  @click="stop($event)" style="display:none;"></a>
+		<!-- 暂停按钮 -->
+		<a class="hbtn btn_primary btn_mini over" title="关闭" @click="over($event)" style="right:0px;display:none;"></a>
+		<!-- 摄像机列表 -->
+		<ul style="display:none;"></ul>
+		
+		<!-- 后加按钮2017-06-28 -->
+		<p class="speedcontrol" style="display:none;">
+			<a class="hbtn btn_primary btn_mini speeddown" title="减速，长按连续减速" @mousedown="updateSpeed(-1)" @mouseup="restorePatrol()" :disabled="view.disabled"></a>
+			<input :disabled="view.disabled" v-model="view.speed"/>
+			<input class="stoptime" :disabled="view.disabled" v-model="view.stoptime"/>
+			<a class="hbtn btn_primary btn_mini speedup" title="加速，长按连续加速" @mousedown="updateSpeed(1)" @mouseup="restorePatrol()" :disabled="view.disabled"></a>
+		</p>
+		<!--  -->
+	</div>
+
+	<!-- 自定义设备树 -->
+	<section class="selfSeach vbox h" id="selfSearch">
+		<style>
+		div.point>section.selfSeach{
+		    height: 70%;
+		    background: rgba(35, 40, 47, 0.91);
+		    position: absolute;
+		    left: 102%;
+		    top: 0px;
+		    border-radius: 10px;
+		       transform: rotateY(-180deg);
+		       overflow: hidden;
+		}
+		.h{
+			 display:none;
+		}
+		div.transa.mapopr{
+			overflow:hidden !important;
+		}
+		div.point{
+			overflow:initial !important;
+		}
+		a.speedup,a.speeddown{
+			float:right;
+			left:50%;
+			width:30px;
+			height:30px;
+			border:none;
+			background-image:url(css/image/speedup.png);
+		    background-position: center;
+		}
+		p.speedcontrol a:hover,p.speedcontrol a:focus{
+			text-decoration: none;
+		    background-color: rgba(0, 0, 0, 0);
+		}
+		a.speeddown{
+			background-image:url(css/image/speeddown.png);
+			float:left;
+		}
+		p.speedcontrol input{
+			width:45px;
+			height:30px;
+			border-radius:100%;
+			background:#658ca6;
+			text-align:center;
+		}
+		p.speedcontrol input.stoptime{
+			right:-100px;
+			position:absolute;
+			background:#9a6aca;
+		}
+		p.speedcontrol input:disabled{
+			background:grey;
+		}
+		p.speedcontrol{
+			position:absolute;
+			top:0px;
+			left:50%;
+			width:160px;
+			height:42px;
+			text-align:center;
+			padding:6px 0;
+			margin-left:-80px;
+		}
+		div.mapopr>p.speedcontrol{
+			display:block !important;
+		}
+		div.transa>p.speedcontrol{
+			transform: rotateY(-180deg);
+		}
+		div.flip> div.layui-layer-content{
+			height:100%;
+			overflow:hidden;
+		}
+		</style>
+		<div class="input icon" style="border-top-right-radius: 10px;border-top-left-radius: 10px;">
+			<input  v-model="treeKey" placeholder="输入关键字搜索">
+			<span class="find"></span>
+		</div>
+		<div class="hz-col-1" style="overflow:auto;">
+			<ul id="selfTree" class="ztree"></ul>
+		</div>
+	</section>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/3Dpatrol/patrolManage"]);
+</script>

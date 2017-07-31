@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_ctrl_log_main" desc="查询指挥中心日志主表">
+		<sql>
+			SELECT clm_id,
+				   TO_CHAR(clm_date, 'YYYY-MM-DD') clm_date,
+				   clm_regular_leader,
+				   clm_deputy_leader
+			  FROM dty_ctrl_log_main
+			 WHERE clm_cus_number = :cus_number
+			   AND clm_state = 1
+		</sql>
+		<where id="0">
+			   AND (:clm_date_start IS NULL OR clm_date >= TO_DATE(:clm_date_start, 'YYYY-MM-DD'))
+			   AND (:clm_date_end IS NULL OR clm_date #= TO_DATE(:clm_date_end, 'YYYY-MM-DD'))
+		</where>
+		<where id="1">
+			   AND TO_CHAR(clm_date, 'YYYY-MM-DD') = :clm_date
+		</where>
+		<where id="2">
+			   AND clm_id = :clm_id
+		</where>
+		<order id="0">
+			 ORDER BY clm_date DESC
+		</order>
+	</item>
+	<item id="query_ctrl_log_detail" desc="查询指挥中心日志从表">
+		<sql>
+			SELECT cld_id,
+				   cld_clm_id,
+				   cld_begin_time,
+				   cld_end_time,
+				   cld_handle_situation,
+				   cld_device_situation,
+				   cld_handle_sender,
+				   cld_handle_receiver,
+				   cld_device_sender,
+				   cld_device_receiver
+			  FROM dty_ctrl_log_detail
+		</sql>
+		<where id="0">
+			 WHERE cld_clm_id = :cld_clm_id
+		</where>
+		<order id="0">
+			 ORDER BY cld_id
+		</order>
+	</item>
+	<item id="insert_ctrl_log_main" desc="新增指挥中心日志主表">
+		<seq>dty_ctrl_log_main@id@clm_id</seq>
+		<sql>
+			INSERT INTO dty_ctrl_log_main
+			  (clm_cus_number,
+			   clm_id,
+			   clm_date,
+			   clm_regular_leader,
+			   clm_deputy_leader,
+			   clm_state,
+			   clm_create_user,
+			   clm_create_time,
+			   clm_update_user,
+			   clm_update_time)
+			VALUES
+			  (:cus_number,
+			   :id,
+			   TO_DATE(:clm_date, 'YYYY-MM-DD'),
+			   :clm_regular_leader,
+			   :clm_deputy_leader,
+			   1,
+			   :user_id,
+			   SYSDATE,
+			   :user_id,
+			   SYSDATE)
+		</sql>
+	</item>
+	<item id="update_ctrl_log_main" desc="更新指挥中心日志主表">
+		<sql>
+			UPDATE dty_ctrl_log_main
+			   SET clm_regular_leader = :clm_regular_leader,
+			       clm_deputy_leader  = :clm_deputy_leader,
+			       clm_update_user    = :user_id,
+			       clm_update_time    = SYSDATE
+			 WHERE clm_id = :clm_id
+		</sql>
+	</item>
+	<item id="del_ctrl_log_main" desc="删除指挥中心日志主表">
+		<sql>
+			UPDATE dty_ctrl_log_main
+			   SET clm_state = 0, clm_update_user = :user_id, clm_update_time = SYSDATE
+			 WHERE clm_id = :clm_id
+		</sql>
+	</item>
+	<item id="insert_ctrl_log_detail" desc="新增指挥中心日志从表">
+		<seq>dty_ctrl_log_detail@id@cld_id</seq>
+		<sql>
+			INSERT INTO dty_ctrl_log_detail
+			  (cld_id,
+			   cld_clm_id,
+			   cld_begin_time,
+			   cld_end_time,
+			   cld_handle_situation,
+			   cld_device_situation,
+			   cld_handle_sender,
+			   cld_handle_receiver,
+			   cld_device_sender,
+			   cld_device_receiver)
+			VALUES
+			  (:id,
+			   :cld_clm_id,
+			   :cld_begin_time,
+			   :cld_end_time,
+			   :cld_handle_situation,
+			   :cld_device_situation,
+			   :cld_handle_sender,
+			   :cld_handle_receiver,
+			   :cld_device_sender,
+			   :cld_device_receiver)
+		</sql>
+	</item>
+	<item id="del_ctrl_log_detail" desc="删除指挥中心日志从表">
+		<sql>
+			DELETE FROM dty_ctrl_log_detail WHERE cld_clm_id = :cld_clm_id
+		</sql>
+	</item>
+</sqlItem>

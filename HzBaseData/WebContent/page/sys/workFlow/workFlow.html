@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<title>工作流配置</title>
+</head>
+<body>
+<div class="vbox box-con" id="flowList">
+
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <ul class="hz-col-1 list-group"  style="cursor:pointer;overflow-y:scroll;margin-top:15px;border:1px solid #1e689d;" id="flowGroup">
+			    	<template  v-cloak v-for="item in list | filterBy searchTree in 'fti_name'">
+						<li class="list-group-item" @click="refresh(item,this)" :value="item.fti_id" >
+					  		{{item['fti_name']}}
+				  		</li>
+					</template>
+			    </ul>
+			</div>
+			
+			<div style="height:20px" id="groupbtn">
+				<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_mini" id="del"><i class="btn_icon icon_edit"></i><span>编辑</span></a>
+				<a class="hbtn btn_primary btn_mini" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			</div>
+		</div>
+		
+		<div class="hz-col-9 right-con">
+	       	<table id="table" ></table>
+		</div>
+		
+	</div>
+	<div class="bottom" >
+		<div class="buttons" id="oprbutton">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div> 
+	
+	<div class="vbox hz-col-1" id="flowgroup" style="display:none;"><!-- 流程分类添加 -->
+		<div class="hz-col-9">
+			<form class="form-horizontal"  style="margin-top:20px;overflow-x: hidden;">
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">流程分类名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disalbled=true v-model="flowgroup['fti_name']" placeholder="请输入流程分类名称">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">流程分类标识</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="flowgroup['fti_key']" placeholder="请输入流程分类标识">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">排列顺序</label>
+			        <div class="col-sm-8 ">
+			            <input type="text" class="form-control" v-model="flowgroup['fti_seq']" placeholder="请输入排列顺序">
+			        </div>
+			    </div>
+			</form>
+		</div>
+		<div class="hz-col-1">
+		    <a class="hbtn btn_primary btn_mini pull-right" id="save"  style="margin-right:20px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		</div>
+	</div>
+	
+	
+	<div class="vbox hz-col-1" id="flows" style="display:none;"><!-- 流程修改新增 -->
+		<div class="hz-col-9">
+			<form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+		
+		    	<div class="form-group ">
+			        <label class="col-sm-3 control-label">流程分类</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled=true v-model="flowgroup['fti_name']" >
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">流程名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="flowgroup['wfi_name']" placeholder="请输入流程名称">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">执行角色</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="flowgroup['wfi_role_id']" placeholder="请输入执行角色">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">排列顺序</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled=true v-model="flowgroup['wfi_seq']" >
+			        </div>
+			    </div>
+			</form>
+		</div>
+		 <div class="hz-col-1">
+					  <a class="hbtn btn_primary btn_mini pull-right" id="save" style="margin-right:15px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			 </div>	
+	</div>
+	
+</div>
+
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/sys/workFlow/workFlow"]);
+</script>
+</html>

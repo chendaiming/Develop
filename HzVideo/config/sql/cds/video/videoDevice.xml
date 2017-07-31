@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_video_device">
+		<seq>cmr_video_device_dtls@id@vdd_device_id</seq>
+		<sql>
+			INSERT INTO cmr_video_device_dtls(
+			   vdd_cus_number,
+			   vdd_device_id,
+			   vdd_device_name,
+			   vdd_other_id,
+			   vdd_device_type,
+			   vdd_device_brand,
+			   vdd_device_mode,
+			   vdd_ip_addrs,
+			   vdd_port,
+			   vdd_ip_addrs2,
+			   vdd_port2,
+			   vdd_user_name,
+			   vdd_user_password,
+			   vdd_dept_id,
+			   vdd_area_id,
+			   vdd_dvc_addrs,
+			   vdd_stts_indc,
+			   vdd_seq,
+			   vdd_crte_time,
+			   vdd_crte_user_id,
+			   vdd_updt_time,
+			   vdd_updt_user_id
+			) VALUES(
+				:vdd_cus_number,
+				:id,
+				:name,
+				:vdd_other_id,
+				:vdd_device_type,
+				:vdd_device_brand,
+				:vdd_device_mode,
+				:vdd_ip_addrs,
+				:vdd_port,
+				:vdd_ip_addrs2,
+				:vdd_port2,
+				:vdd_user_name,
+				:vdd_user_password,
+				:vdd_dept_id,
+				:vdd_area_id,
+				:vdd_dvc_addrs,
+				:vdd_stts_indc,
+				:vdd_seq,
+				SYSDATE,
+				:vdd_crte_user_id,
+				SYSDATE,
+				:vdd_updt_user_id
+			)
+		</sql>
+	</item>
+	<item id="update_video_device">
+		<sql>
+			UPDATE cmr_video_device_dtls SET
+			   vdd_device_name    =:name,
+			   vdd_other_id       =:vdd_other_id,
+			   vdd_device_type    =:vdd_device_type,
+			   vdd_device_brand   =:vdd_device_brand,
+			   vdd_device_mode    =:vdd_device_mode,
+			   vdd_ip_addrs       =:vdd_ip_addrs,
+			   vdd_port           =:vdd_port,
+			   vdd_ip_addrs2      =:vdd_ip_addrs2,
+			   vdd_port2          =:vdd_port2,
+			   vdd_user_name      =:vdd_user_name,
+			   vdd_user_password  =:vdd_user_password,
+			   vdd_dept_id        =:vdd_dept_id,
+			   vdd_area_id        =:vdd_area_id,
+			   vdd_dvc_addrs      =:vdd_dvc_addrs,
+			   vdd_stts_indc      =:vdd_stts_indc,
+			   vdd_seq            =:vdd_seq,
+			   vdd_updt_time      =SYSDATE,
+			   vdd_updt_user_id   =:vdd_updt_user_id
+			WHERE vdd_device_id = :id AND vdd_cus_number =:vdd_cus_number
+		</sql>
+	</item>
+	<item id="del_video_device">
+		<sql>
+			DELETE FROM  cmr_video_device_dtls WHERE vdd_device_id = ?
+		</sql>
+	</item>
+	<item id="select_video_tree">
+		<sql>
+			SELECT 
+			   vdd.vdd_cus_number,
+			   vdd.vdd_device_id AS id,
+			   vdd.vdd_device_name AS name,
+			   vdd.vdd_area_id AS pid,
+			   vdd.vdd_other_id,
+			   vdd.vdd_device_type,
+			   vdd.vdd_device_brand,
+			   vdd.vdd_device_mode,
+			   vdd.vdd_ip_addrs,
+			   vdd.vdd_port,
+			   vdd.vdd_ip_addrs2,
+			   vdd.vdd_port2,
+			   vdd.vdd_user_name,
+			   vdd.vdd_user_password,
+			   vdd.vdd_dept_id,
+			   vdd.vdd_area_id,
+			   vdd.vdd_dvc_addrs,
+			   vdd.vdd_stts_indc,
+			   vdd.vdd_seq,
+			   vdd.vdd_crte_time,
+			   vdd.vdd_crte_user_id,
+			   vdd.vdd_updt_time,
+			   vdd.vdd_updt_user_id,
+			   odd.odd_name AS vdd_dept_name,
+			   abd.abd_area_name AS vdd_area_name
+			FROM cmr_video_device_dtls vdd
+			LEFT JOIN sys_org_dept_dtls odd ON odd.odd_id = vdd.vdd_dept_id
+			LEFT JOIN com_area_base_dtls abd ON abd.abd_area_id = vdd.vdd_area_id
+		</sql>
+		<where id="0">
+			WHERE vdd.vdd_cus_number = ?
+			ORDER BY vdd.vdd_seq
+		</where>
+	</item>
+</sqlItem>

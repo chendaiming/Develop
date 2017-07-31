@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<title>点位管理</title>
+</head>
+<body>
+	<div id="pointMng" class="vbox" style="width:350px;height:300px;padding:5px 10px;">
+		<div class="input icon" >
+		  	<input v-model="searchTree" id="input" placeholder="输入关键字并按下[ENTER]键搜索">
+		  	<span class="find"></span>
+	    </div>
+		<div class="hz-col-1" style="overflow: auto">
+			<ul class="ztree" id="viewMenuZtree"></ul>	
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="bottons">
+			<a @click="delPoints" v-bind:class="{'btn_disabled':checked.length==0}" style="float:right" class="hbtn btn_primary btn_large"><span>删除</span></a>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+  requirejs(['hz/map/mapPoint/pointMng']);
+</script>
+</html>

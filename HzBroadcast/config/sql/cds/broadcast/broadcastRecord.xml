@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_broadcast_records" desc="查询广播记录">
+		<const key="bsr_play_type_name">BROADCAST_PLAY_MODE</const>
+		<sql>
+   		 	SELECT distinct bsr_cus_number,
+			                bsr_play_id,
+			                bsr_play_time,
+			                TO_CHAR(bsr_play_time, 'YYYY-MM-DD HH24:MI:SS') AS time,
+			                bsr_play_type,
+			                bsr_play_file,
+			                bsr_user_id,
+			                bsr_play_type AS bsr_play_type_name,
+			                abd_area_name
+	                  FROM  bct_broadcast_play_record  
+	             LEFT JOIN  bct_broadcast_play_client
+	                    ON  (bsr_play_id = bpc_play_id)                  
+	             LEFT JOIN  bct_broadcast_base_dtls
+	                    ON  (bpc_client_id = bbd_other_id)  
+	             LEFT JOIN  com_area_base_dtls
+	                    ON  (bbd_area_id =abd_area_id)              
+		</sql>
+		<where id="0">
+			 WHERE bsr_cus_number = :cusNumber
+			   AND TRUNC(bsr_play_time)  = TO_TIMESTAMP(:today,'YYYY-MM-DD')
+			   AND (:search IS NULL 
+			        OR (
+			        	abd_area_name LIKE '%'|| :search || '%' 
+			            OR  
+			            bsr_play_file LIKE '%'|| :search || '%'
+			           )
+			       )     
+		</where>
+		<order id="0">
+			ORDER BY bsr_play_time DESC
+		</order>
+    </item>
+    
+	<item id="query_broadcast_area_records" desc="区统计">
+		<sql>
+			SELECT COUNT(abd_area_id) AS value, abd_area_name AS name
+             FROM  bct_broadcast_play_record  
+        LEFT JOIN  bct_broadcast_play_client
+               ON  (bsr_play_id = bpc_play_id)                  
+        LEFT JOIN  bct_broadcast_base_dtls
+               ON  (bpc_client_id = bbd_other_id)  
+	    LEFT JOIN  com_area_base_dtls
+	           ON  (bbd_area_id =abd_area_id)  
+		</sql>
+		<where id="0">
+			WHERE bsr_cus_number = :cusNumber
+			  AND TRUNC(bsr_play_time)  = TO_TIMESTAMP(:today,'YYYY-MM-DD') 
+		</where>
+		<order id="0">
+			GROUP BY abd_area_name
+		</order>
+	</item>
+	
+	<item id="query_broadcast_time_records" desc="时间段统计">
+	<sql>
+			SELECT COUNT(abd_area_id) AS value,
+			       TO_CHAR(bsr_play_time, 'YYYY-MM-DD HH24') AS name
+             FROM  bct_broadcast_play_record  
+        LEFT JOIN  bct_broadcast_play_client
+               ON  (bsr_play_id = bpc_play_id)                  
+        LEFT JOIN  bct_broadcast_base_dtls
+               ON  (bpc_client_id = bbd_other_id)  
+	    LEFT JOIN  com_area_base_dtls
+	           ON  (bbd_area_id =abd_area_id)          
+		</sql>
+		<where id="0">
+			WHERE bsr_cus_number = :cusNumber
+			  AND TRUNC(bsr_play_time)  = TO_TIMESTAMP(:today,'YYYY-MM-DD') 
+		</where>
+		<order id="0">
+			 GROUP BY to_char(bsr_play_time, 'YYYY-MM-DD HH24')
+		</order>
+    </item>
+    
+  	<item id="insert_broadcast_play_record" desc="新增广播播放记录">
+	    	<sql>
+	    	INSERT INTO bct_broadcast_play_record
+			  (bsr_cus_number,
+			   bsr_play_id,
+			   bsr_play_time,
+			   bsr_play_type,
+			   bsr_play_file,
+			   bsr_user_id)
+			VALUES
+			  (:cusNumber,
+			   :playId,
+			   SYSDATE,
+			   :broadcastType,
+			   :videoPath,
+			   :userId)
+    	</sql>
+    </item>    
+    
+	<item id="insert_broadcast_play_client" desc="插入广播播放终端">
+    	<sql>
+	    	INSERT INTO bct_broadcast_play_client
+			  (bpc_cus_number,
+			   bpc_play_id,
+			   bpc_client_id)
+			VALUES
+			  (:cusNumber,
+			   :playId,
+			   :clientId)
+    	</sql>
+    </item> 
+</sqlItem>

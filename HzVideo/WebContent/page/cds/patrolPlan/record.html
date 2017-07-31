@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+ul.container{
+	color:#fff;	
+	margin-top:50px;
+	overflow:auto;
+    border-top: 1px solid #4077ae;
+}
+ul.container li{
+    margin: 10px;
+    background: rgba(105, 158, 173, 0.6);
+    padding-top: 10px;
+    border-radius: 10px;
+    cursor:pointer;
+    width: 83%;
+    margin-left: 16%;
+    position: relative;
+}
+ul.container li::after{
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-right: 15px solid rgba(105, 158, 173, 0.6);
+    border-bottom: 15px solid transparent;
+    top: 20%;
+    position: absolute;
+    left: -15px;
+}
+ul.container li>div:last-child{
+	transition:height 1s;
+	height:0px;
+	overflow:hidden;
+	background:rgba(105, 130, 161, 0.95);
+}
+ul.container li>div:last-child{
+    border-top: 1px solid rgb(19, 1, 1);
+}
+ul.container p{
+	margin:10px;
+}
+ul.container li p span{
+	width:50%;
+}
+div.show{
+	height:auto !important;
+	overflow:hidden;
+    color: #e7fcb3;
+}
+label{
+    background: #3f4a43;
+    min-height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 10px;
+    margin: 5px;
+    padding:0 10px;
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:32%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 15px;
+}
+.condition>input{
+    width: 98%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    outline:none;
+    margin-left:2%;
+}
+div.layui-layer-content{
+	color:#fff;
+}
+label::after{
+	content: '(已查看)';
+    color: green;
+    font-weight: bold;
+    font-family: monospace;
+}
+label.excute::after{
+	content:'(未查看)';
+	color:red;
+    font-weight: bold;
+    font-family: monospace;
+}
+div.date-input{
+	height: 34px;
+	border:none;
+}
+div.date-input >input{
+	background:none;
+	height:100%;
+	height:auto;
+	padding:0 0 0 2%;
+}
+ul.container li>p{
+    position: absolute;
+    left: -19%;
+    padding: 5px 10px;
+    text-align: center;
+    color: #e0e638;
+    top: 20%;
+    margin:0px;
+    padding:0px;
+    width:15%;
+    margin-top: 5px;
+}
+ul.container::before {
+    content: '';
+    border: 1px solid #fcfcfc;
+    position: fixed;
+    left: 215px;
+    top: 50px;
+    bottom: 57px;
+}
+ul.container>li::before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-color: #c4dffa;
+    position: absolute;
+    left: -4%;
+    top: 20%;
+    margin-top: 5px;
+    border-radius: 100%;
+}
+.progress{
+    width: 49.6%;
+    margin-left: -0.4%;
+}
+span.progress >progress{
+	border:none;
+}
+span.excutep{
+	color:#68ff00;
+}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="container">
+	<div class="vbox hz-col-1" style="position:relative;overflow-y:auto;overflow-x:hidden;">
+		<div class="condition" style="right:67%;">
+		<hz-date 
+      		tip="计划执行时间" 
+      		:val.sync="condition.excutetime"
+      	 	format=Y-m-d
+      	/>
+		</div>
+		<div class="condition" style="right:34%"><input placeholder="计划名称" class="find"  v-model="condition.planName" style="background-image:url(../../../css/images/area.png)"></div>
+		<div class="condition" style="right:1%"><input placeholder="计划执行人" class="find" id="finda" v-model="condition.userName" style="background-image:url(../../../css/images/plc.png)"></div>
+		<div  v-if="records.length==0" class="empty" style="padding-top:44px">暂无记录</div>
+		<ul class="container" id="scroll" v-cloak>
+			<li v-for="t in plans" title="点击查看详情">
+				<p><span>{{t['vcr_vpp_excute_time']}}</span><span class="excutep">{{t['vcr_vpp_user_name']}}</span></p>
+				<div @click="toggle($event,t)">
+					<p><span>计划名称：{{t['vcr_vpp_name']}}</span><span >执行时间：{{t['vcr_vpp_excute_time']}}</span></p>
+					<p>
+						<span>执行人：{{t['vcr_vpp_user_name']}}</span>
+						<span class="progress">执行情况：<progress   value="{{t.exc}}"  max="{{t.max}}"></progress></span>
+					</p>
+					<p><span>备注：{{t['mark']||'无'}}</span></p>
+				</div>
+				<div>
+					<label v-for="c in t.cameras"  :class="{excute:c['status']=='0'}">{{c['name']}}</label>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+			<a  @click="reset" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>重置</span></a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/patrolPlan/record']);
+</script>
+</html>

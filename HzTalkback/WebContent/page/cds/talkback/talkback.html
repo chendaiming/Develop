@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+.left{
+    border-left: 1px solid rgb(31, 105, 158);
+   	padding: 10px;
+}
+a.listen{
+    background: url(../../../libs/ztree/css/zTreeStyle/img/listen.png);
+    background-repeat: no-repeat;
+    background-position: right;
+}
+a.broad{
+    background: url(../../../libs/ztree/css/zTreeStyle/img/broad.png);
+    background-repeat: no-repeat;
+    background-position: right;
+}
+.ztree a>span{
+	    margin-right: 16px;
+}
+</style>
+<body>
+<div class="vbox box-con">
+	<div class="vbox hz-col-1">
+		<div class="hbox hz-col-1">
+			<div class="left-con vbox hz-col-3">
+				<div class="input icon">
+					<input id="input" placeholder="输入关键字搜索"> <span class="find"></span>
+				</div>
+				<div class="hz-col-4" style="overflow: auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+			</div>
+			<div class="hz-col-6 vbox right-con">
+				<div class="hz-col-1 vbox" style="border-bottom:1px solid #4077ae">
+					<div class="hbox">
+						<label> 
+							<span>当前区域:</span> <span v-text="selectAreaName"></span>
+						</label>
+					</div>
+				</div>
+				<div class="vbox" style="height:180px;">
+					<div class="hbox">
+						<label> 
+							<span>当前会话ID:</span> <span v-text="call_id"></span>
+						</label>
+					</div>
+					<div class="hz-col-9" id="form" style="overflow: auto;">
+						<div v-if="call_info.length==0" class="empty">暂无信息</div>
+						<div class="col-sm-12" v-cloak>
+							<div v-for="info in call_info">
+								<div>
+									<span v-text="info.msg"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>				
+			</div>
+			</div>
+			<div class="bottom">
+			<a class="hbtn btn_primary btn_large " @click="relationDialog()"><i class="btn_icon icon_add"></i><span>对讲主机关联/切换</span></a>
+			<div class="buttons">	
+					<a class="hbtn btn_primary btn_large " @click="talk()"><i class="btn_icon icon_save"></i><span>呼叫</span></a>		  
+					<a class="hbtn btn_primary btn_large" @click="call_close()"><i class="btn_icon icon_del"></i><span>挂断</span></a>
+					<a class="hbtn btn_primary btn_large" @click="call()"><i class="btn_icon icon_reset"></i><span>广播</span></a>
+					<a class="hbtn btn_primary btn_large" @click="monitor()"><i class="btn_icon icon_reset"></i><span>监听</span></a>
+					<a  class="hbtn btn_primary btn_large" @click="startTalk()"><i class="btn_icon icon_save"></i><span>电脑呼叫</span></a>		  
+					<a  class="hbtn btn_primary btn_large" @click="stopTalk()" ><i class="btn_icon icon_del"></i><span>电脑挂断</span></a>
+		    </div>			
+		</div>
+	</div>
+	<div class="vbox hz-col-1" id="relation_dialog" style="display: none;">
+		<!-- 导出 -->
+		<form class="form-horizontal">
+			<div class="form-group " style="height: 40px; margin-top: 16px;">
+				<label class="col-xs-3 control-label">当前用户</label>
+				<div class="col-xs-8">
+						<input type="text" class="form-control"
+								v-model="userName" readonly="readonly"/>
+				</div>
+			</div>
+			<div class="form-group" style="height: 40px; margin-top: 16px;">
+				<label class="col-xs-3 control-label">对讲主机</label>
+				<div class="col-xs-8">
+						<hz-select tip="请选择关联主机"
+							showload=true 
+							sqlid="select_talkback_otherid_name"
+							whereid=1
+							:params=[cusNumber]
+				    		:id.sync="userSettingInfo.sus_value" />
+					</div>
+			</div>
+			<div class="bottom">
+				<a class="hbtn btn_primary btn_mini pull-right"  @click="saveRelation()"><i
+					class="btn_icon icon_save"></i><span>关联并切换</span></a> <a
+					class="hbtn btn_primary btn_mini pull-right"  @click="switchHost()"><i
+					class="btn_icon icon_save"></i><span>仅切换</span></a>
+			</div>
+		</form>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/talkback/talkback"]);
+</script>

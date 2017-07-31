@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_door_card_dtls">
+		<seq>DOR_DOOR_CARD_DTLS@dcd_door_card_id</seq>
+		<sql>
+			INSERT INTO DOR_DOOR_CARD_DTLS
+			  (dcd_cus_number,
+			   dcd_door_card_id,
+			   dcd_surface_id,
+			   dcd_chip_id,
+			   dcd_people_id,
+			   dcd_people_type,
+			   dcd_use,
+			   dcd_seq,
+			   dcd_crte_time,
+			   dcd_crte_user_id)
+			VALUES
+			  (:dcd_cus_number,
+			   :dcd_door_card_id,
+			   :dcd_surface_id,
+			   :dcd_chip_id,
+			   :dcd_people_id,
+			   :dcd_people_type,
+			   :dcd_use,
+			   :dcd_door_card_id,
+			    SYSDATE,
+			   :dcd_crte_user_id)
+		</sql>
+	</item>
+	<item id="select_door_card_dtls_control">
+		<const key="dcd_people_type_ch">person_doorCard_type</const>
+		<const key="dcd_use_ch">VMI_IS_DEFAULT</const>
+		<sql>
+			SELECT dcd_cus_number,
+			       dcd_door_card_id,
+			       dcd_surface_id,
+			       dcd_chip_id,
+			       dcd_people_id,
+			       person_name,
+			       dcd_people_type,
+			       dcd_people_type_ch,
+			       dcd_use,
+			       dcd_use_ch,
+			       dcd_seq,
+			       dcd_crte_time,
+			       dcd_crte_user_id
+			  FROM (SELECT dcd_cus_number,
+			               dcd_door_card_id,
+			               dcd_surface_id,
+			               dcd_chip_id,
+			               dcd_people_id,
+			               pbd_police_name AS person_name,
+			               dcd_people_type,
+			               dcd_people_type AS dcd_people_type_ch,
+			               dcd_use,
+			               dcd_use AS dcd_use_ch,
+			               dcd_seq,
+			               dcd_crte_time,
+			               dcd_crte_user_id
+			          FROM DOR_DOOR_CARD_DTLS
+			         INNER JOIN PLC_POLICE_BASE_DTLS
+			            ON dcd_cus_number = pbd_cus_number
+			           AND dcd_people_type = 1
+			           AND dcd_people_id = pbd_user_id
+			        Union ALL
+			        SELECT dcd_cus_number,
+			               dcd_door_card_id,
+			               dcd_surface_id,
+			               dcd_chip_id,
+			               dcd_people_id,
+			               pbd_prsnr_name AS person_name,
+			               dcd_people_type,
+			               dcd_people_type AS dcd_people_type_ch,
+			               dcd_use,
+			               dcd_use AS dcd_use_ch,
+			               dcd_seq,
+			               dcd_crte_time,
+			               dcd_crte_user_id
+			          FROM DOR_DOOR_CARD_DTLS
+			         INNER JOIN PSR_PRISONER_BASE_DTLS
+			            ON dcd_cus_number = pbd_cus_number
+			           AND dcd_people_type = 2
+			           AND dcd_people_id = pbd_prsnr_id)
+		</sql>
+		<where id="0">
+			 WHERE dcd_door_card_id = :dcd_door_card_id
+		</where>
+		<where id="1">
+		    WHERE dcd_chip_id like concat('%',concat(:dcd_chip_id,'%'))
+		</where>
+		<order id="0">
+			ORDER BY  dcd_surface_id
+		</order>
+	</item>
+	<item id="update_door_card_dtls">
+		<sql>
+			UPDATE DOR_DOOR_CARD_DTLS
+				SET dcd_surface_id = :dcd_surface_id ,
+					dcd_people_id = :dcd_people_id,
+					dcd_chip_id = :dcd_chip_id,
+					dcd_people_type = :dcd_people_type,
+					dcd_use = :dcd_use
+			WHERE dcd_door_card_id = :dcd_door_card_id
+		</sql>
+	</item>
+	<item id="delete_door_card_dtls">
+		<sql>
+			DELETE FROM dor_door_card_dtls
+			WHERE dcd_door_card_id = :dcd_door_card_id
+		</sql>
+	</item>
+</sqlItem>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_screen_base_cut" desc="添加基础屏分割信息">
+		<sql>
+			INSERT  INTO
+				screen_base_cut
+				(	
+					sbc_cus_number,
+					sbc_screen_id,	
+					sbc_screen_win_id,
+					sbc_cut_num,
+					sbc_camera_info,
+					sbc_crte_time,
+					sbc_crte_user_id,
+					sbc_updt_time,
+					sbc_updt_user_id
+				)
+			values(
+					:sbc_cus_number,
+					:sbc_screen_id,	
+					:sbc_screen_win_id,
+					:sbc_cut_num,
+					:sbc_camera_info,
+					SYSDATE,
+					:sbc_crte_user_id,
+					SYSDATE,
+					:sbc_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="select_screenCut_screen_win_dtls" desc="拼接屏基础信息查询">
+    	<sql>
+			SELECT dcr_cus_number,
+				   dcr_screen_id,
+				   dcr_screen_win_id,
+				   sbc_cut_num
+			  FROM screen_win_dtls
+			  LEFT JOIN screen_base_cut
+			  ON (dcr_cus_number = sbc_cus_number AND
+			  	  dcr_screen_id = sbc_screen_id AND
+			  	  dcr_screen_win_id = sbc_screen_win_id)
+		</sql>
+		<where id="0">
+			WHERE dcr_cus_number = ? AND
+				  dcr_screen_id = ?
+		</where>
+		<order id="0">
+			ORDER BY dcr_screen_top,dcr_screen_left
+		</order>
+	</item>
+    
+    <item id="select_screen_base_cut" desc="查询基础屏分割信息">
+    	<sql>
+			SELECT sbc_cus_number,
+				   sbc_screen_id,
+				   sbc_screen_win_id,
+				   sbc_cut_num,
+				   sbc_camera_info,
+				   sbi_other_idnty,
+				   sbi_width,
+				   sbi_height,
+				   sbi_row_num,
+				   sbi_column_num
+			  FROM screen_base_cut
+			  LEFT JOIN screen_base_info
+			  ON (sbc_cus_number = sbi_cus_number AND
+			  	  sbc_screen_id = sbi_screen_id)
+		</sql>
+		<where id="0">
+			WHERE sbc_cus_number = ? AND
+				  sbc_screen_id = ?
+		</where>
+		<order id="0">
+			ORDER BY sbc_screen_win_id
+		</order>
+	</item>
+  
+	<item id="delete_screen_base_cut" desc="删除基础屏分割信息">
+    	<sql>
+			DELETE screen_base_cut
+			 WHERE sbc_cus_number = :sbc_cus_number AND
+			 	   sbc_screen_id = :sbc_screen_id AND
+			 	   sbc_screen_win_id = :sbc_screen_win_id
+		</sql>
+	</item>
+</sqlItem>

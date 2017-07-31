@@ -1,0 +1,421 @@
+<style>
+	#roomDetailCon{
+		width:100%;
+		height:100%;
+	}
+	#roomDetailCon .title{
+		position:relative;
+		height:35px;
+		line-height:35px;
+		color:fff;
+		text-align:center;
+		background-color:rgba(25,53,103,0.5);
+	}
+	#roomDetailCon .title img{
+		position: absolute;
+		top:5px;
+		right:5px;
+		width:22px;
+		height:22px;
+		cursor: pointer;
+	}
+	#roomDetailCon .left{
+		width:150px;
+	}
+	#roomDetailCon .right{
+		overflow-y:auto; 
+		margin-right:-35px;
+		margin-top:20px;
+	}
+	#roomDetailCon .left .device-title{
+		height:35px;
+		line-height:35px;
+		color:#bbb;
+		padding-left:40px;
+	}
+	.device-title.camera{
+		background:url(css/image/room_camera.png) no-repeat;
+		background-position:left center;
+	}
+	.device-title.door{
+		background:url(css/image/room_door.png) no-repeat;
+		background-position:left center;
+	}
+	.device-title.talk{
+		background:url(css/image/room_talk.png) no-repeat;
+		background-position:left center;
+	}
+	#roomDetailCon .zfinfo{
+		height:160px;
+		background:url(css/image/zf.png) no-repeat;
+		background-position:center;
+		float:left;
+		width:24%;
+		margin-bottom:10px;
+		text-align:center;
+		cursor: pointer;
+	}
+	.zfinfo .zfpic{
+		width:85px;
+		height:100px;
+		margin-top:10px;
+	}
+	.zfinfo .info{
+		padding-top:12px;
+		font-size:12px;
+	}
+	.con{
+		text-align:center;
+		overflow: auto;
+	}
+	.doors {
+		position: relative;
+		box-sizing: border-box;
+		width:106px;
+		height:106px;
+		line-height:106px;
+		border:6px solid #387A90;
+		border-color:#fff;
+		border-radius:50%;
+		margin:0 auto;
+		margin-top:10px;
+		padding:8px;
+	}
+	.doors .option{
+		position: absolute;
+		width:36px;
+		height:36px;
+		line-height:36px;
+		border-radius:50%;
+		background-color:rgba(51,102,153,.95);
+		color:#fff;
+		text-align:center;
+		font-size:12px;
+		cursor: pointer;
+	}
+	.doors .info{
+		position: absolute;
+		background-color:rgba(51,102,153,.95);
+		color:yellow;
+		width:54px;
+		height:54px;
+		line-height:54px;
+		top:50%;
+		left:50%;
+		margin-left:-27px;
+		margin-top:-29px;
+		border-radius:50%;
+	}
+	.doors .open{
+		top:0;
+		left:-18px;
+	}
+	.doors .closedoor{
+		top:0;
+		right:-18px;
+	}
+	.doors .record{
+		bottom:-18px;
+		left:50%;
+		margin-left:-18px;
+	}
+	.cameras{
+		background-color:rgba(51,102,153,.95);
+		padding:8px 10px;
+		margin-top:10px;
+		text-align:center;
+		border-radius:4px;
+		overflow: hidden;
+		cursor: pointer;
+	}
+	.talks{
+		background-color:rgba(51,102,153,.95);
+		padding:8px 10px;
+		margin-top:10px;
+		text-align:center;
+		border-radius:4px;
+		overflow: hidden;
+		cursor: pointer;
+	}
+	.remark{
+		padding-top:20px;
+		text-align:center;
+		color:#999;
+		font-size:12px;
+	}
+	[data-cur='1']{
+	    -webkit-filter: grayscale(100%);
+	    -moz-filter: grayscale(100%);
+	    -ms-filter: grayscale(100%);
+	    -o-filter: grayscale(100%);
+	    
+	    filter: grayscale(100%);
+		filter:opacity(0.1);
+	    filter: gray;
+	}
+</style>
+<div id="roomDetailCon" class="vbox">
+	<div class="title">
+		<span v-text="roomName"></span>
+		<img @click="hide" src="css/icons/close.png">
+	</div>
+	<div class="hbox hz-col-1" style="padding:15px 10px 10px 10px">
+		<div class="left vbox">
+			<div class="hz-col-2 vbox">
+				<div class="device-title camera"></div>
+				<div class="hz-col-1 con cameracon">
+					<div v-if="cameras.length==0" class="remark">暂无关联数据</div>
+					<div v-for="c in cameras" :cid="c.cbd_id" class="cameras" v-text="c.cbd_name">
+						
+					</div>
+				</div>
+			</div>
+			<div class="hz-col-2 vbox">
+				<div class="device-title door"></div>
+				<div class="hz-col-1 con">
+					<div v-if="doors.length==0" class="remark">暂无关联数据</div>
+					<div v-for="d in doors" class="doors">
+						<div class="info" v-text="d.dbd_name"></div>
+						<div @click="openDoor(d.model_name,d.dbd_id)" class="option open">开门</div>
+						<div @click="closeDoor(d.model_name,d.dbd_id)" class="option closedoor">关门</div>
+						<div @click="openRecord(d.dbd_id)" class="option record">记录</div>
+					</div>
+				</div>
+			</div>
+			<div class="hz-col-1">
+				<div class="device-title talk"></div>
+				<div class="hz-col-1 con">
+					<div v-if="talks.length==0" class="remark">暂无关联数据</div>
+					<div v-for="t in talks" class="talks" v-text="t.tbd_name">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="right hz-col-1">
+			<div style="padding:0 0 5px 20px;position:absolute;top:40px;width:75%;" class="">
+				<div class="col-xs-4">
+					罪犯列表
+				</div>
+				<div class="col-xs-4">
+			    	<label class="checkbox-inline">
+					  <input type="checkbox" v-model="checkBox.cur" val='false'>在舍
+					</label>	
+		    	</div>
+		    	<div class="col-xs-4">
+					<label class="checkbox-inline">
+					  <input type="checkbox" v-model="checkBox.levelPri" val='false'>离舍
+					</label>	    	
+				</div>
+			</div>
+			<div v-if="zfs.length==0" class="remark">暂无罪犯</div>
+			<div v-for="z in zfs" @click="openPrisoner(z)" class="zfinfo">
+				<img v-if="z.image"  class="zfpic" data-code="{{z.code}}" :src='z.image' >
+				<img v-if="!z.image && z.code" class="zfpic" data-code="{{z.code}}" src="css/image/zfpic.png"/>
+				<div class="info" v-if="z.code">
+					<div  v-text="z.name"></div>
+					<div style="color:#999"  v-text="z.code"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	require(['vue','frm/hz.db','frm/hz.event','frm/hz.videoclient','hz/map/map.handle','frm/loginUser','frm/localStorage','frm/dialog','frm/hz.door','frm/message'],
+			function(vue,db,hzEvent,hzVideo,mapHandle,user,ls,dialog,hzDoor,message){
+		
+		var roomDetail=$('#roomDetail');
+		var currentPri={levelPri:[],cur:[],total:[]};
+		
+		setTimeout(function(){
+			hzEvent.subs('map.handle.onClickRoom', function (name) {
+				console.log(arguments);
+				if(!name){
+					return;
+				}
+				vm.roomName = name.split('_')[4]+'监舍';
+				loadRoomDevices(name);
+				
+				roomDetail.css({
+					left:window.event.clientX/2,
+					top:window.event.clientY/2
+				}).slideDown();
+			});
+		},1000);
+		var vm = new vue({
+			el:'#roomDetailCon',
+			data:{
+				roomName:'',
+				cameras:[],
+				doors:[],
+				talks:[],
+				zfs:[],
+				checkBox:{
+					cur:'',
+					total:''
+				}
+			},
+			methods:{
+				hide:function(){$('#roomDetail').hide();},
+				openDoor:function(modelName,doorId){
+					var request = {
+						cusNumber:user.cusNumber,
+						userId:user.userId,
+						doorId:[doorId]	
+					};
+					if(user.doorAvoid == 1){//免密
+						hzDoor.openDoor({
+							request:request,
+							success:function(res){
+								mapHandle.door.open(modelName);
+								message.alert('发送开门指令成功');
+							}
+						});
+					}else{
+						layer.prompt({title:'请输入门禁口令',formType: 1,value:'',maxlength:6}, function(pass, index){
+							if(pass == user.doorpwd){
+								hzDoor.openDoor({
+									request:request,
+									success:function(res){
+										mapHandle.door.open(modelName);
+										message.alert('发送开门指令成功');
+									}
+								});
+								layer.close(index);
+							} else{
+								layer.msg('密码错误');
+							}
+						});						
+					}
+				},
+				closeDoor:function(modelName,doorId){
+					var request = {
+						cusNumber:user.cusNumber,
+						userId:user.userId,
+						doorId:[doorId]	
+					};
+					hzDoor.closeDoor({
+						request:request,
+						success:function(res){
+							mapHandle.door.close(modelName);
+							message.alert('发送关门指令成功');
+						}
+					});
+				},
+				openRecord:function(did){
+					ls.setItem('doorId',did);
+					dialog.open({
+						id:'239',
+						type:2,
+						title:'门禁刷卡记录',
+						url:'page/cds/door/record/record.html',
+						params:{doorId:did}
+					});
+				},
+				openPrisoner:function(p){
+					ls.setItem('prisonerCode',p.code);
+					dialog.open({
+						id:'259',
+						title:'罪犯信息查询',
+						type:2,
+						url:'page/cds/prisoner/prisonerInfo.html'
+					});
+				}
+			},
+			watch:{
+				'checkBox.cur':function(val){//当前在监舍的人
+					if(typeof val=='number')return;
+					if(val){
+						this.checkBox.levelPri=0;
+						this.zfs=currentPri.cur;
+						console.log(this.zfs);
+					}else{
+						this.zfs=currentPri.total;
+					}
+				},
+				'checkBox.levelPri':function(val){//离舍
+					if(typeof val=='number')return;
+					if(val){
+						this.checkBox.cur=0;
+						this.zfs=currentPri.levelPri;
+					}else{
+						this.zfs=currentPri.total;
+					}
+				}
+			}
+		});
+		function loadRoomDevices(rname){
+			db.query({
+				request:{
+					sqlId:'select_room_cameras',
+					params:{roomName:rname}
+				},
+				success:function(data){
+					vm.cameras = data;
+				}
+			});
+			db.query({
+				request:{
+					sqlId:'select_room_doors',
+					params:{roomName:rname}
+				},
+				success:function(data){
+					vm.doors = data;
+				}
+			});
+			db.query({
+				request:{
+					sqlId:'select_room_talks',
+					params:{roomName:rname}
+				},
+				success:function(data){
+					vm.talks = data;
+				}
+			});
+			//房间收押人
+			db.query({
+				request:{
+					sqlId:'select_prison_in_room',
+					params:{roomName:rname,cus:user.cusNumber},
+					whereId:'0'
+				},success:function(data){
+					db.query({
+							request:{
+								sqlId:'select_prisoner_current',
+								params:{roomName:rname,cus:user.cusNumber},
+								whereId:'0'
+							},success:function(list){
+								//过滤掉不在监舍的人
+								currentPri.cur=list;
+								filterPrison(list,data);
+								//当前在监人total
+								currentPri.total=data;
+								vm.zfs = data;
+							}
+					});
+				}
+			});
+		}
+		$('.cameracon').on('dblclick','.cameras',function(){
+			hzVideo.setLayout(1);
+			hzVideo.play($(this).attr('cid'));
+		});
+		
+		//过滤当前在房间内的犯人
+		function filterPrison(list,total){
+			var tempList=list.map(function(row){
+				return row.code;
+			});
+			for(var i=0,len=total.length;i<len;i++){
+				if(tempList.indexOf(total[i].code)>-1){//在舍
+					total[i].cur='';
+				}else{//离舍
+					currentPri.levelPri.push(total[i]);
+				}
+			}
+		}
+	});
+	
+	
+</script>

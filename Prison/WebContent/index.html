@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<title>首页</title>
+<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="css/common.css" charset="utf-8">
+<link rel="stylesheet" href="css/animate.css" charset="utf-8">
+<link rel="stylesheet" href="css/frm/map.css" charset="utf-8">
+<link rel="stylesheet" href="css/home/index.css" charset="utf-8">
+<link rel="stylesheet" href="css/map/mapCommon.css" charset="utf-8">
+<style type="text/css">
+	#menuSection {
+		position: absolute;
+		bottom: 0px;
+		left: 0px;
+		z-index: 9999998;
+	}
+	#viewSection {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		height: 100%;
+		z-index: 9999997;
+	}
+	#indexDiv {
+		width: 100%;
+		height: 100%;
+		margin: 0px;
+		padding: 0px;
+		display: none;
+	}
+	#videoRecordSection {
+		display: none;
+	    position: absolute;
+	    right: 15%;
+    	top: 10%;	
+		z-index: 9999998;
+	}
+	#alarmPlanSection {
+		display: none;
+	    position: absolute;
+	    right: 50%;
+    	top: 35%;	
+		z-index: 9999998;
+	}
+</style>
+</head>
+<body>
+	<section id="menuSection"></section>
+	<section id="viewSection"></section>
+	<section id="videoRecordSection"></section>
+	<section id="addAlarmPlanSection"></section>
+
+	<div id="connectionTip">
+		<div class="tip-tab">
+			<div class="tip-tab-cell"><span>系统连接已断开，正在尝试连接...</span></div>
+		</div>
+	</div>
+
+	<div id="indexDiv">
+		<div class="logo"></div>
+		<div id="modelGroupEdit"></div>
+		<div id="modelGroupAdd"></div>
+		<!-- <div id="viewMenuAdd"></div> -->
+		<div id="viewMenuList" test></div>
+
+		<div id="addPointPanel"></div><!-- 添加点位弹出层 -->
+		<div id="talkbackMini"></div><!-- 点击对讲弹出层 -->
+		<div id="schedulingMini"></div><!-- 点击对讲弹出层 -->
+		<div id="roomDetail"></div><!-- 点击房间弹出层 -->
+		<div id="pointRightMenu" oncontextmenu="return false;"></div>
+
+		<div id="pointInfoPanel" oncontextmenu="return false;">
+		</div>
+
+		<div id="alarmHandle"></div>
+		<div id="addVideoPlanPanel" class="vbox" >
+			<img @click="closeVideoPlanPanel" src="css/image/close.png"/>
+			<form class="form-horizontal hz-col-1" role="form" style="padding:30px 20px 0 20px">
+			  <div class="col-xs-12">
+				  <div class="form-group">
+				    <label class="col-xs-3 control-label">预案名称</label>
+				    <div class="col-xs-9">
+				       	<input class="form-control" v-model="plan.name" type="text" placeholder="预案名称">
+				    </div>
+				  </div>
+		   	  </div>
+		   	  <div class="col-xs-12">
+				  <div class="form-group">
+				    <label class="col-xs-3 control-label">预案类型</label>
+				    <div class="col-xs-9">
+				       	<hz-treeselect
+				       		tip="预案类型"
+				       		sqlid="select_device_type_drop",
+				       		:params=[plan.dgm_cus_number]
+				       		:id.sync="plan.plan_type"
+				       	/>
+				    </div>
+				  </div>
+		   	  </div>
+	   	  		<p>框选的摄像机</p>
+		   	  	<div style="height:80px;border-top:1px solid #4077ae">
+					 <div v-cloak v-if="boxSelectCameras.length>0" v-for="n in boxSelectCameras" track-by="id" class="col-xs-6" style="margin-top:10px;">
+					  		<a class="plan_camera" >
+					  			<span class="cameraName" v-text="n.name"></span>
+					  		</a>
+					  </div>
+				</div>
+		  	</form>
+		  	<div class="bottom" style="border:none">
+		  		<div class="buttons" style="margin-top:15px;">
+					 <a @click="saveVideoPlan(1)" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存个人预案</span></a>
+					 <a @click="saveVideoPlan(0)" v-if="dataAuth != 2" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存公共预案</span></a>
+		  		</div>
+		  	</div>
+		</div>
+
+		<!-- 刷卡提示  ck -->
+		<section id="doorRecord" class="doorRecord">
+			<p></p>
+			<ul id="doorlist" v-cloak><!-- 提示列表 -->
+				<li v-for="c in doorList" data-doorid='{{c.doorId}}' data-plc='{{c.cardId}}'>
+					<div style="padding-top: 5px;">
+						<p><label>门禁编号:</label>{{c.doorId}}</p>
+						<p><label>刷卡人员:</label>{{c.peopleName}}</p>
+						<p><label>刷卡时间:</label>{{c.brushCardTime}}</p>
+						<p><label>人员类型:</label>{{c.peopleType==1&&'民警'||c.peopleType==2&&'病员'||c.peopleType==3&&'外来人员'}}</p>
+						<p><label>进出标示:</label>{{c.inOutFlag==1?'进':'出'}}</p>
+						<p><label>状态:</label>{{c.status==1?'异常刷卡':'正常刷卡'}}</p>
+					</div>
+					<a v-bind:class="{'active':c.inOutFlag==1}">开门</a>
+					<a v-bind:class="{'active':c.inOutFlag==0}">关门</a>
+					<a >定位</a>
+				</li>
+			</ul>
+			<a></a>
+
+			<!-- 密码弹窗 -->
+			<form id="passwordd" class="passwordd" autocomplete="false" >
+	            <input  type="password" >
+	           	<input  type="password" >
+	           	<input  type="password" >
+	           	<input  type="password" >
+	           	<input  type="password" >
+	           	<input  type="password" >
+			</form>
+		</section>
+
+
+		<!-- 楼层示意图 ck-->
+		<section id="diagramck" class="diagramck" @click.self="show($event)">
+			<ul >
+				<li v-for="level in levels" style="top:{{25 * $index}}px; z-index:{{levels.length - $index}};" id="gram{{level.area}}" data-area="{{level.area}}" title="当前人数：{{level.tl}}人 &#10;总人数：{{level.prisoners}}人">
+					<p @click.self="showLevel($event);">
+						<span style="padding-top: 2px;">{{levels.length-$index}}F</span>
+						<span style="text-align: center;">{{level.tl}} / {{level.prisoners}} 人</span>
+					</p>
+				</li>
+			</ul>
+		</section>
+
+
+		<!-- 全局搜索框 ck -->
+		<section class='searchAll' id="searchAll">
+			<input placehold="搜索关键字" v-model="key"/>
+			<div>
+				<ul>
+					<li v-for="key in searchs" @click="find(key);">搜索"<span>{{key.name}}</span>"相关的{{key.tip}}</li>
+				</ul>
+			</div>
+		</section>
+
+	  	<hz-panels v-if="selectPanels.length>0" :data="selectPanels"/>  
+	</div>
+</body>
+
+<script type="text/javascript" src="js/require.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript">
+	requirejs(['hz/home/index']);
+</script>
+</html>

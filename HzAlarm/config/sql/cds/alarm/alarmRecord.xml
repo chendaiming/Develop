@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+
+	<item id="select_alaram_record_byday" desc="按照时间查询，时间线">
+		<const key="ard_dvc_type">securityDeviceType</const>
+		<const key="ard_alert_level">ALARM_LEVEL</const>
+		<const key="ard_oprtn_stts">ALARM_PROCESS_RESULT</const>
+		<sql>
+			SELECT
+				ard_alertor_id,
+				ard_record_id,
+				ard_alertor_name name,
+				TO_CHAR(ard_alert_time,'yyyy-mm-dd hh24:mi:ss') ard_alert_time,
+			
+				ard_alert_addrs address,
+				ard_receive_alarm_police,
+				ard_oprtn_stts,
+				ard_local_case,
+				ard_alert_level,
+				ard_alert_reason,
+				ard_dvc_type,
+				ard_dvc_type maintype,
+				ard_alert_police_name,
+				ard_rec_police_name,
+				TO_CHAR(ard_receive_time,'yyyy-mm-dd hh24:mi:ss')  ard_receive_time,
+				ard_event_type,
+				ard_oprtr_name,
+				ard_sure_police_name,
+				ard_event_user_name,
+				ard_event_time,
+				ard_oprtn_desc,
+				ard_oprtn_result,
+				ard_remark,
+				ard_img_src
+			FROM
+				alt_alert_record_dtls
+			WHERE
+				ard_alert_date=TO_DATE(:day,'yyyy-MM-dd')
+			AND
+				ard_cus_number=:cus
+	    </sql>
+	   	<where id="0" desc="按照报警器名称查询">
+	   		AND
+	   			ard_alertor_name LIKE CONCAT('%',CONCAT(:key,'%'))
+	   	</where>
+	   	<where id="1" desc="多条件查询，地点，等级，类型，处理状态">
+	   		AND
+	   			(:type IS  NULL  OR ard_dvc_type =:type)
+	   		AND
+	   			(:result  IS NULL OR ard_oprtn_stts=:result)
+	   		AND
+	   			(:plc IS  NULL OR ard_alert_police=:plc)
+	   	</where>
+	   	<order id="0">
+	   	ORDER BY 
+	     		ard_alert_time DESC
+	   	</order>
+    </item>
+    <item id="select_proc_flow_by_alarm_id" desc="报警处置流程">
+    	<sql>
+			SELECT hfm_flow_name, 
+			       hfd_flow_item_name, 
+			       hfd_flow_order
+			  FROM alt_handle_flow_master_h
+			  LEFT JOIN alt_handle_flow_dtls_h
+			    ON hfm_flow_id = hfd_flow_id
+			   AND hfm_alarm_record_id = hfd_alarm_record_id
+			 WHERE hfm_alarm_record_id = :alarmId
+			 ORDER by hfd_flow_order
+    	</sql>
+    </item>
+    <item id="select_alarm_record_bytype" desc="按照报警类型查询">
+    	<const key="name">ALARM_DEVICE_TYPE</const>
+    	<sql>
+			SELECT ard_dvc_type name, COUNT(ard_alertor_id)value
+			  FROM  alt_alert_record_dtls t
+			 WHERE
+				 ard_cus_number = :cus
+			 AND
+			 	ard_alert_date=TO_DATE(:day,'yyyy-MM-dd')
+    	</sql>
+    	<where id="1" desc="多条件查询，地点，等级，类型，处理状态">
+	   		AND
+	   			(:type IS  NULL  OR ard_dvc_type =:type)
+	   		AND
+	   			(:result  IS NULL OR ard_oprtn_stts=:result)
+	   		AND
+	   			(:plc IS  NULL OR ard_alert_police=:plc)
+	   	</where>
+	   	<order id='0'>
+	   		 GROUP BY ard_dvc_type
+	   	</order>
+    </item>
+     <item id="select_alarm_record_bytime" desc="一天内各个时间报警次数">
+    	<sql>
+    		WITH t AS
+			 (SELECT :day || DECODE(SIGN(level - 10), -1, ' 0' || level, ' '||level) AS time
+			    FROM DUAL
+			  CONNECT BY level # 25)
+			  
+			 SELECT
+			 	WM_CONCAT(r) as r,
+			 	 WM_CONCAT(t) t
+			FROM
+			(
+			 SELECT
+			 	 COUNT(ard_record_id) as r,
+				 to_char(to_date(t.time, 'yyyy-MM-dd HH24'), 'HH24') || ':00' t
+			 FROM 
+			 	alt_alert_record_dtls
+			 RIGHT JOIN t
+			    ON t.time = TO_CHAR(ard_alert_time, 'yyyy-MM-dd hh24')
+			 WHERE
+			  	ard_cus_number=:cus  
+    	</sql>
+    	<where id="1" desc="多条件查询，地点，等级，类型，处理状态">
+	   		AND
+	   			(:type IS  NULL  OR ard_dvc_type =:type)
+	   		AND
+	   			(:result  IS NULL OR ard_oprtn_stts=:result)
+	   		AND
+	   			(:plc IS  NULL OR ard_alert_police=:plc)
+	   	</where>
+	   	<order id="0">
+	   		GROUP BY 
+	      		t.time
+	         ORDER BY 
+	     		t.time
+	     		)
+	   	</order>
+    </item>
+    <item id="select_alarm_result_byday" desc="一天中报警的处理情况">
+    	<sql>
+   		  SELECT 
+   		  		COUNT(ard_record_id) sum
+		  FROM 
+		    	alt_alert_record_dtls
+    	</sql>
+    	<where id="1" desc="一天中的报警总次数">
+    		WHERE 
+    			ard_oprtn_stts=4 AND  ard_alert_date=TO_DATE(:day,'yyyy-mm-dd')
+    	</where>
+    	<order id="0" desc="多条件查询，地点，等级，类型，处理状态">
+	   		AND
+	   			(:type IS  NULL  OR ard_dvc_type =:type)
+	   		AND
+	   			(:result  IS NULL OR ard_oprtn_stts=:result)
+	   		AND
+	   			(:plc IS  NULL OR ard_alert_police=:plc)
+	   	</order>
+    </item>
+
+	<item id="select_alarm_record_count" desc="查询报警记录总数">
+		<sql>
+			SELECT COUNT(*) count FROM alt_alert_record_dtls
+		</sql>
+		<where id="0">
+			where ard_cus_number = :cusNumber
+		</where>
+	</item>
+</sqlItem>

@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+.hz-handle-desc {
+	position: absolute;
+    top: 35%;
+    left: 50%;
+    padding: 10px 1px;
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: 3px;
+    background-color: rgba(42, 61, 82, .95);
+    box-shadow: 0 0 10px #333;
+}
+.hz-handle-desc >a.hhd-close {
+	position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background: url(images/close_a.png) center center no-repeat;
+    background-size: 100%;
+    cursor: pointer;
+    transition: all 0.5s;
+    opacity: .7;
+}
+.hz-handle-desc >a.hhd-close:hover {
+	background-image: url(images/close_a_h.png);
+	opacity: 1;
+}
+
+
+.hz-handle-desc >div.hhd-title {
+	margin: 0 10px 5px 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #8c8c8c;
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+    cursor: move;
+}
+.hz-handle-desc >div.hhd-body {
+	max-height: 400px;
+	overflow-y: auto;
+}
+.hz-handle-desc ul {list-style: none;}
+.hz-handle-desc li {padding: 5px 10px; margin-bottom: 1px; cursor: default;}
+.hz-handle-desc li:hover {background-color: rgba(129, 232, 253, 0.15);}
+.hz-handle-desc span.keynote {color: #0eff00;}

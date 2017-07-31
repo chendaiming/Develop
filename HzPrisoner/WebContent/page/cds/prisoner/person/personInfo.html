@@ -1,0 +1,219 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<style>
+/* body{ */
+/* 	background: url('image/person_face_bg.png') no-repeat; */
+/* 	background-size:100% 114%;  */
+/* } */
+.person_info{
+	font-size:16px;
+}
+.title_1{
+	text-align: center;
+    position: absolute;
+    top: 0%;
+    left: 12%;
+}
+.title_2{
+	text-align: center;
+    position: absolute;
+    top: 0%;
+    left: 76%;
+}
+._face{
+	width: 33.33%;
+	height:300px;
+	/* border:1px solid #1f699e;  */
+	float:left;
+}
+._data{
+	width: 33.33%;
+	height:300px;
+	/* border:1px solid #1f699e; */
+	float:left;
+	padding: 50px 30px 0;
+}
+._scene{
+	width: 33.33%;
+	height:300px;
+ 	/* border:1px solid #1f699e;  */
+	float:left;
+}
+.text{
+	width: 80px;
+	color: white;
+	text-align: right;
+	font-size: 16px;
+}
+.prisoner_data{
+	text-align:left;
+	width: 80px;
+	position: absolute;
+	margin-top: 0px;
+	margin-left:15px;
+	color: rgba(12, 197, 226, 1);
+	font-size:16px;
+/* 	background: url('image/title.png') no-repeat; */
+/* 	background-size:100% 100%; 	 */
+}
+.title_part_1 {
+	text-align: center;
+    padding: 15px 0 10px 0;
+}
+.face_pic {
+	width: 67%;
+    height: 240px;
+    margin: 0 auto;
+    border: 1px solid #00ffff;
+}
+.data_list {
+    margin-top: 15px;
+}
+.data_list div {
+    height: 40px;
+    line-height: 40px;
+    margin-bottom: 3px;
+}
+.prisoner_border_img {
+	width: 100%;
+    height: 2px;
+}
+.scene_img_bc {
+	position:relative;
+	width: 70%;
+    margin: 0 auto;
+    height: 250px;
+    background:url(image/right.png) no-repeat;
+    -moz-background-size:100% 100%;
+    background-size:100% 100%;
+}
+.scene_img {
+	width: 96%;
+	position:absolute;
+	clip:rect(0 272px 0 0);
+    height: 96%;
+    margin-top: 2%;
+    margin-left: 2%;
+}
+
+.move_line {
+	height: 3px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    /* border-top: 2px solid #00ffff; */
+}
+
+
+</style>
+<body>
+<div class="person_info" id="form">
+	<div style="width:98%;height:100%;margin: auto;margin-top: 20px;">
+		<div class="_face">
+			<div class="title_part_1">人脸库照片</div>
+			<!-- <img v-if="prisoner.img_url" :src="prisoner.img_url" style="background-size: 100% 100%;width: 100%;height: 100%;"> -->
+			<div class="face_pic"></div>
+		</div>
+		<div class="_data">
+			<div class="data_list">
+				<div>
+					<span class="text">人员编号</span>
+					<span v-text="prisoner.prisonerid" class="prisoner_data" ></span>
+					<img src="image/line.png" class="prisoner_border_img" />
+				</div>
+				<div>
+					<span class="text" >人员姓名</span>
+					<span v-text="prisoner.name" class="prisoner_data"></span>
+					<img src="image/line.png" class="prisoner_border_img" />
+				</div>
+				<div>
+					<span class="text" >人员类型</span>
+					<span v-text="prisoner.type" class="prisoner_data"></span>
+					<img src="image/line.png" class="prisoner_border_img" />
+				</div>
+				<div>
+					<span class="text">所在位置</span>
+					<span v-text="prisoner.addrs" class="prisoner_data"></span>
+					<img src="image/line.png" class="prisoner_border_img" />
+				</div>		
+				<div>
+					<span class="text">比对结果</span>
+					<span class="prisoner_data">87.12%</span>
+					<img src="image/line.png" class="prisoner_border_img" />
+				</div>
+			</div>
+		</div>
+		<div class="_scene">
+			<div class="title_part_1">现场照片</div>
+			<!-- <img  style="background-size: 100% 100%;width: 100%;height: 100%;" v-if="prisoner.img_url_scene" :src="prisoner.img_url_scene" > -->
+			<div style="width:100%;position:relative;">
+				<div class="scene_img_bc">
+					<!-- <img class="scene_img" src="image/right.png" style="width:100%;height:100%" /> -->
+					<img class="scene_img" src="image/0012.png" />
+				</div>
+				<div class="move_line">
+					<img src="image/line.png" style="width:100%;height:100%" />
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</div>
+</body>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script type="text/javascript" src="../../../../libs/jquery/jquery.js"></script>
+<script>
+require(["hz/cds/prisoner/person/person_info"])
+</script>
+<script>
+	$(document).ready(function(){
+		/*  $(".move_line").animate({top:"240px"},{
+		      step: function(now, fx) {
+		          $(this).css('top',now+"px");
+		          console.log(now)
+		      }
+		},1000,function(){
+			$(this).hide();
+		})  */
+		$(".scene_img").animate({
+			fontSize:240
+		},{
+		      step: function(now, fx) {
+		          $(this).css('clip','rect(0px, 270px, '+(now)+'px, 0px)')
+		          $(".move_line").css('top',now+"px");
+		          if(now==240){
+		        	  success();
+		          }
+		      }
+		},1000)
+		
+		/* var i = 1000 / 240,a=i;
+		var timer = setInterval(function(){
+			a=a+i;
+			$('.scene_img').css({
+				clip:"rect(0px 272px "+a+"px 0px)"
+			})
+			$(".move_line").css({
+				top:a+"px"
+			})
+			if(a>=240){
+				success();
+				return;
+			}
+		},1);
+		
+		function success(){
+			clearInterval(timer);
+			$(".move_line").hide();
+			var _img='<img style="width:100%;height:100%" src="image/0012.png">';
+			$(".face_pic").append(_img);
+		} */
+	})
+	function success(){
+			$(".move_line").hide();
+			var _img='<img style="width:100%;height:100%" src="image/0012.png">';
+			$(".face_pic").append(_img);
+		}
+</script>

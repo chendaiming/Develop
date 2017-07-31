@@ -1,0 +1,179 @@
+
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+		padding:5px 0;
+	  	overflow: auto;
+	  	z-index: 99;
+	  	position:absolute;
+	  	top:36px;
+	  	left:15px;
+  	    width: 95%;
+  	    max-height:240px;
+	}
+
+</style>
+<body>
+<div class="vbox box-con">
+<div class="hbox hz-col-1">
+	<div class="left-con vbox">
+		<div class="input icon" >
+		  	<input v-model="searchTree" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+	    <div class="hz-col-1" style="overflow:auto">
+			<ul id="talkTree" class="ztree"></ul>
+	    </div>
+	</div>
+	<div class="hz-col-1 right-con" >
+		<form id="talkForm" class="form-horizontal" role="form">
+	 <div class="col-xs-12">
+				  <div class="form-group">
+					    <label class="col-xs-2 control-label">对讲主机编号</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="talkback['tbd_mian_id']" type="text"  placeholder="对讲主机编号">
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">对讲分机编号</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="talkback['tbd_child_id']" type="text"  placeholder="对讲分机编号">
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">厂商唯一编号</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="talkback['tbd_other_id']" type="text"  placeholder="厂商唯一编号">
+					    </div>
+					  </div>
+			   	  </div>		
+			   	    <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">对讲机名称<span class="required">*</span></label>
+
+					    <div class="col-xs-10">
+					       <input class="form-control" v-model="talkback['name']" type="text"  placeholder="对讲机名称">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+				    <div class="form-group ">
+			        <label class="col-xs-2 control-label">对讲机品牌<span class="required">*</span></label>
+			        <div class="col-xs-10">
+					  		<hz-select 
+					  			tip="对讲机品牌" 
+					  			code="TALKBACK_BRAND"
+					  			:id.sync="talkback.tbd_brand" 
+					  		></hz-select>
+					</div>
+			       </div>
+				  </div>
+				  <div class="col-xs-12">
+				    <div class="form-group ">
+			        <label class="col-xs-2 control-label">对讲机类型<span class="required">*</span></label>
+			        <div class="col-xs-10">
+					  		<hz-select 
+					  			tip="对讲机类型" 
+					  			code="TALKBACK_TYPE"
+					  			:id.sync="talkback.tbd_type" 
+					  		></hz-select>
+					</div>
+			       </div>
+				  </div>
+				  <div class="col-xs-12">
+				    <div class="form-group ">
+			        <label class="col-xs-2 control-label">关联服务<span class="required">*</span></label>
+				        <div class="col-xs-10">
+								<hz-select tip="关联对讲服务信息" 
+									sqlid="select_talkback_service_select"
+									whereid=0
+									orderid=0
+									:params = {cusNumber:cusNumber}
+									:id.sync="talkback.tbd_relation_service"></hz-select>
+						</div>
+			       </div>
+				  </div>				  			
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">对讲IP</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="talkback['tbd_ip']" type="text"  placeholder="对讲IP">
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">对讲频道</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="talkback['tbd_port']" type="text"  placeholder="对讲频道">
+					    </div>
+					  </div>
+			   	  </div>
+			     <div class="col-xs-12">
+			    	 <div class="form-group ">
+			      	  	<label class="col-xs-2 control-label">所属部门<span class="required">*</span></label>
+				        <div class="col-xs-10">
+					        <hz-treeselect
+					        	tip="请选择所属部门"
+					        	sqlId="query_org_dep_talkback"
+					        	:params="{org:cusNumber}"
+					        	:id.sync="talkback.dep"
+				        	></hz-treeselect>
+					    </div> 
+		    	  	</div>
+				  </div>
+
+				  <div class="col-xs-12">
+				  <div class="form-group ">
+			        <label class="col-xs-2 control-label">所属区域<span class="required">*</span></label>
+			        <div class="col-xs-10">
+			            <input type="text" class="form-control" disabled=true v-model="talkback.tbd_area_name" placeholder="请选择区域">
+			        </div>
+			    </div>
+			    </div>
+
+			    <div class="col-xs-12">
+				    <div class="form-group ">
+				        <label class="col-xs-2 control-label">安装位置<span class="required">*</span></label>
+				        <div class="col-xs-10">
+				            <input type="text" class="form-control" v-model="talkback['tbd_dvc_addrs']" placeholder="请输入安装位置">
+				        </div>
+				    </div>
+			    </div>
+			    <div class="col-xs-12">
+				  <div class="form-group">
+				    <label class="col-xs-2 control-label" >设备状态</label>
+				    <div class="col-xs-10">
+					  		<hz-select 
+					  			tip="设备状态"
+					  			code="PATROL_DEVICE_STATUS" 
+					  			:id.sync="talkback.tbd_dvc_stts"
+					  		/>
+				    </div>
+				  </div>
+			  </div>
+		</form>
+	</div>
+	</div>
+     <div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['cds/video/talkbackManage'])
+</script>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="delete_trackmove" >
+		<sql>
+			DELETE FROM map_orbit_move_master where omg_id = :id
+		</sql>
+	</item>
+	<item id="delete_trackmove_point" >
+		<sql>
+			DELETE FROM MAP_ORBIT_MOVE_POINTS where omp_omg_id = :id
+		</sql>
+	</item>
+	<item id="select_move_start_rltn">
+		<sql>
+			SELECT 
+			  omr.omr_a_dvc_id,
+			  mpi.mpi_point_name
+			FROM map_orbit_move_rltn omr
+			INNER JOIN map_model_point_info mpi ON mpi.mpi_point_id = omr.omr_a_dvc_id
+			WHERE omr.omr_cus_number =:cusNumber AND omr.omr_omg_id = :omg_id
+			group by omr.omr_a_dvc_id,mpi.mpi_point_name
+			UNION ALL
+			SELECT
+				omr.omr_a_dvc_id,
+				r.rbd_name as mpi_point_name
+			FROM map_orbit_move_rltn omr
+			INNER JOIN dvc_rfid_base_dtls r ON r.rbd_id = omr.omr_a_dvc_id
+			WHERE omr.omr_cus_number =:cusNumber AND omr.omr_omg_id = :omg_id
+			group by omr.omr_a_dvc_id,r.rbd_name
+		</sql>
+	</item>
+	<item id="select_move_end_rltn">
+		<sql>
+			SELECT
+			  omr.omr_b_dvc_id,
+			  mpi.mpi_point_name
+			FROM map_orbit_move_rltn omr
+			INNER JOIN map_model_point_info mpi ON mpi.mpi_point_id = omr.omr_b_dvc_id
+			WHERE omr.omr_cus_number =:cusNumber AND omr.omr_omg_id = :omg_id
+			group by omr.omr_b_dvc_id,mpi.mpi_point_name
+			UNION ALL
+			SELECT
+				omr.omr_b_dvc_id,
+				r.rbd_name as mpi_point_name
+			FROM map_orbit_move_rltn omr
+			INNER JOIN dvc_rfid_base_dtls r ON r.rbd_id = omr.omr_b_dvc_id
+			WHERE omr.omr_cus_number =:cusNumber AND omr.omr_omg_id = :omg_id
+			group by omr.omr_b_dvc_id,r.rbd_name
+		</sql>
+	</item>
+	<item id="select_move_points">
+		<sql>
+			SELECT 
+				omp_pos_x AS x,
+				omp_pos_y AS y,
+				omp_pos_z AS z
+			FROM map_orbit_move_points
+		</sql>
+		<where id="0">
+			WHERE omp_cus_number =:cusNumber AND omp_omg_id = :omg_id
+			ORDER BY omp_seq
+		</where>
+	</item>
+    <item id="select_trackmove_list" desc="查询轨迹移动">
+    	<sql>
+    		SELECT 
+    			omg_cus_number,
+				omg_id,
+				omg_origin_name,
+				omg_destination_name,
+				omg_remark,
+				omg_create_uid,
+				omg_create_datetime,
+				omg_update_uid,
+				omg_update_datetime
+    		FROM map_orbit_move_master
+    	</sql>
+    	<where id="0">
+    		WHERE omg_cus_number=:cusNumber
+    	</where>
+    </item>
+    <item id="update_track_move">
+    	<sql>
+    		UPDATE map_orbit_move_master SET
+				omg_origin_name =:omg_origin_name,
+				omg_destination_name=:omg_destination_name,
+				omg_remark=:omg_remark,
+				omg_update_uid=:omg_update_uid,
+				omg_update_datetime = SYSDATE,
+				omg_view_id = :omg_view_id,
+		        omg_pos_x = :omg_pos_x,
+		        omg_pos_y = :omg_pos_y,
+		        omg_pos_z = :omg_pos_z,
+		        omg_rot_x = :omg_rot_x,
+		        omg_rot_y = :omg_rot_y,
+		        omg_rot_z = :omg_rot_z,
+		        omg_tar_x = :omg_tar_x,
+		        omg_tar_y = :omg_tar_y,
+		        omg_tar_z = :omg_tar_z
+			WHERE omg_id = :omg_id
+    	</sql>
+    </item>
+    <item id="delete_movepoint_byomgid">
+    	<sql>
+    		DELETE FROM map_orbit_move_points WHERE omp_omg_id = :omg_id
+    	</sql>
+    </item>
+     <item id="delete_moverlan_byomgid">
+    	<sql>
+    		DELETE FROM map_orbit_move_rltn WHERE omr_omg_id = :omg_id
+    	</sql>
+    </item>
+    <item id="insert_orbit_move" desc="轨迹移动主表">
+    	<seq>map_orbit_move_master@omg_id@omg_id</seq>
+    	<sql>
+    		INSERT INTO map_orbit_move_master (
+    			omg_cus_number,
+				omg_id,
+				omg_origin_name,
+				omg_destination_name,
+				omg_remark,
+				omg_create_uid,
+				omg_create_datetime,
+				omg_update_uid,
+				omg_update_datetime,
+				omg_view_id,
+		        omg_pos_x,
+		        omg_pos_y,
+		        omg_pos_z,
+		        omg_rot_x,
+		        omg_rot_y,
+		        omg_rot_z,
+		        omg_tar_x,
+		        omg_tar_y,
+		        omg_tar_z
+    		) VALUES (
+    			:omg_cus_number,
+				:omg_id,
+				:omg_origin_name,
+				:omg_destination_name,
+				:omg_remark,
+				:omg_create_uid,
+				SYSDATE,
+				:omg_update_uid,
+				SYSDATE,
+				:omg_view_id,
+		        :omg_pos_x,
+		        :omg_pos_y,
+		        :omg_pos_z,
+		        :omg_rot_x,
+		        :omg_rot_y,
+		        :omg_rot_z,
+		        :omg_tar_x,
+		        :omg_tar_y,
+		        :omg_tar_z
+    		)
+    	</sql>
+    </item>
+    <item id="insert_move_point">
+    	<sql>
+    		INSERT INTO map_orbit_move_points (
+    			omp_cus_number,
+				omp_omg_id,
+				omp_pos_x,
+				omp_pos_y,
+				omp_pos_z,
+				omp_seq
+    		) VALUES (
+    			:omp_cus_number,
+				:omp_omg_id,
+				:omp_pos_x,
+				:omp_pos_y,
+				:omp_pos_z,
+				:omp_seq
+    		)
+    	</sql>
+    </item>
+    <item id="insert_move_rlans">
+    	<sql>
+    		INSERT INTO map_orbit_move_rltn (
+    			omr_cus_number,
+				omr_omg_id,
+				omr_a_dvc_type,
+				omr_a_dvc_id,
+				omr_b_dvc_type,
+				omr_b_dvc_id
+    		) VALUES (
+    			:omr_cus_number,
+				:omr_omg_id,
+				:omr_a_dvc_type,
+				:omr_a_dvc_id,
+				:omr_b_dvc_type,
+				:omr_b_dvc_id
+    		)
+    	</sql>
+    </item>
+</sqlItem>

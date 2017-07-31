@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_rfid_bind_data" desc="查询rfid绑定数据">
+		<const key="rpb_label_type_name">RPB_LABEL_TYPE</const>
+		<const key="rpb_people_type_name">RPB_PEOPLE_TYPE</const>
+		<sql>
+			SELECT *
+				FROM (SELECT rpb_cus_number,
+						   rpb_bind_id,
+						   rpb_label_type,
+						   rpb_label_type AS rpb_label_type_name,
+						   rpb_label_id,
+						   rpb_people_type,
+						   rpb_people_type AS rpb_people_type_name,
+						   rpb_people_id,
+						   pbd_police_name AS rpb_people_name,
+						   pbd_police_id as number_id,
+						   odd_name as dept_name
+					  FROM dvc_rfid_label_people_bind r
+					 INNER JOIN plc_police_base_dtls u
+						ON r.rpb_people_id = u.pbd_user_id
+					 INNER JOIN sys_org_dept_dtls d
+					    ON u.pbd_drptmnt_id = d.odd_id
+					 WHERE r.rpb_people_type=1
+					UNION ALL
+					SELECT rpb_cus_number,
+						   rpb_bind_id,
+						   rpb_label_type,
+						   rpb_label_type AS rpb_label_type_name,
+						   rpb_label_id,
+						   rpb_people_type,
+						   rpb_people_type AS rpb_people_type_name,
+						   rpb_people_id,
+						   pbd_prsnr_name AS rpb_people_name,
+						   pbd_other_id as number_id,
+						   odd_name as dept_name
+					  FROM dvc_rfid_label_people_bind r
+					 INNER JOIN psr_prisoner_base_dtls p
+						ON r.rpb_people_id = p.pbd_prsnr_id
+					 INNER JOIN SYS_ORG_DEPT_DTLS d
+					    ON p.pbd_prsn_area_id = d.odd_id
+					 WHERE r.rpb_people_type=2
+			)
+		</sql>
+		<where id="0">
+		  	WHERE rpb_cus_number = :rpb_cus_number
+		</where>
+		<where id="1">
+		  	WHERE rpb_cus_number = :rpb_cus_number
+		  	AND rpb_label_id LIKE CONCAT('%',CONCAT(:rpb_label_id,'%'))
+		</where>
+    </item>
+	<item id="insert_rfid_bind_data" desc="新增rfid绑定数据">
+		<seq>dvc_rfid_label_people_bind@rpb_bind_id</seq>
+		<sql>
+			INSERT INTO dvc_rfid_label_people_bind
+			  (rpb_cus_number,
+			   rpb_bind_id,
+			   rpb_label_type,
+			   rpb_label_id,
+			   rpb_people_type,
+			   rpb_people_id)
+			values
+			  (:rpb_cus_number,
+			   :rpb_bind_id,
+			   :rpb_label_type,
+			   :rpb_label_id,
+			   :rpb_people_type,
+			   :rpb_people_id)
+		</sql>
+    </item>
+    <item id="update_rfid_bind_data" desc="更新rfid绑定数据">
+		<sql>
+			UPDATE dvc_rfid_label_people_bind
+			   SET rpb_label_type  = :rpb_label_type,
+			       rpb_label_id    = :rpb_label_id,
+			       rpb_people_type = :rpb_people_type,
+			       rpb_people_id   = :rpb_people_id
+		</sql>
+		<where id="0">
+			WHERE rpb_bind_id = :rpb_bind_id
+			AND rpb_cus_number = :rpb_cus_number
+		</where>
+    </item>
+    <item id="delete_rfid_bind_data" desc="删除rfid绑定数据">
+		<sql>
+			DELETE FROM dvc_rfid_label_people_bind
+		</sql>
+		<where id="0">
+			WHERE rpb_bind_id = :rpb_bind_id
+			AND rpb_cus_number = :rpb_cus_number
+		</where>
+    </item>
+
+    <item id="select_people_by_rfid">
+    	<sql>
+			SELECT rmr_rfid_name,
+			       rmr_dept_id,
+			       rmr_dept_name,
+			       rmr_area_id,
+			       rmr_area_name,
+			       rmr_before_rfid_id,
+			       rmr_before_rfid_name,
+			       rmr_people_id,
+			       rmr_people_name,
+			       rmr_people_type,
+			       rmr_monitor_time,
+			       rmr_pos_xyz
+			  FROM (SELECT rmr_rfid_name,
+			               rmr_dept_id,
+			               rmr_dept_name,
+			               rmr_area_id,
+			               rmr_area_name,
+			               rmr_before_rfid_id,
+			               rmr_before_rfid_name,
+			               rmr_people_id,
+			               rmr_people_name,
+			               rmr_people_type,
+			               rmr_monitor_time,
+			               rmr_pos_xyz,
+			               ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			          FROM dvc_rfid_monitor_record
+			         WHERE rmr_monitor_flag = 1
+			           AND rmr_cus_number = :cus
+			           AND rmr_rfid_id = :rfid)
+			 WHERE fn = 1
+    	</sql>
+    </item>
+
+    <item id="select_people_scatter_by_rfid">
+    	<const key="PBD_SPRT_MNGE">sprt_mnge_cn</const>
+    	<const key="PBD_TYPE_INDC">type_indc_cn</const>
+    	<sql>
+			SELECT rmr_rfid_id AS rfid_id,
+			       rmr_record_id AS record_id,
+			       rmr_rfid_name AS rfid_name,
+			       rmr_dept_name AS dept_name,
+			       rmr_before_rfid_name AS before_rfid_name,
+			       rmr_people_type AS people_type,
+			       rmr_people_id AS people_id,
+			       rmr_people_name AS people_name,
+			       rmr_pos_xyz,
+			       TO_CHAR(rmr_monitor_time, 'YYYY-MM-DD HH24:MI:SS') AS monitor_time,
+			       pbd_other_id  AS prnsr_code,
+			       pbd_sprt_mnge AS sprt_mnge,
+			       pbd_sprt_mnge AS sprt_mnge_cn,
+			       pbd_type_indc AS type_indc,
+			       pbd_type_indc AS type_indc_cn
+			  FROM (SELECT rmr_cus_number,
+			               rmr_record_id,
+			               rmr_rfid_id,
+			               rmr_rfid_name,
+			               rmr_dept_name,
+			               rmr_before_rfid_name,
+			               rmr_people_type,
+			               rmr_people_id,
+			               rmr_people_name,
+			               rmr_monitor_time,
+			               rmr_pos_xyz,
+			               ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			          FROM dvc_rfid_monitor_record
+			         WHERE rmr_monitor_flag = 1
+			           AND rmr_monitor_time > TRUNC(SYSDATE)
+			           AND rmr_cus_number = ?
+			           AND (rmr_people_type = ? OR TRIM(?) IS NULL))
+			  LEFT JOIN psr_prisoner_base_dtls
+			    ON pbd_cus_number = rmr_cus_number
+			   AND pbd_prsnr_id = rmr_people_id
+			   AND rmr_people_type = 2
+			 INNER JOIN map_model_point_info
+			    ON mpi_cus_number = rmr_cus_number
+			   AND mpi_link_id = rmr_rfid_id
+			   AND mpi_link_type = ?
+			   AND mpi_view_id = ?
+			 WHERE fn = 1
+    	</sql>
+    	<where id="0">
+			   AND rmr_rfid_id = ?
+    	</where>
+    </item>
+
+    <item id="select_people_info_by_rfid">
+    	<const key="PBD_SPRT_MNGE">sprt_mnge_cn</const>
+    	<const key="PBD_TYPE_INDC">type_indc_cn</const>
+    	<sql>
+			SELECT rmr_rfid_id AS rfid_id,
+			       rmr_record_id AS record_id,
+			       rmr_rfid_name AS rfid_name,
+			       rmr_dept_name AS dept_name,
+			       rmr_before_rfid_name AS before_rfid_name,
+			       rmr_people_type AS people_type,
+			       rmr_people_id AS people_id,
+			       rmr_people_name AS people_name,
+			       rmr_pos_xyz AS pos_xyz,
+			       TO_CHAR(rmr_monitor_time, 'YYYY-MM-DD HH24:MI:SS') AS monitor_time,
+			       pbd_other_id AS prnsr_code,
+			       pbd_sprt_mnge AS sprt_mnge,
+			       pbd_sprt_mnge AS sprt_mnge_cn,
+			       pbd_type_indc AS type_indc,
+			       pbd_type_indc AS type_indc_cn
+			  FROM (SELECT rmr_cus_number,
+			               rmr_record_id,
+			               rmr_rfid_id,
+			               rmr_rfid_name,
+			               rmr_dept_name,
+			               rmr_before_rfid_name,
+			               rmr_people_type,
+			               rmr_people_id,
+			               rmr_people_name,
+			               rmr_monitor_time,
+			               rmr_pos_xyz,
+			               ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			          FROM dvc_rfid_monitor_record
+			         WHERE rmr_monitor_flag = 1
+			           AND rmr_cus_number = ?
+			           AND rmr_rfid_id = ?
+			           AND rmr_people_id = ?)
+			  LEFT JOIN psr_prisoner_base_dtls
+			    ON pbd_cus_number = rmr_cus_number
+			   AND pbd_prsnr_id = rmr_people_id
+			   AND rmr_people_type = 2
+    	</sql>
+    	<where id="0">
+			 WHERE fn = 1
+    	</where>
+    </item>
+    
+    <item id="select_people_info_by_peopleId_and_cusNumber" desc="根据人员编号和机构号查询犯人信息">
+    	<const key="PBD_SPRT_MNGE">sprt_mnge_cn</const>
+    	<const key="PBD_TYPE_INDC">type_indc_cn</const>
+    	<sql>
+    		SELECT pbd_other_id AS prnsr_code,
+			       pbd_sprt_mnge AS sprt_mnge,
+			       pbd_sprt_mnge AS sprt_mnge_cn,
+			       pbd_type_indc AS type_indc,
+			       pbd_type_indc AS type_indc_cn
+			  FROM psr_prisoner_base_dtls
+    	</sql>
+    	<where id="0">
+    		 WHERE pbd_cus_number = ?
+    		   AND pbd_prsnr_id = ?
+    	</where>
+    </item>
+
+    <item id="select_linkage_camera_by_rfid" desc="根据RFID查询联动设备（根据相同的房间编号 和 设备关联关系）">
+    	<sql>
+			SELECT cbd_id AS dvc_id, 
+			       cbd_name AS dvc_name
+			  FROM dvc_rfid_base_dtls
+			 INNER JOIN cmr_camera_base_dtls
+			    ON cbd_cus_number = rbd_cus_number
+			   AND cbd_room_id = rbd_room_id
+			 WHERE rbd_cus_number = :cusNumber
+			   AND rbd_id = :rfidId
+			UNION
+			SELECT dld_dvc_id AS dvc_id, 
+			       dld_dvc_name AS dvc_name
+			  FROM com_dvc_link_mian
+			 INNER JOIN com_dvc_link_dtls
+			    ON dlm_cus_number = dld_cus_number
+			   AND dlm_link_id = dld_link_id
+			   AND dld_dvc_type = :cameraType
+			 WHERE dlm_cus_number = :cusNumber
+			   AND dlm_dvc_type = :rfidType
+			   AND dlm_dvc_id = :rfidId
+    	</sql>
+    </item>
+
+
+    <item id="select_count_people_by_rfid" desc="根据RFID统计房间或RFID下的人数">
+    	<sql>
+			SELECT rbd_cus_number AS cus_number,
+			       rbd_id         AS rfid_id,
+			       rbd_name       AS rfid_name,
+			       rbd_room_id    AS room_id,
+			       count_people   AS count,
+			       mpi_pos_x	  AS pos_x,
+			       mpi_pos_y	  AS pos_y,
+			       mpi_pos_z	  AS pos_z
+			  FROM dvc_rfid_base_dtls
+			 INNER JOIN (SELECT rmr_cus_number, rmr_rfid_id, COUNT(0) AS count_people
+			               FROM (SELECT rmr_cus_number,
+			                            rmr_rfid_id,
+			                            ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			                       FROM dvc_rfid_monitor_record
+			                      WHERE rmr_monitor_flag = 1
+			                        AND rmr_monitor_time > TRUNC(SYSDATE)
+			                        AND rmr_cus_number = ?
+			                        AND (rmr_people_type = ? OR TRIM(?) IS NULL))
+			              WHERE fn = 1
+			              GROUP BY rmr_cus_number, rmr_rfid_id)
+			    ON rmr_cus_number = rbd_cus_number
+			   AND rmr_rfid_id = rbd_id
+			 INNER JOIN map_model_point_info
+			    ON mpi_cus_number = rbd_cus_number
+			   AND mpi_link_id = rbd_id
+			   AND mpi_link_type = ?
+			   AND mpi_view_id = ?
+			 ORDER BY rbd_room_id
+    	</sql>
+    </item>
+
+    <item id="select_rfid_count_people_by_areaid" desc="根据区域编号统计RFID监测的人员数量">
+    	<sql>
+			SELECT rbd_cus_number AS cus_number, SUM(count_people) AS count_people
+			  FROM dvc_rfid_base_dtls
+			 INNER JOIN (SELECT rmr_cus_number, rmr_rfid_id, COUNT(0) AS count_people
+			               FROM (SELECT rmr_cus_number,
+			                            rmr_rfid_id,
+			                            ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			                       FROM dvc_rfid_monitor_record
+			                      WHERE rmr_monitor_flag = 1
+			                        AND rmr_monitor_time > TRUNC(SYSDATE)
+			                        AND rmr_cus_number = ?)
+			              WHERE fn = 1
+			              GROUP BY rmr_cus_number, rmr_rfid_id)
+			    ON rmr_cus_number = rbd_cus_number
+			   AND rmr_rfid_id = rbd_id
+    	</sql>
+    	<where id="0">
+			 WHERE rbd_cus_number = ?
+			   AND rbd_area_id = ?
+			 GROUP BY rbd_cus_number
+    	</where>
+    </item>
+
+
+    <item id="select_prisoner_rfid_by_date_for_flowtrack" desc="根据日期查询罪犯某一天所经过的所有RFID基站">
+    	<sql>
+			SELECT rmr_rfid_id AS rfid_id, 
+			       rmr_rfid_name AS rfid_name,
+			       rmr_monitor_time AS monitor_time
+			  FROM dvc_rfid_monitor_record
+    	</sql>
+    	<where id="0">
+			 WHERE rmr_monitor_flag = :monitorFlag
+			   AND rmr_cus_number = :cusNumber
+			   AND rmr_people_type = :peopleType
+			   AND rmr_people_id = :peopleId
+			   AND rmr_monitor_time BETWEEN
+			       TO_TIMESTAMP(CONCAT(:date, ' 00:00:00'),'YYYY-MM-DD HH24:MI:SS') AND
+			       TO_TIMESTAMP(CONCAT(:date, ' 23:59:59'),'YYYY-MM-DD HH24:MI:SS')
+    	</where>
+    	<order id="0">
+			 ORDER BY rmr_monitor_time    	
+    	</order>
+    </item>
+
+
+	<item id="select_rfid_bind_people_for_search_location" desc="查询监测人员的RFID点位所在的视角菜单编号用于人员搜索定位">
+		<sql>
+			SELECT mpi_view_id AS view_id
+			  FROM map_model_point_info
+			 INNER JOIN dvc_rfid_base_dtls
+			    ON mpi_cus_number = rbd_cus_number
+			   AND mpi_link_id = rbd_id
+			   AND mpi_link_type = :linkType
+			 INNER JOIN (SELECT rmr_cus_number,
+			                    rmr_rfid_id,
+			                    rmr_people_type,
+			                    rmr_people_id,
+			                    ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			               FROM dvc_rfid_monitor_record
+			              WHERE rmr_monitor_flag = 1
+			                AND rmr_monitor_time > TRUNC(SYSDATE)
+			                AND rmr_cus_number = :cusNumber
+			                AND rmr_people_type = :peopleType
+			                AND rmr_people_id = :peopleId)
+			    ON rbd_cus_number = rmr_cus_number
+			   AND rbd_id = rmr_rfid_id
+			   AND fn = 1
+			 WHERE mpi_cus_number = :cusNumber
+		</sql>
+	</item>
+</sqlItem>

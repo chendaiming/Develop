@@ -1,0 +1,101 @@
+
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+ .control-label{
+    text-align: right;
+    line-height: 35px;
+  }
+  [v-cloak]{
+  	display:none;
+  }
+</style>
+<div class="vbox box-con" id="labelPanel"  v-cloak>
+	<div class="hz-col-1 right-con">
+		<form class="form-horizontal" role="form" >
+			<div class="row">
+			  <div class="col-xs-11">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label">关联类型</label>
+				    <div class="col-xs-8">
+				      <hz-select 
+				  			tip="请选择关联类型"
+				  			code="LPI_LINK_TYPE" 
+				  			:id.sync="labelData.lpi_link_type"
+				  		/>
+				    </div>
+				  </div>
+			  </div>
+			</div>
+			<div class="row" v-show="labelData.lpi_link_type == 1" style="display: none">
+				<div class="col-xs-11">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >关联区域</label>
+				    <div class="col-xs-8">
+				  			<hz-treeselect
+								tip="请选择所属区域"
+								sqlid="select_area_base_dtls"
+								:params="[labelData.lpi_cus_number]"
+								 whereid=0 
+								:id.sync="labelData.lpi_link_id" 
+								:sname.sync="labelData.lpi_show_text" 
+							/>
+				    </div>
+				  </div>
+			  </div>
+			</div>
+			<div class="row">
+				<div class="col-xs-11">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >点位类型</label>
+					<div class="col-xs-8">
+						<hz-select 
+					  			tip="请选择点位类型"
+					  			code="LPI_POINT_TYPE" 
+					  			:id.sync="labelData.lpi_point_type"
+					  		/>
+					</div>
+				  </div>
+			  </div>
+			</div>
+			<div class="row">
+				<div class="col-xs-11">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >显示名称</label>
+				    <div class="col-xs-8">
+				  		<input class="form-control" v-model="labelData.lpi_show_text" placeholder="请输入标注名称"/>
+				    </div>
+				  </div>
+			  </div>
+			</div>
+			<div class="row">
+				<div class="col-xs-11">
+				  <div class="form-group">
+				    <label class="col-xs-4 control-label" >显示图标</label>
+				    <div class="col-xs-1">
+				    	<img :src="img" style="width: 32px;height: 35px;margin-top: 1px">
+				    </div>
+					<div class="col-xs-7" >
+						<hz-select tip="请选择图标" :list="icons" :selected.sync="selectedIcon"/>
+					</div>
+				  </div>
+			  </div>
+			</div>
+		</form>
+	</div>
+
+	<div class="bottom" >
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large" @click="operLabel()"><span>{{openFlag?'关闭':'开启标注'}}</span></a>
+			<a class="hbtn btn_primary btn_large" @click="saveLabel()"><span>保存</span></a>
+			<a class="hbtn btn_primary btn_large" @click="reset()"><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script> 
+<script type="text/javascript">
+  requirejs(['hz/map/mapPoint/pointLabel']);
+</script>

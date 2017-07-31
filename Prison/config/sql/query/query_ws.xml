@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="select_camera_webService">
+    	<sql>
+			 SELECT cbd_cus_number,
+             		cbd_id,
+                    cbd_name,
+                    cbd_area_id,
+                    cbd_other_id,
+                    cbd_type,
+                    cbd_brand,
+                    cbd_ip_addrs,
+                    cbd_dept_id,
+                    cbd_area_id,
+                    cbd_dvc_addrs,
+                    cbd_stts_indc,
+                    cbd_stream_type,
+                    cbd_playnow_type,
+                    cbd_playback_type,
+                    cbd_seq,
+                    cvr_device_id,
+                    cvr_chnnl_code,
+                    cbd_capacity_id                 
+              FROM cmr_camera_base_dtls,
+               (
+            SELECT MIN(cvr_device_id) AS cvr_device_id, 
+                   MIN(cvr_chnnl_code) AS cvr_chnnl_code,
+                   cvr_camera_id
+             FROM  cmr_camera_video_rltn 
+         GROUP BY  cvr_camera_id       
+                )                 
+    	</sql>
+		<where id="0">
+			WHERE cbd_cus_number = ?
+			  AND cvr_camera_id = cbd_id
+		</where>
+    </item>
+    
+    <item id="select_patrol_webService">
+    	<sql>
+			SELECT ppi_cus_number,
+				   ppi_id,
+				   ppi_other_id,
+				   ppi_name,
+				   ppi_brand,
+				   ppi_dept_id,
+				   ppi_area_id,
+				   ppi_dvc_addrs,
+				   ppi_dvc_stts,
+				   ppi_rlan_ctrl
+			  FROM ptl_patrol_point_dtls
+    	</sql>
+		<where id="0">
+			WHERE ppi_cus_number = ?
+		</where>
+    </item>
+ 
+    <item id="select_talkback_webService" desc="查询对讲设备信息">
+    	<sql>
+			SELECT     tbd_cus_number,
+					   tbd_id,
+					   tbd_other_id,
+					   tbd_name,
+					   tbd_brand,
+					   tbd_mian_id,
+					   tbd_child_id,
+					   tbd_ip,
+					   tbd_port,
+					   tbd_dept_id,
+					   tbd_area_id,
+					   tbd_room_id,
+					   tbd_dvc_addrs           
+			FROM       tbk_talkback_base_dtls 
+    	</sql>
+		<where id="0">
+			WHERE tbd_cus_number = ?
+		</where>
+    </item> 
+
+    <item id="select_led_webService" desc="查询LED设备信息">
+    	<sql>
+			SELECT  lbd_cus_number,
+   					lbd_id,
+   					lbd_other_id,
+				    lbd_name,
+				    lbd_brand,
+				    lbd_ip,
+				    lbd_chl,
+				    lbd_port,
+				    lbd_dept_id,
+				    lbd_area_id,
+				    lbd_room_id ,
+				    lbd_dvc_addrs      
+			FROM    tbk_led_base_dtls 
+    	</sql>
+		<where id="0">
+			WHERE lbd_cus_number = ?
+		</where>
+    </item>  
+
+    <item id="select_floodlight_webService" desc="查询智能照明设备信息">
+    	<sql>
+			SELECT fbd_cus_number,
+				   fbd_id,
+				   fbd_other_id,
+				   fbd_name,
+				   fbd_brand,
+				   fbd_ip,
+				   fbd_chl,
+				   fbd_port,
+				   fbd_dept_id,
+				   fbd_area_id,
+				   fbd_room_id,
+				   fbd_dvc_addrs      
+			FROM   tbk_floodlight_base_dtls 
+    	</sql>
+		<where id="0">
+			WHERE fbd_cus_number = ?
+		</where>
+    </item>    
+
+    <item id="select_audiomonitor_webService" desc="查询拾音器设备信息">
+    	<sql>
+			SELECT abd_cus_number,
+				   abd_id,
+				   abd_other_id,
+				   abd_name,
+				   abd_brand,
+				   abd_ip,
+				   abd_chl,
+				   abd_port,
+				   abd_dept_id,
+				   abd_area_id,
+				   abd_room_id,
+				   abd_dvc_addrs    
+			FROM   tbk_audiomonitor_base_dtls
+    	</sql>
+		<where id="0">
+			WHERE abd_cus_number = ?
+		</where>
+    </item> 
+    <item id="select_rfidbind_webService" desc="查询rfid绑定数据">
+		<sql>
+	        SELECT rpb_cus_number,
+	               rpb_bind_id,
+	               rpb_label_type,
+	               rpb_label_id,
+	               rpb_people_type,
+	               rpb_people_id
+	          FROM dvc_rfid_label_people_bind 
+		</sql>
+		<where id="0">
+		  	WHERE rpb_cus_number = ?
+		</where>
+    </item>    
+     <item id="select_other_policeimg">
+    	<sql>
+			SELECT mjbh,zp
+			  FROM mjzpb
+    	</sql>
+    </item> 
+    
+    <item id="select_other_prisonerimg">
+    	<sql>
+			SELECT zp
+			  FROM ksszpb
+    	</sql>
+    </item>    
+</sqlItem>

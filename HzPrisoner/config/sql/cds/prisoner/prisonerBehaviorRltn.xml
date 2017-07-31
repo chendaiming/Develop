@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	 <item id="delete_prisoner_behavior_rltn_byid"  desc="删除关联摄像机">
+		 <sql>
+			DELETE FROM psr_prisoner_behavior_rltn
+		 </sql>	
+		 <where id="0">
+	         WHERE 	pbr_cus_number = :cusNumber
+			   AND 	pbr_ctrl_id = :pbr_ctrl_id
+		 </where>		 	 
+     </item>
+      <item id="select_prisoner_rltn_camera_byid"  desc="根据行为监控编号查询关联摄像机">
+		 <sql>
+			SELECT pbr_prsnr_id, pbr_remark
+			  FROM psr_prisoner_behavior_rltn 
+		 </sql>	
+		 <where id="0">
+	         WHERE pbr_cus_number = :cusNumber
+			   AND pbr_ctrl_id = :pbr_ctrl_id
+		 </where>		 	 
+     </item>
+     <item id="select_prisoner_rltn_camera_by_deptid"  desc="根据监区查询关联摄像机">
+		 <sql>
+			SELECT pbr_cus_number,
+				   pbc_ctrl_id,
+				   TO_CHAR(pbc_start_time, 'hh24:mi:ss'),
+				   TO_CHAR(pbc_end_time, 'hh24:mi:ss'),
+				   pbc_area_id,
+				   pbr_prsnr_id AS camera_id
+			  FROM psr_prisoner_behavior_ctrl p
+			 INNER JOIN psr_prisoner_behavior_rltn r
+			    ON p.pbc_ctrl_id = r.pbr_ctrl_id
+		 </sql>	
+		 <where id="0">
+	         WHERE pbr_cus_number = :cusNumber
+	           AND pbc_dept_id = :pbc_dept_id
+			   AND TO_CHAR(pbc_start_time, 'hh24:mi:ss') &lt; TO_CHAR(sysdate, 'hh24:mi:ss')
+			   AND TO_CHAR(pbc_end_time, 'hh24:mi:ss') &gt; TO_CHAR(sysdate, 'hh24:mi:ss')
+		 </where>		 	 
+     </item>
+      <item id="insert_prisoner_behavior_rltn"  desc="添加关联摄像机">
+		 <sql>
+			INSERT INTO psr_prisoner_behavior_rltn(
+				pbr_cus_number,
+				pbr_ctrl_id,
+				pbr_prsnr_id,
+				pbr_remark,
+				pbr_crte_time,
+				pbr_crte_user_id,
+				pbr_updt_time,
+				pbr_updt_user_id	
+			)VALUES(
+				:pbr_cus_number,
+				:pbr_ctrl_id,
+				:pbr_prsnr_id,
+				:pbr_remark,
+				 SYSDATE,
+				:pbr_crte_user_id,
+				 SYSDATE,
+				:pbr_updt_user_id
+			)
+		 </sql>	
+		 <where id="0">
+	         WHERE pbr_cus_number = :cusNumber
+			   AND pbr_ctrl_id = :pbr_ctrl_id
+		 </where>		 	 
+     </item>
+</sqlItem>

@@ -1,0 +1,144 @@
+@CHARSET "UTF-8";
+
+.treeContent {
+	background: rgba(21, 67, 82, 0.9);
+	max-height: 200px;
+	min-height: 150px;
+	overflow: auto;
+	z-index: 99;
+}
+
+.choose_music_css {
+	height: 30px;
+	width: 30px;
+	border-radius: 100%;
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+}
+
+.play_music_css {
+	height: 45px;
+	width: 45px;
+	border-radius: 100%;
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.play_music_css i {
+	font-size: 19px;
+}
+.play_music_small_css{
+	float: right;
+    height: 25px;
+	width: 25px;
+	border-radius: 100%;
+	-moz-border-radius: 100%;
+	-webkit-border-radius: 100%;
+    margin-top: 35px;
+    margin-right: 20px;
+}
+.play_music_small_css i {
+	font-size: 10px;
+	top: -1px;
+    left: -1px;
+}
+
+.popover {
+	background-color: rgba(0, 0, 0, 0.39);
+	border: 1px solid rgb(0, 118, 173);
+}
+
+.popover.top>.arrow:after {
+	border-top-color: rgba(0, 0, 0, 0);
+}
+
+.popover.top>.arrow {
+	border-top-color: rgb(0, 118, 173);
+	border-bottom-color: rgb(0, 118, 173);
+}
+
+.popover-content {
+	font-size: 13px;
+	font-weight: 400;
+	color: #4fc3e1;
+	padding: 0;
+}
+
+.popover-content li {
+	line-height: 10px;
+	cursor: pointer;
+	padding: 8px 8px;
+	border-radius: 5px;
+}
+
+.mode-popover {
+	font-size: 13px;
+}
+
+.popover-content li:focus, .popover-content li:hover {
+	background-color: #0076ad;
+	border-color: #0076ad;
+	color: #fff;
+}
+
+.popover.top {
+	margin-top: -15px;
+}
+.audio-list{
+    border-bottom: 1px solid #2e4965;
+    width: 100%;
+    margin: 0 !important;
+}
+
+.audio-list img{
+    width: 50px;
+    height: 50px;
+    margin: 15px;
+}
+.audio-list:hover, .audio-list:focus{
+    text-decoration: none;
+	background-color:rgba(179, 179, 179, 0.3);
+    
+}
+.audio-list-selected{
+	background-color:rgba(179, 179, 179, 0.3);
+}
+
+/* ================== 音量条样式 ==================== */
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 10px;
+	width: 10px;
+	background: #55D5F6;
+	border-radius: 5px;
+	border: solid 0.125em rgba(205, 224, 230, 0.5); /*设置边框*/
+}
+
+input[type=range]::-moz-range-thumb {
+	-moz-appearance: none;
+	height: 10px;
+	width: 10px;
+	background: #55D5F6;
+	border-radius: 5px;
+	border: solid 0.125em rgba(205, 224, 230, 0.5); /*设置边框*/
+}
+
+input[type=range]::-moz-range-track {
+	-moz-appearance: none;
+}
+..dropdown-menu {
+	height: 73px;
+}
+
+/* ================== 音量条样式 ==================== */

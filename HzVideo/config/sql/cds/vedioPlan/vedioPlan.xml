@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+	<item id="insert_vedio_plan">
+		<seq>vedio_plan_patrol@vpp_id</seq>
+		<sql>
+		INSERT INTO vedio_plan_patrol
+		(
+		   vpp_cus_number   ,
+		   vpp_id           ,
+		   vpp_frequenes    ,
+		   vpp_excute_time  ,
+		   vpp_name         ,
+		   vpp_creater      ,
+		   vpp_create_time  
+		)values(
+		   :cus   ,
+		   :vpp_id           ,
+		   :vpp_frequenes    ,
+		   :vpp_excute_time  ,
+		   :vpp_name         ,
+		   :vpp_creater      ,
+		   SYSDATE  
+		)
+		</sql>
+	</item>
+	<item id="update_vedio_plan">
+		<sql>
+			update
+				vedio_plan_patrol
+			set
+			    vpp_frequenes    =:vpp_frequenes,
+			    vpp_excute_time  =:vpp_excute_time,
+			    vpp_name         =:vpp_name,
+			    vpp_updater      =:vpp_updater,
+			    vpp_update_time  =SYSDATE
+			 where
+			 	vpp_id=:vpp_id
+		</sql>
+	</item>
+	
+	<item id="insert_plan_user_link">
+	<seq>vpp_user_link@vul_id</seq>
+	<sql>
+		INSERT INTO	vpp_user_link
+			(
+			   vul_cus_number   ,
+			   vul_user_id      ,
+			   vul_vpp_id       ,
+			   vul_id
+			)
+		VALUES(
+			   :cus   ,
+			   :vul_user_id      ,
+			   :vul_vpp_id       ,
+			   :vul_id
+		)
+	</sql>
+	</item>
+	<item id="insert_plan_camera_link">
+	<seq>vpp_camera_link@vcl_id</seq>
+		<sql>
+			INSERT INTO vpp_camera_link
+			(
+			   vcl_cus_number      ,
+			   vcl_camera_id       ,
+			   vcl_vpp_id          ,
+			   vcl_id  
+			)
+			VALUES(
+			   :cus			        ,
+			   :vcl_camera_id       ,
+			   :vcl_vpp_id          ,
+			   :vcl_id
+			)
+			
+		</sql>
+	</item>
+	<item id="delete_plan_user_link">
+		<sql>
+			DELETE FROM 
+				vpp_user_link
+			WHERE
+				vul_vpp_id=:vpp_id
+			AND
+				vul_cus_number=:cus
+		</sql>
+	</item>
+	<item id="delete_plan_camera_link">
+		<sql>
+			DELETE FROM 
+				vpp_camera_link
+			WHERE
+				vcl_vpp_id=:vpp_id
+			AND
+				vcl_cus_number=:cus
+		</sql>
+	</item>
+	<item id="delete_vedio_plan">
+		<sql>
+			DELETE FROM
+				vedio_plan_patrol
+			WHERE
+				vpp_id=:vpp_id
+			AND
+				vpp_cus_number=:cus
+		</sql>
+	</item>
+<!-- 	<item id="select_vedio_plan">
+		<sql>
+			SELECT
+	           vpp_id           ,
+	           vpp_frequenes    ,
+	           vpp_excute_time  ,
+	           vpp_name    ,
+	           (select WM_CONCAT(vul_user_id||'|'||pbd_police_name) FROM vpp_user_link JOIN plc_police_base_dtls  ON vul_user_id=pbd_user_id  WHERE vul_vpp_id=vpp_id)users,
+	           (select WM_CONCAT(vcl_camera_id||'|'||cbd_name) FROM vpp_camera_link JOIN cmr_camera_base_dtls  ON vcl_camera_id=cbd_id  WHERE vcl_vpp_id=vpp_id)cameras
+	       FROM 
+	         vedio_plan_patrol
+			WHERE vpp_cus_number=:cus				     
+		</sql>
+		<order id="0">
+			ORDER BY vpp_excute_time  ASC
+		</order>
+	</item> -->
+	<item id="select_vedio_plan">
+		<sql>
+			SELECT
+	           vpp_id           ,
+	           vpp_frequenes    ,
+	           vpp_excute_time  ,
+	           vpp_name    ,
+               (select WM_CONCAT(vul_user_id||'|'||ubd_name) FROM vpp_user_link JOIN sys_user_base_dtls  ON vul_user_id=ubd_id  WHERE vul_vpp_id=vpp_id)users,
+	           (select WM_CONCAT(vcl_camera_id||'|'||cbd_name) FROM vpp_camera_link JOIN cmr_camera_base_dtls  ON vcl_camera_id=cbd_id  WHERE vcl_vpp_id=vpp_id)cameras
+	       FROM 
+	         vedio_plan_patrol
+			WHERE vpp_cus_number=:cus				     
+		</sql>
+		<order id="0">
+			ORDER BY vpp_excute_time  ASC
+		</order>
+	</item>
+	<!-- <item id="insert_into_vedio_plan_record">
+		<sql>
+			INSERT INTO  vpp_check_record(
+				   vcr_cus_number       ,
+				   vcr_id               ,
+				   vcr_vpp_id           ,
+				   vcr_vpp_name         ,
+				   vcr_vpp_user         ,
+				   vcr_vpp_user_name	,
+				   vcr_vpp_excute_time  ,
+				   vcr_vpp_real_time	,
+				   vcr_vpp_camera       ,
+				   vcr_vpp_camera_name	,
+				   vcr_status       
+			)
+			SELECT
+		    	   vcl_cus_number,
+		    	   NVL(( SELECT MAX(vcr_id) FROM vpp_check_record),1) +ROWNUM,
+				   vpp_id,
+				   vpp_name,
+				   vul_user_id,
+				   pbd_police_name ,
+				   vpp_excute_time,
+				   TRUNC(SYSDATE,'dd'),
+				   vcl_camera_id,
+				   cbd_name ,
+				   0
+			  FROM 
+				  	vedio_plan_patrol
+		      JOIN 
+		            vpp_user_link
+		      ON 
+		            vul_vpp_id = vpp_id
+		      JOIN
+		      	    vpp_camera_link
+	          ON 
+	                vcl_vpp_id = vpp_id
+		      left join
+		           cmr_camera_base_dtls 
+		      on   
+		      		vcl_camera_id=cbd_id
+		      left join 
+		           plc_police_base_dtls
+              on
+                   vul_user_id=pbd_user_id
+              WHERE
+              	  vcl_cus_number=:cus
+              AND
+              	 vpp_id=:planid
+		</sql>
+	</item> -->
+	<item id="insert_into_vedio_plan_record">
+		<sql>
+			INSERT INTO  vpp_check_record(
+				   vcr_cus_number       ,
+				   vcr_id               ,
+				   vcr_vpp_id           ,
+				   vcr_vpp_name         ,
+				   vcr_vpp_user         ,
+				   vcr_vpp_user_name	,
+				   vcr_vpp_excute_time  ,
+				   vcr_vpp_real_time	,
+				   vcr_vpp_camera       ,
+				   vcr_vpp_camera_name	,
+				   vcr_status       
+			)
+			SELECT
+		    	   vcl_cus_number,
+		    	   NVL(( SELECT MAX(vcr_id) FROM vpp_check_record),1) +ROWNUM,
+				   vpp_id,
+				   vpp_name,
+				   vul_user_id,
+				   ubd_name  ,
+				   vpp_excute_time,
+				   TRUNC(SYSDATE,'dd'),
+				   vcl_camera_id,
+				   cbd_name ,
+				   0
+			  FROM 
+				  	vedio_plan_patrol
+		      JOIN 
+		            vpp_user_link
+		      ON 
+		            vul_vpp_id = vpp_id
+		      JOIN
+		      	    vpp_camera_link
+	          ON 
+	                vcl_vpp_id = vpp_id
+		      LEFT JOIN
+		           cmr_camera_base_dtls 
+		      ON   
+		      		vcl_camera_id=cbd_id
+		      LEFT JOIN 
+		            sys_user_base_dtls
+              ON
+                    vul_user_id=ubd_id
+              WHERE
+              	    vcl_cus_number=:cus
+              AND
+              	    vpp_id=:planid
+		</sql>
+	</item>
+	<item id="select_vedio_plan_record">
+		<sql>
+			SELECT
+				DISTINCT vcr_vpp_id,
+				vcr_vpp_name,
+				vcr_vpp_user,
+				vcr_vpp_user_name,
+				vcr_vpp_excute_time,
+			    cameras,
+			    SUBSTR(exc/max,0,3)  precent,
+			    exc,
+			    max,
+			    mark
+			FROM(
+				SELECT
+					DISTINCT vcr_vpp_id,
+					vcr_vpp_name,
+					vcr_vpp_user,
+					vcr_vpp_user_name,
+					vcr_vpp_excute_time,
+				    null		cameras,
+				    COUNT(DECODE(vcr_status,1,vcr_vpp_id,NULL)) OVER( PARTITION BY  vcr_vpp_id,vcr_vpp_excute_time, vcr_vpp_user ORDER BY vcr_vpp_id) exc,
+				    COUNT(vcr_vpp_id) OVER( PARTITION BY  vcr_vpp_id,vcr_vpp_excute_time, vcr_vpp_user ORDER BY vcr_vpp_id) max,
+				    vcr_mark mark
+				FROM
+					vpp_check_record
+				WHERE
+					vcr_cus_number=:cus
+				AND
+					vcr_vpp_real_time=TO_DATE(:excutetime,'yyyy-mm-dd')
+			)
+			<where id="0">
+			  WHERE
+				(:userid is null OR vcr_vpp_user=:userid )
+		      AND
+		      	(:planName is null OR VCR_VPP_NAME  LIKE CONCAT('%',CONCAT(:planName,'%')))
+			</where>
+			<order id="0">
+			  ORDER BY
+					 vcr_vpp_excute_time DESC	
+			</order>
+		</sql>
+	</item>
+	<item  id="update_plan_record">
+		<sql>
+			update  
+				vpp_check_record
+			set
+				vcr_status=1
+			where
+				vcr_vpp_id=:planid
+			AND
+				vcr_vpp_user=:userid
+			AND
+				vcr_cus_number=:cus
+			AND
+				vcr_vpp_camera=:camera
+		</sql>
+	</item>
+	<item id="select_plan_detail">
+		<sql>
+			SELECT
+				vcr_vpp_camera_name name,
+				vcr_status   status,
+				vcr_vpp_camera id
+			FROM
+				vpp_check_record
+			WHERE
+				vcr_vpp_id=:planid
+			AND
+				vcr_cus_number=:cus
+			AND
+				vcr_vpp_user=:user
+			AND
+				vcr_vpp_excute_time=:extime
+				
+		</sql>
+	</item>
+
+	<item id="select_plc_by_orgidd">
+		<sql>
+		WITH t AS(
+			SELECT 
+					'1-'||odd_id        id,
+					'1-'||odd_parent_id pid,
+					odd_name            name,
+					'org.png'           icon,
+			        0					type,
+			        'true'				nocheck
+			FROM sys_org_dept_dtls
+			WHERE level # :level
+			START WITH odd_parent_id=:org CONNECT BY PRIOR odd_id = odd_parent_id 
+		)
+			SELECT
+				id,
+				pid,
+				name,
+				icon,
+		        type,
+		        nocheck
+			FROM
+				t
+			UNION ALL
+			 SELECT 
+		        ''||ubd_id id,
+		        '1-'||ubd_dept_id pid,
+		        ubd_name name,
+		        'user.png' icon,
+		        1 type,
+		        ''     nocheck
+		    FROM 
+		       sys_user_base_dtls  
+       		INNER JOIN 
+       			 t  
+       		ON 
+       			'1-'||ubd_dept_id=t.id
+		</sql>
+	</item>
+	
+	<item id="select_video_plan_notice"  desc="ubd_id为系统用户编号">
+		<sql>
+			SELECT
+				  vpp_id id,
+				  vpp_name name,
+				  vpp_excute_time,
+				 (SELECT WM_CONCAT(vul_user_id) FROM vpp_user_link  INNER JOIN sys_user_base_dtls  ON ubd_id=vul_user_id WHERE vul_vpp_id = vpp_id) users
+			FROM 
+				 VEDIO_PLAN_PATROL t
+			 WHERE vpp_id =:planid
+			  AND vpp_cus_number = :cus
+		</sql>
+	</item>
+	<item id="select_resume_plan_all" desc="系统重启后恢复计划">
+		<sql>
+		SELECT
+	        vpp_id,
+	        vpp_name,
+	        vpp_excute_time,
+	        vpp_frequenes,
+	        vpp_cus_number  cus,
+			'add' opr
+		 FROM
+		 	vedio_plan_patrol
+		</sql>
+	</item>
+	<item  id="update_record_mark"  desc="备注">
+		<sql>
+			UPDATE
+				vpp_check_record
+			SET
+				vcr_mark=:mark
+			WHERE
+				vcr_vpp_id=:planid
+			AND
+				vcr_vpp_user=:user
+			AND
+				vcr_vpp_excute_time=:excute
+		</sql>
+	</item>
+</sqlItem>

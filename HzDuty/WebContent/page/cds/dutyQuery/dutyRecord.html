@@ -1,0 +1,111 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<style>
+.table-bordered tbody tr td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+}
+.table-bordered{
+	width: 100%;
+}
+.table-bordered tr{
+	height: 35px;
+}
+</style>
+<div class="vbox box-con" id="dutyRecordManage">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" style="width: 255px;">
+			<div class="hz-col-1 vbox">
+			    <div class="hz-col-1">
+			    	<div>
+			    		<hz-treeselect 
+					    		tip="值班人员"
+					    		sqlid="select_drptmnt_police_tree2"
+					    		whereid=0
+					    		:params=[cusNumber,cusNumber]
+					    		:id.sync="peopleId"
+					    		isleaf=true
+				    		/>
+	          		</div>
+	      	    	<div style="margin-top: 10px;">
+		      	   		<hz-date tip="开始日期" :val.sync="startDate"/>
+	          		</div>
+	      	    	<div style="margin-top: 10px;">
+		      	   		<hz-date tip="结束日期" :val.sync="endDate"/>
+	          		</div>
+	          		<div style="text-align: center;margin-top: 10px;">
+	          			<a class="hbtn btn_primary btn_large save" style="margin: 0px auto;" @click="laodPeopleList()"><i class="btn_icon icon_search"></i><span>查询</span></a>
+	          		</div>
+	          	</div>
+		   		<div style="width: 100%;height: 220px;">
+		   			<div id="pie" style="width: 100%;height: 100%;"></div>
+		   		</div>
+			</div>
+		</div>
+		<div class="hz-col-1 vbox right-con">
+			<div class="hbox hz-col-1">
+				<div class="hz-col-1" style="overflow: auto;">
+					<div v-cloak v-if="peopleList.length==0" class="empty" style="margin-top: 17%;">无值班信息</div>
+					<table class="table-bordered">
+						<tr v-cloak v-if="peopleList.length>0" v-for="people in peopleList">
+							<td>
+								<span v-cloak v-if="people.flag==1" style="color: #999999">
+									{{people.ped_date}}
+									({{people.week}})
+								</span>
+								<span v-cloak v-if="people.flag==2" style="color: #7CFC00;font-size: 15px;">
+									{{people.ped_date}}
+									({{people.week}})
+								</span>
+								<span v-cloak v-if="people.flag==3"  style="color: #D1EEEE">
+									{{people.ped_date}}
+									({{people.week}})
+								</span>
+							</td>
+							<td>
+								<span v-cloak v-if="people.flag==1" style="color: #999999">
+									{{people.scd_shift_name}}({{people.scd_shift_start_time}} ~ {{people.scd_shift_end_time}})
+								</span>
+								<span v-cloak v-if="people.flag==2" style="color: #7CFC00;font-size: 15px;">
+									{{people.scd_shift_name}}({{people.scd_shift_start_time}} ~ {{people.scd_shift_end_time}})
+								</span>
+								<span v-cloak v-if="people.flag==3"  style="color: #D1EEEE">
+									{{people.scd_shift_name}}({{people.scd_shift_start_time}} ~ {{people.scd_shift_end_time}})
+								</span>
+							</td>
+							<td>
+								<span v-cloak v-if="people.flag==1" style="color: #999999">
+									{{people.scd_job_name}}
+								</span>
+								<span v-cloak v-if="people.flag==2" style="color: #7CFC00;font-size: 15px;">
+									{{people.scd_job_name}}
+								</span>
+								<span v-cloak v-if="people.flag==3" style="color: #D1EEEE">
+									{{people.scd_job_name}}
+								</span>
+							</td>
+							<td>
+								<span v-cloak v-if="people.flag==1" style="color: #999999">{{people.remark}}</span>
+								<span v-cloak v-if="people.flag==2" style="color: #7CFC00">{{people.remark}}</span>
+								<span v-cloak v-if="people.flag==3" style="color: #D1EEEE">{{people.remark}}</span>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<!--<div class="bottom" style="margin-right: 0px;">
+				<div class="buttons">
+					<a class="hbtn btn_primary btn_large export"><i class="btn_icon icon_download"></i><span>导出</span></a>	
+				</div>
+			</div>-->
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyQuery/dutyRecord"]);
+</script>

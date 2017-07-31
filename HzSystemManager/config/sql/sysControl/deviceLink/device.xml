@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+
+	<item id="select_device_repair_record" desc="查询设备维修记录">
+		<const key="devicetype">DGT_DVC_TYPE</const>
+		<sql>
+			SELECT
+				   drr_repairman_name   repairman,
+				   TO_CHAR(drr_repair_date,'yyyy-mm-dd hh24:mi:ss')      repairdate,
+				   drr_repair_remark    remark,
+				   drr_dvc_type         devicetype,
+				   drr_dvc_name         devicename,
+				   drr_area_name        area,
+				   drr_recorder_name	recorder,
+				   TO_CHAR(drr_crte_time,'yyyy-mm-dd hh24:mi:ss')        cretdate,
+				   drr_crte_user_id     cretuser,
+				   drr_repair_remark	mark
+			FROM
+				com_dvc_repair_record	
+			WHERE
+				drr_cus_number=:cus
+			AND
+				drr_updt_time=TO_DATE(:date,'yyyy-mm-dd')
+		</sql>
+		<where id="0">
+			AND
+				(:devicetype IS　NULL OR drr_dvc_type=:devicetype)
+			AND
+				(:deviceid   IS NULL OR drr_dvc_id=:deviceid)	
+			AND
+				(:userid	IS  NULL OR drr_crte_user_id=:userid)			
+		</where>
+		<order id="0">
+			ORDER BY  drr_repair_date  DESC
+		</order>
+	</item>
+	<item id="select_device_groupby_type">
+		<const key="name">DGT_DVC_TYPE</const>
+		<sql>
+			SELECT
+				COUNT(drr_dvc_type) value,
+				drr_dvc_type name
+			FROM
+				com_dvc_repair_record
+			WHERE 
+				drr_cus_number=:cus
+			AND
+				drr_updt_time=TO_DATE(:date,'yyyy-mm-dd')
+		</sql>
+		<where id="0">
+			AND
+				(:devicetype IS　NULL OR drr_dvc_type=:devicetype)
+			AND
+				(:deviceid   IS NULL OR drr_dvc_id=:deviceid)	
+			AND
+				(:userid	IS  NULL OR drr_crte_user_id=:userid)
+		</where>
+		<order id="0">
+			GROUP BY
+				drr_dvc_type
+		</order>
+	</item>
+	<item id="insert_device_repair_record" desc="维修记录">
+		<seq>com_dvc_repair_record@drr_repair_id</seq>
+		<sql>
+			INSERT INTO 
+				com_dvc_repair_record
+			(
+				   drr_cus_number       ,
+				   drr_repair_id        ,
+				   drr_repairman_name   ,
+				   drr_repair_date      ,
+				   drr_repair_remark    ,
+				   drr_dvc_type         ,
+				   drr_dvc_id           ,
+				   drr_dvc_name         ,
+				   drr_area_id          ,
+				   drr_area_name        ,
+				   drr_recorder_name	,
+				   drr_crte_time        ,
+				   drr_crte_user_id     ,
+				   drr_updt_time        ,
+				   drr_updt_user_id     
+			)
+			VALUES(
+				   :cus,
+				   :drr_repair_id,
+				   :repairman   ,
+				   TO_DATE(:repairdate,'yyyy-mm-dd hh24:mi:ss'),
+				   :mark    ,
+				   :devicetype         ,
+				   :deviceid           ,
+				   :devicename         ,
+				   :areaid          ,
+				   :area        ,
+				   :recorder		,
+				   SYSDATE        ,
+				   :user     ,
+				   TRUNC(SYSDATE)        ,
+				   :user     
+			)
+		</sql>
+	</item>
+	<item id="select_device_camera_type" desc="摄像机">
+		<sql>
+		SELECT 
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM(
+			SELECT 
+				'1-'||abd_area_id id,
+				'1-'||abd_parent_id pid,
+				abd_area_name name,
+				0  type,
+				abd_cus_number cus ,
+				abd_seq seq,
+				'area.png' icon,
+		       'true' nocheck
+			FROM
+				com_area_base_dtls
+			UNION ALL
+			SELECT
+				''||cbd_id id,
+				'1-'||cbd_area_id pid,
+				cbd_name	name,
+				1 type,
+				cbd_cus_number cus,
+				cbd_seq	 seq,
+				DECODE(cbd_type,0,'qiang.png',1,'all_ball.png',2,'video.png') icon,
+		       'false' nocheck
+			FROM
+				cmr_camera_base_dtls
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_network_type" desc="电网">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+			(
+			SELECT 
+				'1-'||abd_area_id id,
+				'1-'||abd_parent_id pid,
+				abd_area_name name,
+				0  type,
+				abd_cus_number cus ,
+				abd_seq seq,
+				'area.png' icon,
+		       'true' nocheck
+			FROM
+				com_area_base_dtls
+			UNION ALL
+			SELECT
+				''||pnb_id id,
+				'1-'||pnb_area pid,
+				pnb_name	name,
+				1 type,
+				pnb_cus_number cus,
+				pnb_seq	 seq,
+				'power.png' icon,
+		       'false' nocheck
+			FROM
+				pnw_power_network_base_dtls
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_alertor_type" desc="报警器">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+			(
+			SELECT 
+				'1-'||abd_area_id id,
+				'1-'||abd_parent_id pid,
+				abd_area_name name,
+				0  type,
+				abd_cus_number cus ,
+				abd_seq seq,
+				'area.png' icon,
+		       'true' nocheck
+			FROM
+				com_area_base_dtls
+			UNION ALL
+			SELECT
+				''||nbd_id id,
+				'1-'||nbd_area_id pid,
+				nbd_name	name,
+				1 type,
+				nbd_cus_number cus,
+				nbd_seq	 seq,
+				'alarm.png' icon,
+		       'false' nocheck
+			FROM
+				alt_network_base_dtls
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_videotalk_type" desc="对讲">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+			(
+			SELECT 
+				'1-'||abd_area_id id,
+				'1-'||abd_parent_id pid,
+				abd_area_name name,
+				0  type,
+				abd_cus_number cus ,
+				abd_seq seq,
+				'area.png' icon,
+			    'true' nocheck
+			FROM
+				com_area_base_dtls
+			UNION ALL
+			SELECT
+				''||tbd_id id,
+				'1-'||tbd_area_id pid,
+				tbd_name	name,
+				1 type,
+				tbd_cus_number cus,
+				tbd_seq	 seq,
+				'talk.png' icon,
+			    'false' nocheck
+			from
+				tbk_talkback_base_dtls
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_broadcast_type" desc="广播">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+			(
+			SELECT 
+				'1-'||abd_area_id id,
+				'1-'||abd_parent_id pid,
+				abd_area_name name,
+				0  type,
+				abd_cus_number cus ,
+				abd_seq seq,
+				'area.png' icon,
+		        'true' nocheck
+			FROM
+				com_area_base_dtls
+			UNION ALL
+			SELECT
+				''||bbd_id id,
+				'1-'||bbd_area_id pid,
+				bbd_name	name,
+				1 type,
+				bbd_cus_number cus,
+				bbd_seq	 seq,
+				'broad.png' icon,
+		        'false' nocheck
+			FROM
+				bct_broadcast_base_dtls
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_screen_type" desc="大屏">
+		<sql>
+			SELECT '1-' || odd_id id,
+			       '1-' || odd_parent_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       0 type,
+			       'true' nocheck
+			  FROM sys_org_dept_dtls
+			 START WITH odd_parent_id = :cus
+			CONNECT BY prior odd_id = odd_parent_id
+			UNION ALL
+			SELECT '' || sbi_screen_id id,
+			       '1-' || sbi_dept_id pid,
+			       sbi_screen_name name,
+			       'screen.png' icon,
+			       1 type,
+			       'false' nocheck
+			  FROM cds_screen_base_info
+		</sql>
+		<where id="0">
+			WHERE
+				sbi_cus_number=:cus
+		</where>
+	</item>
+	<item id="select_device_door_type" desc="门禁">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+		(
+			SELECT 
+				'1-'||abd_area_id id,
+				'1-'||abd_parent_id pid,
+				abd_area_name name,
+				0  type,
+				abd_cus_number cus ,
+				abd_seq seq,
+				'area.png' icon,
+				'true' nocheck
+			FROM
+				com_area_base_dtls
+			UNION ALL
+			SELECT
+				''||dbd_id id,
+				'1-'||dbd_area_id pid,
+				dbd_name name,
+				1	type,
+				dbd_cus_number cus ,
+				dbd_seq seq,
+				'door.png' icon,
+				'false' nocheck
+			FROM
+				dor_door_base_dtls
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_rfid_type" desc="RFID基站 15">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+		(
+			SELECT '1-' || abd_area_id id,
+			       '1-' || abd_parent_id pid,
+			       abd_area_name name,
+			       0 type,
+			       abd_cus_number cus,
+			       abd_seq seq,
+			       'area.png' icon,
+			       'true' nocheck
+			  FROM com_area_base_dtls
+			UNION ALL
+			SELECT '' || rbd_id id,
+			       '1-' || rbd_area_id pid,
+			       rbd_name name,
+			       1 type,
+			       rbd_cus_number cus,
+			       rbd_seq seq,
+			       'trans.png' icon,
+			       'false' nocheck
+			  FROM dvc_rfid_base_dtls
+
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_device_patrol_type" desc="巡更基站16">
+		<sql>
+		SELECT
+			id,
+			pid,
+			name,
+			type,
+			icon,
+			nocheck
+		FROM
+		(
+			SELECT '1-' || abd_area_id id,
+			       '1-' || abd_parent_id pid,
+			       abd_area_name name,
+			       0 type,
+			       abd_cus_number cus,
+			       abd_seq seq,
+			       'area.png' icon,
+			       'true' nocheck
+			  FROM com_area_base_dtls
+			UNION ALL
+			SELECT '' || ppi_id id,
+			       '1-' || ppi_area_id pid,
+			       ppi_name name,
+			       1 type,
+			       ppi_cus_number cus,
+			       ppi_seq seq,
+			       'door.png' icon,
+			       'false' nocheck
+			  FROM ptl_patrol_point_dtls
+
+		)t
+		</sql>
+		<where id="0">
+			WHERE
+				t.cus=:cus
+		</where>
+		<order id="0">
+			ORDER BY t.seq
+		</order>
+	</item>
+	<item id="select_record_user" desc="记录员">
+		<sql>
+			SELECT
+				'1-'||odd_id id,
+				'1-'||odd_parent_id pid,
+				odd_name name,
+				'org.png' icon,
+				0 type
+			FROM
+				sys_org_dept_dtls
+			START WITH
+				odd_id=:cus
+			CONNECT BY prior odd_id=odd_parent_id
+			UNION ALL 
+			SELECT
+				''||ubd_id id,
+				'1-'||ubd_dept_id pid,
+				ubd_name name,
+				'user.png' icon,
+				1 type
+			FROM
+				sys_user_base_dtls
+			WHERE
+				ubd_cus_number=:cus
+		</sql>
+	</item>
+</sqlItem>

@@ -1,0 +1,112 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+div.btn-box1{
+	float: left;
+	padding-top: 10px;
+	height: 0px;
+}
+</style>
+<div class="vbox box-con" id="clockRecord">
+	<div class="buttons btn-box1">
+		<a class="hbtn btn_primary btn_large" @click="openSearchPanel()"><i class="btn_icon icon_search"></i><span>查询</span></a>
+	</div>
+	<div class="hbox hz-col-1">
+		<div style="width: 100%;height: auto;">
+	       	<table id="table"></table>
+       	</div>
+	</div>
+	<!-- 查询面板 -->
+	<div class="vbox hz-col-1" id="search_panel" style="display:none;">
+		<div class="hz-col-8">
+			<form class="form-horizontal" style="margin-top: 20px;">
+				<div class="col-xs-12">
+					<div class="form-group">
+					    <label class="col-xs-2 control-label">值班日期</label>
+					    <div class="col-xs-5">
+					    	<hz-date tip="开始日期" :val.sync="search.ped_sdate"/>
+					    </div>
+					    <div class="col-xs-5">
+					    	<hz-date tip="结束日期" :val.sync="search.ped_edate"/>
+					    </div>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+					    <label class="col-xs-2 control-label">值班部门</label>
+					    <div class="col-xs-10">
+					    	<hz-treeselect
+					    		tip="值班部门"
+					    		sqlid="select_checkWork_dept_tree"
+					    		whereid=0
+					    		:params=[cusNumber]
+					    		:id.sync="search.ped_dept_id"
+					    		isleaf=true
+				    		/>
+					    </div>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+					    <label class="col-xs-2 control-label">值班班次</label>
+					    <div class="col-xs-10">
+					    	<hz-select
+					    		tip="值班班次"
+					    		sqlid="select_checkWork_shift_base_dtls"
+					    		whereid=0
+					    		showload=true
+					    		:params=[cusNumber,search.ped_dept_id,search.ped_dept_id]
+					    		:id.sync="search.ped_shift_id"
+				    		/>
+					    </div>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+					    <label class="col-xs-2 control-label">值班岗位</label>
+					    <div class="col-xs-10">
+					    	<hz-select
+					    		tip="值班岗位"
+					    		sqlid="select_checkWork_job_base_dtls"
+					    		whereid=0
+					    		showload=true
+					    		:params=[cusNumber,search.ped_dept_id,search.ped_dept_id]
+					    		:id.sync="search.ped_job_id"
+				    		/>
+					    </div>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+					    <label class="col-xs-2 control-label">打卡状态</label>
+					    <div class="col-xs-10">
+					    	<hz-select tip="打卡状态"code="CLOCK_STATUS"
+						    	:id.sync="search.clock_status"/>
+					    </div>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+					    <label class="col-xs-2 control-label">值班人员</label>
+					    <div class="col-xs-10">
+					    	<div>
+					    		<input class="form-control" id="pedId" placeholder="值班人员" v-model="search.ped_name">
+					    	</div>
+					    </div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="buttons">
+		    <a class="hbtn btn_primary btn_mini pull-right serach" @click="serach()"><i class="btn_icon icon_serach"></i><span>查询</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/checkWork/clockRecord"]);
+</script>

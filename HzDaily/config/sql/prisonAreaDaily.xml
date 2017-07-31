@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_prison_area_dtls" desc="查询监区日报信息">
+		<sql>
+			SELECT pad_cus_number,
+				   pad_prsn_area_idnty,
+				   pad_regtr_prsner,
+				   pad_custody_prsner,
+				   pad_large_prsner,
+				   pad_back_rtal_prsner,
+				   pad_probation_prsner,
+			  	   pad_new_custody_prsner,
+			  	   pad_released_prsner,
+				   pad_death_prsner,
+				   to_char(pad_report_time,'YYYY-MM-DD HH24:mi:ss') AS pad_report_time, 
+				   pad_report_people
+			  FROM idy_prison_area_dtls
+		</sql>
+		<where id="0">
+			WHERE pad_cus_number = :pad_cus_number AND
+				  pad_prsn_area_idnty = :pad_prsn_area_idnty
+		</where>
+		<order id="0">
+			ORDER BY pad_report_time DESC
+		</order>
+	</item>
+	
+	<item id="insert_prison_area_dtls" desc="添加监区日报信息">
+		<sql>
+			INSERT  INTO
+				idy_prison_area_dtls
+				(	
+					pad_cus_number,
+					pad_prsn_area_idnty,	
+					pad_regtr_prsner,
+					pad_custody_prsner,
+					pad_large_prsner,
+					pad_back_rtal_prsner,
+					pad_probation_prsner,
+					pad_new_custody_prsner,
+					pad_released_prsner,
+					pad_death_prsner,
+					pad_report_time,
+					pad_report_people
+				)
+			values(
+					:pad_cus_number,
+					:pad_prsn_area_idnty,
+					:pad_regtr_prsner,
+					:pad_custody_prsner,
+					:pad_large_prsner,
+					:pad_back_rtal_prsner,
+					:pad_probation_prsner,
+					:pad_new_custody_prsner,
+					:pad_released_prsner,
+					:pad_death_prsner,
+					SYSDATE,
+					:pad_report_people
+        		)
+		</sql>
+    </item>
+</sqlItem>

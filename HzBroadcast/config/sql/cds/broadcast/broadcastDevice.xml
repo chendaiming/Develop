@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_broadcast_device_area_tree" desc="广播设备 区域树的查询">
+		<sql>
+			SELECT abd.abd_cus_number,
+			       abd.abd_area_id AS id,
+			       abd.abd_area_name AS name,
+			       abd.abd_parent_id AS pid
+			FROM com_area_base_dtls abd
+		</sql>
+		<where id="0">
+			WHERE abd.abd_cus_number=?
+			ORDER BY abd.abd_seq
+		</where>
+    </item>
+    
+    <item id="select_broadcast_tree"  desc="数字广播基础信息树查询">
+    	<const key="dvc_stts">BROADCAST_STATUS</const>
+		<const key="use_stts">BROADCAST_USE_STATUS</const>
+		<sql>
+		   SELECT bbd_id          AS  id,
+		          bbd_other_id    AS  other_id,
+		          bbd_area_id     AS  pid,
+		          bbd_name,
+		          bbd_name        AS  name,
+		          bbd_dvc_stts    AS  dvc_stts,
+		          bbd_use_stts    AS  use_stts,
+		          bbd_dvc_stts,
+		          bbd_name,
+		          ''              AS  icon,
+		          1               AS  type
+		     FROM bct_broadcast_base_dtls
+		    WHERE bbd_cus_number = ?
+		   UNION ALL
+		   SELECT DISTINCT abd_area_id     AS   id,
+		          ''              AS   other_id,
+		          abd_parent_id   AS   pid,
+		          abd_area_name,
+		          abd_area_name   AS   name,
+		          0          ,
+		          0           ,
+		          0,
+		          '',
+		          ''       AS   icon,
+		          0        AS   type
+		     FROM com_area_base_dtls
+       INNER JOIN bct_broadcast_base_dtls
+               ON (bbd_area_id = abd_area_id)  		     
+		    START WITH abd_cus_number= ?
+			CONNECT BY PRIOR abd_area_id=abd_parent_id
+		    ORDER BY other_id,id
+		</sql>
+	</item>  
+ 
+	<item id="select_broadcast_device_tree" desc="广播设备信息查询">
+		<const key="bbd_dvc_stts_name">BROADCAST_STATUS</const>
+		<const key="bbd_use_stts_name">BROADCAST_USE_STATUS</const>
+		<sql>
+			SELECT DISTINCT 
+			 	b.bbd_cus_number,
+			    b.bbd_id,
+	    		b.bbd_other_id, 
+	    		b.bbd_name,
+	    		b.bbd_brand,
+	    		b.bbd_ip,
+	    		b.bbd_port,
+	    		b.bbd_dept_id,
+	    		b.bbd_area_id,
+	    		b.bbd_dvc_addrs,
+	    		b.bbd_dvc_stts,
+	    		b.bbd_use_stts,
+	    		b.bbd_seq,
+    			b.bbd_id AS id,
+    			b.bbd_name AS name,
+    			b.bbd_area_id AS pid,
+    			b.bbd_dvc_stts AS bbd_dvc_stts_name,
+    			b.bbd_use_stts AS bbd_use_stts_name,
+    			abd.abd_area_name AS bbd_area_name
+			FROM bct_broadcast_base_dtls b
+			LEFT JOIN sys_org_dept_dtls odd on odd.odd_id = b.bbd_dept_id
+			LEFT JOIN com_area_base_dtls abd on abd.abd_area_id = b.bbd_area_id
+			LEFT JOIN (select abd_area_id, abd_area_name
+			               from (SELECT odd_id
+			                       FROM sys_org_dept_dtls
+			                      START WITH odd_id = ?
+			                     CONNECT BY prior odd_id = odd_parent_id)
+			              INNER JOIN com_org_area_rltn
+			                 ON oar_dept_id = odd_id
+			              INNER JOIN com_area_base_dtls
+			                 ON abd_area_id = oar_area_id
+			             ) a
+		    ON b.bbd_area_id = a.abd_area_id
+		    ORDER BY b.bbd_seq
+		</sql>
+	</item>
+	
+	<item id="insert_broadcast_device" desc="新增广播设备">
+    	<seq>bct_broadcast_base_dtls@bbd_id</seq>
+    	<sql>
+	    	INSERT INTO bct_broadcast_base_dtls
+			  (bbd_cus_number,
+			   bbd_id,
+			   bbd_other_id,
+			   bbd_name,
+			   bbd_brand,
+			   bbd_ip,
+			   bbd_port,
+			   bbd_dept_id,
+			   bbd_area_id,
+			   bbd_dvc_addrs,
+			   bbd_dvc_stts,
+			   bbd_use_stts,
+			   bbd_crte_time,
+			   bbd_crte_user_id,
+			   bbd_updt_time,
+			   bbd_updt_user_id)
+			VALUES
+			  (:bbd_cus_number,
+			   :bbd_id,
+			   :bbd_other_id,
+			   :bbd_name,
+			   :bbd_brand,
+			   :bbd_ip,
+			   :bbd_port,
+			   :bbd_dept_id,
+			   :bbd_area_id,
+			   :bbd_dvc_addrs,
+			   :bbd_dvc_stts,
+			   :bbd_use_stts,
+			   sysdate,
+			   :bbd_crte_user_id,
+			   sysdate,
+			   :bbd_updt_user_id)
+    	</sql>
+    </item>
+	
+	<item id="update_broadcast_device" desc="更新广播设备信息">
+	  	<sql>
+		  	UPDATE bct_broadcast_base_dtls
+			   SET bbd_cus_number   = :bbd_cus_number,
+			       bbd_id           = :bbd_id,
+			       bbd_other_id     = :bbd_other_id,
+			       bbd_name         = :bbd_name,
+			       bbd_brand        = :bbd_brand,
+			       bbd_ip           = :bbd_ip,
+			       bbd_port         = :bbd_port,
+			       bbd_dept_id      = :bbd_dept_id,
+			       bbd_area_id      = :bbd_area_id,
+			       bbd_dvc_addrs    = :bbd_dvc_addrs,
+			       bbd_dvc_stts     = :bbd_dvc_stts,
+			       bbd_use_stts     = :bbd_use_stts,
+			       bbd_updt_time    =  sysdate,
+			       bbd_updt_user_id = :bbd_updt_user_id
+	  	</sql>
+	  	<where id="0">
+	  		where bbd_id=:bbd_id
+	  	</where>
+	</item>
+	
+	<item id="select_broadcast_org_dept" desc="根据机构号查询所有部门">
+		<sql>
+			SELECT 
+				odd_id AS id,
+				odd_name AS name,
+				odd_parent_id  AS pid
+			FROM sys_org_dept_dtls 
+		</sql>
+		<where id="0">
+			WHERE odd_use = 1 
+			START WITH odd_id= ?
+			CONNECT BY PRIOR odd_id=odd_parent_id
+		</where>
+    </item>
+	
+    <item id="delete_broadcast_device" desc="删除广播设备">
+    	<sql>
+	    	DELETE FROM  bct_broadcast_base_dtls WHERE bbd_id = ?
+    	</sql>
+    </item>
+     <item id="update_broadcast_device_status" desc="更新广播设备使用状态">
+    	<sql>
+			UPDATE bct_broadcast_base_dtls 
+		       SET bbd_dvc_stts  =  :status
+		     WHERE bbd_cus_number = :cusNumber
+			   AND bbd_other_id  IN (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(:clientId,';'))) 
+    	</sql>
+    </item> 
+    <item id="update_broadcast_device_use_stts" desc="更新广播设备使用状态">
+    	<sql>
+			UPDATE bct_broadcast_base_dtls 
+		       SET bbd_use_stts  =  :status
+		     WHERE bbd_cus_number = :cusNumber
+			   AND bbd_other_id  IN (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(:clientId,';'))) 
+    	</sql>
+    </item> 
+    
+    <item id="select_broadcast_checktree"  desc="数字广播基础信息树查询">
+		<sql>
+		   SELECT TO_NUMBER(bbd_other_id)    AS  id,
+		          bbd_area_id     AS  pid,
+		          bbd_name        AS  name,
+		          1               AS  type
+		     FROM bct_broadcast_base_dtls
+		    WHERE bbd_cus_number = ?
+		   UNION ALL
+		   SELECT abd_area_id     AS   id,
+		          abd_parent_id   AS   pid,
+		          abd_area_name   AS   name,
+		          0        AS   type
+		     FROM com_area_base_dtls
+       INNER JOIN bct_broadcast_base_dtls
+               ON (bbd_area_id = abd_area_id)  		     
+		    START WITH abd_cus_number= ?
+			CONNECT BY PRIOR abd_area_id=abd_parent_id
+		    ORDER BY id
+		</sql>
+	</item>          
+</sqlItem>

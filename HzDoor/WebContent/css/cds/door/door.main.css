@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+
+div.doorSelect {
+    height: 42px !important;
+    width: 220px !important;
+    overflow: hidden;
+    border-radius: 12px !important;
+}
+div.doorSelect >div.layui-layer-title {
+	 animation:videoplay 1s infinite;
+}
+div.doorSelect >span.layui-layer-setwin >a.layui-layer-min,div.doorSelect >span.layui-layer-setwin >a.layui-layer-max{
+	display:none;
+}
+
+a.doorSelect {
+    background: url(../../images/boxSelect.png) 5px center no-repeat;
+}
+a.doorSelect:hover {
+	background-image: url(../../images/boxSelectHover.png);
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+   <item id="select_search_by_prisoner" desc="搜索罪犯">
+   		<sql>
+			SELECT pbd_prsnr_id id,
+			       pbd_prsnr_name || ' - (' || odd_name || ')' name
+			  FROM psr_prisoner_base_dtls
+			  LEFT JOIN sys_org_dept_dtls
+			    ON pbd_prsn_area_id = odd_id
+			 WHERE pbd_cus_number = :cus
+   		</sql>
+   </item>
+
+   <item id="select_area_id_by_prisoner" desc="搜索罪犯">
+   		<sql>
+			SELECT oar_area_id AS area_id
+			  FROM psr_prisoner_base_dtls
+			 INNER JOIN com_org_area_rltn
+			    ON pbd_cus_number = oar_cus_number
+			   AND pbd_prsn_area_id = oar_dept_id
+			 WHERE pbd_cus_number = ?
+			   AND pbd_prsnr_id = ?
+   		</sql>
+   </item>
+</sqlItem>

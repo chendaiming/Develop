@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="HzCallRoll">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/config"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="HzFrameService-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HzFrameService/HzFrameService">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="HzLog-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HzLog/HzLog">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="HzSocket-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HzSocket/HzSocket">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="HzCommon-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HzCommon/HzCommon">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="HzDb-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HzDb/HzDb">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="HzMq-1.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/HzMq/HzMq">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="HzCallRoll"/>
+        <property name="java-output-path" value="/HzCallRoll/target/classes"/>
+    </wb-module>
+</project-modules>

@@ -1,0 +1,89 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style>
+	.item>div{
+		background-image:url('../../../css/image/alarmS.png');
+	}
+	.item{
+		position:relative;
+		width:25%;
+		float:left;
+	}
+	.item>div{
+		margin:10px;
+		height:86px;
+		margin-top:15px;
+		border:1px solid #4077ae;
+		border-radius:6px;
+		text-align:center;
+		padding-top:38px;
+		padding-bottom:8px;
+		font-size:12px;
+		color:#eee;
+		cursor:pointer;
+		background-size:25px;
+		background-position:center 6px;
+		background-repeat:no-repeat;
+	}
+	.item>div:hover{
+		background-color:#4077ae;
+	}
+	.item .status{
+		color:#11cd6e;
+		font-size:10px;
+	}
+	span[data-status='1']{
+		color: #fc0000 !important;
+	}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox hz-col-3">
+				<div class="input icon" >
+				  	<input   v-model="search" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				 <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+		<div class="hz-col-9 vbox right-con">
+			<div class="hbox">
+				<div class="radio hz-col-1">
+				    <label>
+				      <span>当前区域：</span><span v-text="area"></span>
+				    </label>
+			  	</div>
+			  	<div class=" hz-col-1">
+			  		<div class="input icon"  style="float:right">
+				  	<input id="tab" v-model="searchd" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			  	</div>
+			</div>
+			<div class="hz-col-9 right-con">
+				<div v-if="remote.doors.length==0" class="empty">暂无设备</div>
+				  <div class="col-sm-12" v-cloak id="listcontainer">
+				  	<div class="item"  v-for="c in alarmDevs" data-id="{{c.id}}">
+				  		<div>
+							<span>{{c.name}}</span>
+							<span class="status" data-status="{{c.nbd_stts}}">（ {{c.devstatus}} ）</span>
+						</div>
+					</div>
+				  </div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"  @click="close($event)"><i class="btn_icon icon_save"></i><span>关闭</span></a>		  
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/alarm/alarmDeviceStatus"]);
+</script>

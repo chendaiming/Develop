@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_alarm_handle_flow" desc="查询处置流程">
+		<sql>
+			SELECT hfm_cus_number,
+			       hfm_flow_id,
+			       hfm_flow_name,
+			       hfm_type_indc,
+			       hfm_show_seq,
+			       hfm_crte_time,
+			       hfm_crte_user_id,
+			       hfm_updt_time,
+			       hfm_updt_user_id
+			  FROM alt_handle_flow_master
+		</sql>
+		<where id="0">
+			 WHERE hfm_cus_number = ? 
+		</where>
+		<order id="0">
+			 ORDER BY hfm_show_seq
+		</order>
+	</item>
+	
+	<item id="insert_alarm_handle_flow" desc="添加处置流程">
+		<seq>alt_handle_flow_master@hfm_flow_id</seq>
+		<sql>
+			INSERT INTO alt_handle_flow_master
+			  (hfm_cus_number,
+			   hfm_flow_id,
+			   hfm_flow_name,
+			   hfm_type_indc,
+			   hfm_show_seq,
+			   hfm_crte_time,
+			   hfm_crte_user_id,
+			   hfm_updt_time,
+			   hfm_updt_user_id)
+			VALUES
+			  (:hfm_cus_number,
+			   :hfm_flow_id,
+			   :hfm_flow_name,
+			   :hfm_type_indc,
+			   :hfm_show_seq,
+			    SYSDATE,
+			   :hfm_crte_user_id,
+			    SYSDATE,
+			   :hfm_updt_user_id)
+		</sql>
+	</item>
+	
+	<item id="update_alarm_handle_flow" desc="修改处置流程">
+		<sql>
+			UPDATE alt_handle_flow_master
+			   SET hfm_flow_name    = :hfm_flow_name,
+			       hfm_type_indc    = :hfm_type_indc,
+			       hfm_show_seq     = :hfm_show_seq,
+			       hfm_updt_time    = SYSDATE,
+			       hfm_updt_user_id = :hfm_updt_user_id
+		</sql>
+		<where id="0">
+			WHERE hfm_cus_number = :hfm_cus_number 
+			  AND hfm_flow_id = :hfm_flow_id
+		</where>
+	</item>
+	
+		
+	<item id="delete_alarm_handle_flow" desc="删除处置流程">
+		<sql>
+			DELETE FROM alt_handle_flow_master
+		</sql>
+		<where id="0">
+			WHERE hfm_cus_number = :hfm_cus_number
+			  AND hfm_flow_id = :hfm_flow_id
+		</where>
+	</item>
+</sqlItem>

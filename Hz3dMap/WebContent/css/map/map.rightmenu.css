@@ -1,0 +1,82 @@
+@CHARSET "UTF-8";
+.rmenu{
+  visibility:hidden;
+  font-size: 1em;
+  width: 16em;
+  height: 16em;
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  right:0;
+  border-radius: 50%;
+  margin-left: -8em;
+  z-index:40;
+  display:none;
+}
+.rmenu li{
+  position: absolute;
+  font-size: 1.5em;
+  width: 8em;
+  height: 8em;
+  overflow:hidden;
+  -webkit-transform-origin: 100% 100%;
+  -moz-transform-origin: 100% 100%;
+  -ms-transform-origin: 100% 100%;
+  transform-origin: 100% 100%;
+  left: 50%;
+  top: 50%;
+  margin-top: -8em;
+  margin-left: -8em;
+  border-right: 0.5px solid transparent;
+  outline:1px solid transparent;
+  -moz-transform:skew(30deg);
+  -webkit-transform:skew(30deg);
+  transform:skew(30deg);
+  z-index:43;
+  -webkit-transition-duration:0.4s;
+  -moz-transition-duration:0.4s;
+  transition-duration:0.4s; 
+}
+.rmenu li a{
+	width: 100%;height: 100%;
+	display: inline-block;
+	-webkit-transform: skew(-30deg) rotate(-60deg) ;
+	-moz-transform: skew(-30deg) rotate(-60deg) ;
+	background-color: #333;
+	margin-top: 20px;
+	outline:1px solid transparent;
+	position: relative;
+	background:#003D5E -webkit-gradient(radial,100 80,70,100 80,30,from(#003D5E),to(rgb(92, 86, 142)));
+	-webkit-font-smoothing:antialiased;			
+	-moz-font-smoothing:antialiased;			
+}
+.rmenu li a:hover{
+	background:#4A6800 -webkit-gradient(radial,100 80,70,100 80,30,from(#4A6800),to(rgb(156, 218, 0)));
+	cursor: pointer;
+}
+.rmenu li a .info{
+	position: absolute;
+	bottom:25px;
+	right: 50px;
+}
+.rmenu li a .info img{
+	width: 30px;height: 30px;vertical-align: middle;
+}
+.rmenu li a .info div{
+	font-size: 12px;color: #fff;text-align: center;
+}
+.rmenu li:nth-child(3) a .info div{
+  transform: rotate(180deg) ;
+  -webkit-transform: rotate(180deg) ;
+  -moz-transform: rotate(180deg) ;
+}
+.rmenu li:nth-child(4) a .info div{
+  -webkit-transform: rotate(180deg) ;
+  transform: rotate(180deg) ;
+  -moz-transform: rotate(180deg) ;
+}
+.rmenu li:nth-child(5) a .info div{
+  -webkit-transform: rotate(180deg) ;
+  -moz-transform: rotate(180deg) ;
+  transform: rotate(180deg) ;
+}

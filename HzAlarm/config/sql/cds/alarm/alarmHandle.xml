@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+	<item id="select_handle_flow_master_for_map_handle">
+		<sql>
+			SELECT hfm_cus_number AS cus_number,
+			       hfm_flow_id    AS id,
+			       hfm_flow_name  AS name,
+			       hfm_show_seq   AS seq
+			  FROM alt_handle_flow_master
+		</sql>
+		<where id="0">
+			 WHERE hfm_cus_number = ?
+		</where>
+	</item>
+
+	<item id="select_handle_flow_dtls_for_map_handle">
+		<sql>
+			SELECT hfd_flow_item_id   AS step_id,
+			       hfd_flow_item_name AS step_name,
+			       hfd_flow_order     AS step_order
+			  FROM alt_handle_flow_dtls
+		</sql>
+		<where id="0">
+			 WHERE hfd_cus_number = ?
+			   AND hfd_flow_id = ?
+		</where>
+		<order id="0">
+			 ORDER BY hfd_flow_order
+		</order>
+	</item>
+
+	<item id="update_receive_info_for_map_handle">
+		<sql>
+			UPDATE alt_alert_record_dtls
+			   SET ard_receive_alarm_police = ?,
+			       ard_rec_police_name      = ?,			   	
+			       ard_receive_time         = TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_oprtn_stts           = ?
+		</sql>
+		<where id="0">
+			 WHERE ard_cus_number = ?
+			   AND ard_record_id = ?
+			   AND (ard_oprtn_stts IS NULL OR ard_oprtn_stts = ?)
+		</where>
+	</item>
+
+	<item id="update_alert_record_stts_for_map_handle">
+		<sql>
+			UPDATE alt_alert_record_dtls
+			   SET ard_oprtn_stts        = ?,
+			       ard_updt_time         = sysdate,
+			       ard_updt_user_id      = ?
+		</sql>
+		<where id="0">
+			 WHERE ard_cus_number = ?
+			   AND ard_record_id = ?
+		</where>
+	</item>
+
+	<item id="update_alert_record_for_map_handle_5" desc="更新报警记录为误报">
+		<sql>
+			UPDATE alt_alert_record_dtls
+			   SET ard_receive_alarm_police = :userId,
+			       ard_rec_police_name      = :userName,
+			       ard_receive_time         = TO_DATE(:time, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_oprtr                = :userId,
+			       ard_oprtr_name           = :userName,
+			       ard_oprtn_time           = TO_DATE(:time, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_oprtn_desc           = :desc,
+			       ard_oprtn_result         = :result,
+			       ard_oprtn_stts           = :stts,
+			       ard_finish_sure_police   = :userId,
+			       ard_sure_police_name     = :userName,
+			       ard_oprtn_finish_time    = TO_DATE(:time, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_updt_time            = SYSDATE,
+			       ard_updt_user_id         = :userId
+			 WHERE ard_cus_number = :cusNumber
+			   AND ard_record_id = :recordId
+		</sql>
+	</item>
+
+	<item id="update_alert_record_for_map_handle_4" desc="更新报警记录为已处理">
+		<sql>
+			UPDATE alt_alert_record_dtls
+			   SET ard_oprtr              = :userId,
+			       ard_oprtr_name         = :userName,
+			       ard_oprtn_time         = TO_DATE(:time, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_oprtn_desc         = :oprtn_desc,
+			       ard_oprtn_result       = :oprtn_result,
+			       ard_oprtn_stts         = :oprtn_stts,
+			       ard_local_case         = :local_case,
+			       ard_finish_sure_police = :userId,
+			       ard_sure_police_name   = :userName,
+			       ard_oprtn_finish_time  = TO_DATE(:time, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_updt_time          = SYSDATE,
+			       ard_updt_user_id       = :userId
+			 WHERE ard_cus_number = :cusNumber
+			   AND ard_record_id = :recordId
+		</sql>
+	</item>
+
+	<item id="update_alert_record_to_finish_for_map_handle">
+		<sql>
+			UPDATE alt_alert_record_dtls
+			   SET ard_local_case        = ?,
+			       ard_oprtn_desc        = ?,
+			       ard_oprtr             = ?,
+			       ard_oprtn_time        = TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_oprtn_finish_time = TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'),
+			       ard_oprtn_stts        = ?,
+			       ard_updt_time         = sysdate,
+			       ard_updt_user_id      = ?
+		</sql>
+		<where id="0">
+			 WHERE ard_cus_number = ?
+			   AND ard_record_id = ?
+		</where>
+	</item>
+
+	<item id="select_alert_record_status_for_map_handle">
+		<const key="oprtn_stts_cn">ARD_OPRTN_STTS</const>
+		<sql>
+			SELECT ard_oprtn_stts   AS oprtn_stts,
+			       ard_oprtn_stts   AS oprtn_stts_cn,
+			       ard_receive_time AS receive_time,
+			       ubd_name         AS receive_user
+			  FROM alt_alert_record_dtls
+			  LEFT JOIN sys_user_base_dtls
+			    ON ubd_cus_number = ard_cus_number
+			   AND ubd_id = ard_receive_alarm_police
+		</sql>
+		<where id="0">
+			 WHERE ard_cus_number = ?
+			   AND ard_record_id = ?
+		</where>
+	</item>
+
+	<item id="select_power_grid_for_alarm_handle">
+		<sql>
+			SELECT pgg_cus_number,
+			       pgg_power_grid_id,
+			       pgg_line_color,
+			       pgg_line_width,
+			       pgg_electricity_color,
+			       pgg_show_elect,
+			       pgg_view_id,
+			       pgg_pos_x,
+			       pgg_pos_y,
+			       pgg_pos_z,
+			       pgg_rot_x,
+			       pgg_rot_y,
+			       pgg_rot_z,
+			       pgg_tar_x,
+			       pgg_tar_y,
+			       pgg_tar_z
+			  FROM map_power_grid_geom
+		</sql>
+		<where id="0">
+			 WHERE pgg_cus_number = ?
+			   AND pgg_power_grid_id = ?
+		</where>
+	</item>
+
+	<item id="select_power_grid_point_for_alarm_handle">
+		<sql>
+			SELECT pgp_pos_x AS x, 
+			       pgp_pos_y AS y, 
+			       pgp_pos_z AS z
+			  FROM map_power_grid_points
+		</sql>
+		<where id="0">
+			 WHERE pgp_cus_number = ?
+			   AND pgp_power_grid_id = ?
+		</where>
+		<order id="0">
+			 ORDER BY pgp_seq
+		</order>
+	</item>
+
+	<item id="insert_alarm_handle_flow_master_h" desc="记录历史报警处置流程主表">
+		<sql>
+			INSERT INTO alt_handle_flow_master_h
+			  (hfm_cus_number,
+			   hfm_alarm_record_id,
+			   hfm_flow_id,
+			   hfm_flow_name,
+			   hfm_type_indc,
+			   hfm_show_seq,
+			   hfm_crte_time,
+			   hfm_crte_user_id,
+			   hfm_updt_time,
+			   hfm_updt_user_id)
+			  SELECT hfm_cus_number, :recordId,
+			         hfm_flow_id,
+			         hfm_flow_name,
+			         hfm_type_indc,
+			         hfm_show_seq,
+			         hfm_crte_time,
+			         hfm_crte_user_id,
+			         hfm_updt_time,
+			         hfm_updt_user_id
+			    FROM alt_handle_flow_master
+		</sql>
+		<where id="0">
+			   WHERE hfm_cus_number = :cusNumber
+			     AND hfm_flow_id = :flowId
+		</where>
+	</item>
+	<item id="insert_alarm_handle_flow_detail_h" desc="记录历史报警处置流程详情">
+		<sql>
+			INSERT INTO alt_handle_flow_dtls_h
+			  (hfd_cus_number,
+			   hfd_alarm_record_id,
+			   hfd_flow_id,
+			   hfd_flow_item_id,
+			   hfd_flow_item_name,
+			   hfd_flow_order,
+			   hfd_crte_time,
+			   hfd_crte_user_id,
+			   hfd_updt_time,
+			   hfd_updt_user_id)
+			  SELECT hfd_cus_number, :recordId,
+			         hfd_flow_id,
+			         hfd_flow_item_id,
+			         hfd_flow_item_name,
+			         hfd_flow_order,
+			         hfd_crte_time,
+			         hfd_crte_user_id,
+			         hfd_updt_time,
+			         hfd_updt_user_id
+			    FROM alt_handle_flow_dtls
+		</sql>
+		<where id="0">
+			   WHERE hfd_cus_number = :cusNumber
+			     AND hfd_flow_id = :flowId
+		</where>
+	</item>
+</sqlItem>

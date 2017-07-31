@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_talkback_status_map" desc="查询对讲设备状态信息">
+		<sql>
+			SELECT tbd_other_id AS device_id,
+				   tbd_dvc_stts AS dvc_stts,
+				   tbd_use_stts AS use_stts
+			FROM   tbk_talkback_base_dtls 
+		</sql>
+		<where id="0">
+			 WHERE tbd_cus_number = ?
+		</where>
+		<where id="1">
+			 WHERE tbd_cus_number = :cusNumber
+			   AND tbd_other_id = :other_id
+		</where>					
+	</item>
+
+ 	<item id="update_talkback_status" desc="对讲机状态更新">
+		<sql>
+			UPDATE tbk_talkback_base_dtls 
+			   SET tbd_dvc_stts     = :status,
+			       tbd_updt_time    = SYSDATE
+			 WHERE tbd_other_id     = :device_id
+		</sql>
+    </item>		
+</sqlItem>

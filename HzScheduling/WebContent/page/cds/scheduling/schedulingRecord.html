@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css">
+<style>
+div.bs-bars.pull-left{
+ width:90%;
+}
+.play{
+	color:#33ccff;
+	cursor: pointer; 
+}
+.play:hover{ 
+ 	color:red; 
+ } 
+ .col-xs-3{
+ 	padding-right: 10px;
+    padding-left: 10px;
+ }
+</style>
+</head>
+<body>
+	<div  class="vbox hz-col-1">
+	<!-- 查询定时任务 -->
+		<div  class="toolbar">
+			<div class="col-xs-12">
+				<div class="col-xs-3">
+					<hz-date tip="选择开始时间" :val.sync="search.startTime" enabletime=true ></hz-date>
+				</div>
+				<div style="float:left">
+					<span>~</span>
+				</div>
+				<div class="col-xs-3">
+					<hz-date tip="选择结束时间" :val.sync="search.endTime" enabletime=true ></hz-date> 
+				</div>
+				<div class="col-xs-5">
+					<div class="col-xs-9">
+						<input type="text" placeholder="被叫号码" class="form-control" v-model="search.phoneNum" />
+					</div>
+					<div class="col-xs-3">
+						<a class="hbtn btn_primary btn_large" id="btnSearch" @click="searchRecord()" title="查询"><i class="btn_icon icon_search"></i></a>
+					</div>
+				</div>
+			</div>
+		 </div>	
+		<div id="tableDiv">	
+		<table id="table" ></table>
+		</div>
+	</div>
+		<!-- 播放器 -->
+	<div id="audio-div" style="display:none;">
+		<audio id="audio-path"  controls="controls">
+		  <source v-bind:src="auditionAudio" type="audio/mp3">
+		</audio>
+	</div>	
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/scheduling/schedulingRecord"]);
+</script>

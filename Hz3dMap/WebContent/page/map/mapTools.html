@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>地图工具</title>
+<style type="text/css">
+	div.map-tools {box-sizing: border-box; border-top: 1px solid rgba(76, 100, 125, 0.88); background-color: transparent;}
+	ul.ul-btns {}
+	ul.ul-btns >li {padding: 6px 30px; text-align: center; cursor: pointer;}
+	ul.ul-btns >li:hover {background-color: rgba(0, 118, 137, 0.2);}
+	ul.ul-btns >li.selected {color: rgb(255, 167, 0); background-color: rgba(0, 118, 137, 0.7);}
+</style>
+</head>
+<body>
+	<div>
+		<div class="map-tools">
+			<ul class="ul-btns">
+				<li :class="selectedIndex == 0 ? 'selected' : ''"><span @click="saveViewPoint()">保存视角</span></li>
+	<!-- 			<li :class="selectedIndex == 1 ? 'selected' : ''"><span @click="setPickModelStatus()">模型编辑</span></li> -->
+				<li :class="selectedIndex == 2 ? 'selected' : ''"><span @click="boxSelectForOpen()">框选视频</span></li>
+				<li :class="selectedIndex == 3 ? 'selected' : ''"><span @click="boxSelectForPlan()">框选预案</span></li>
+	<!-- 			<li :class="selectedIndex == 4 ? 'selected' : ''"><span @click="snap()">视频截图</span></li> -->
+	<!-- 			<li :class="selectedIndex == 5 ? 'selected' : ''"><span @click="record()">视频录像</span></li> -->
+			</ul>
+		</div>
+	</div>
+	<script type="text/javascript">
+	  requirejs(['vue', 'frm/hz.videoclient', 'hz/map/map.handle'], function (vue, videoClient, hzMap) {
+			var $mapTools = $('div.map-tools');
+
+			var vo = new vue({
+				el: '.map-tools',
+				data: {
+					selectStatus: false,
+					selectedIndex: null,
+				},
+				methods: {
+					setSelectStatus: function (status) {
+						this.selectStatus = status;
+						hzMap.boxSelect.setSelectStatus(status, {
+							dvcTypes:[1]
+						});
+					},
+
+					cancelSelectIndex: function () {
+						switch(this.selectedIndex) {
+							case 0: saveViewPoint(this); break;
+							case 1: setPickModelStatus(this); break;
+//							case 2: this.setSelectStatus(false); break;
+//							case 3: this.setSelectStatus(false); break;
+						}
+					},
+
+					/*
+					 * 保存视角
+					 */
+					saveViewPoint: function () {
+						if (this.selectedIndex == 0) {
+							this.selectedIndex = null;
+						} else {
+							this.cancelSelectIndex();
+							this.setSelectStatus(false);
+							this.selectedIndex = 0;
+						}
+
+						saveViewPoint(this);
+					},
+
+					/*
+					 * 模型分组
+					 */
+					setPickModelStatus: function () {
+
+						if (this.selectedIndex == 1) {
+							this.selectedIndex = null;
+						} else {
+							this.cancelSelectIndex();
+							this.setSelectStatus(false);
+							this.selectedIndex = 1;
+						}
+
+						setPickModelStatus(this);
+					},
+
+					/*
+					 * 框选打开视频
+					 */
+					boxSelectForOpen: function () {
+						this.cancelSelectIndex();
+
+						if (this.selectStatus) {
+							if (this.selectedIndex == 2) {
+								this.setSelectStatus(false);
+								this.selectedIndex = null;
+							} else {
+								this.selectedIndex = 2;
+							}
+						} else {
+							this.setSelectStatus(true);
+							this.selectedIndex = 2;
+						}
+
+						hzMap.boxSelect.offSelect('plan.select');
+						hzMap.boxSelect.offSelect('video.select');
+						hzMap.boxSelect.onSelect(function (array) {
+							if (array.length > 0) {
+								var len = array.length;
+								if(array.length>16){
+									len = 16;
+								}
+								videoClient.setLayout(len);
+								var videos = [];
+								for(var i=0;i<array.length;i++){
+									videos.push(array[i].linkId);
+								}
+								videoClient.play(videos);
+							}
+						}, 'video.select');
+					},
+
+					/*
+					 * 框选创建预案
+					 */
+					boxSelectForPlan: function () {
+						this.cancelSelectIndex();
+
+						if (this.selectStatus) {
+							if (this.selectedIndex == 3) {
+								this.setSelectStatus(false);
+								this.selectedIndex = null;
+							} else {
+								this.selectedIndex = 3;
+							}
+						} else {
+							this.setSelectStatus(true);
+							this.selectedIndex = 3;
+						}
+
+						hzMap.boxSelect.offSelect('plan.select');
+						hzMap.boxSelect.offSelect('video.select');
+						hzMap.boxSelect.onSelect(function (array) {
+							if (array.length > 0) {
+								window.homeVm.boxSelectCameras = array;
+								$('#pointInfoPanel').hide();
+								$('#addVideoPlanPanel').show();
+							}
+						}, 'plan.select');					
+					},
+
+					/**
+					 * 视频截图
+					 */
+					snap:function(){
+						videoClient.snap();
+					},
+
+					/*
+					 * 视频录像
+					 */
+					record:function(){
+						videoClient.record();
+					}
+				}
+			});
+
+			function $$ (val) {
+				return $mapTools.find(val);
+			}
+	  });
+	</script>
+</body>
+</html>

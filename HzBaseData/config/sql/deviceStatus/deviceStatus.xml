@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item>
+    	<sql>
+    		INSERT INTO
+    			dvc_device_status_record	
+    		(
+    			dsr_cus_number,
+    			dsr_dvc_type,
+    			dsr_dvc_type_name,
+    			dsr_dvc_id,
+    			dsr_dvc_name,
+    			dsr_dvc_status,
+    			dsr_dvc_status,
+    			dsr_record_time
+    		)
+    		VALUES	
+    		(
+    			?,
+    			?,
+    			typename,
+    			deviceID
+    		)
+    	</sql>
+    </item>
+    
+    <item  id="select_device_status_all" desc="查询所有设备的状态">
+    	<sql>
+    		SELECT
+    			dsr_cus_number,
+    			dsr_dvc_type,
+    			dsr_dvc_type_name,
+    			dsr_dvc_id,
+    			dsr_dvc_name,
+    			dsr_status_desc  status,
+    			DECODE(dsr_dvc_status,0,'正常','异常') dsr_dvc_status,
+    			to_char(dsr_record_time,'yyyy-hh-dd hh24:mi:ss') fredate
+    		FROM
+    			dvc_device_status_record
+    		WHERE 
+    			dsr_record_time BETWEEN TO_DATE(:begin,'yyyy-MM-dd')-1 AND TO_DATE(:end,'yyyy-MM-dd')+1
+    	</sql>
+    	<where id="0">
+    		AND
+    			(:dsr_dvc_name IS NULL OR dsr_dvc_name LIKE CONCAT('%',CONCAT(:dsr_dvc_name,'%')))
+    		AND
+    			(:dsr_dvc_type IS NULL OR dsr_dvc_type=:dsr_dvc_type)
+    		AND
+    			(:dsr_dvc_status IS NULL OR dsr_dvc_status=:dsr_dvc_status)
+    		ORDER BY
+    			dsr_record_time DESC
+    	</where>
+    </item>
+    
+    <item id="select_device_status_echart_all" >
+    	<sql>
+    		SELECT
+    			  (SELECT ccd_value FROM sys_constant_code_dtls  WHERE  ccd_type_id='securityDeviceType' AND ccd_key=dsr_dvc_type) name,
+		          COUNT(dsr_dvc_id) as value,
+		          dsr_dvc_status ,
+		          dsr_dvc_type
+    		FROM
+    			dvc_device_status_record
+    		WHERE 
+    			dsr_record_time BETWEEN TO_DATE(:begin,'yyyy-MM-dd')-1 AND TO_DATE(:end,'yyyy-MM-dd')+1
+    	</sql>
+    	<where id="0">
+    		AND
+    			(:dsr_dvc_name IS NULL OR dsr_dvc_name LIKE CONCAT('%',CONCAT(:dsr_dvc_name,'%')))
+    		AND
+    			(:dsr_dvc_type IS NULL OR dsr_dvc_type=:dsr_dvc_type)
+    		AND
+    			(:dsr_dvc_status IS NULL OR dsr_dvc_status=:dsr_dvc_status)
+    	</where>
+    	<order id="0">
+    		GROUP BY dsr_dvc_type,dsr_dvc_status
+    	</order>
+    </item> 
+</sqlItem>

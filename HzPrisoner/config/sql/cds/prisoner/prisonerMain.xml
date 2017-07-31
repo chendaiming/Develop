@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_count_today_prisoner" desc="查询当日罪犯统计">
+		<sql>
+			SELECT id, title, count
+			  FROM (SELECT '当前关押：' AS title, COUNT(0) AS count, 1001 AS id
+			          FROM psr_prisoner_base_dtls
+			         WHERE pbd_cus_number = :cusNumber
+			           AND pbd_stts_indc = 1
+			        UNION
+			        SELECT '当日收押：' AS title, COUNT(0) AS count, 1002 AS id
+			          FROM psr_prisoner_base_dtls
+			         WHERE pbd_cus_number = :cusNumber
+			           AND pbd_stts_indc = 1
+			           AND TRUNC(pbd_entry_prisoner_date) = TRUNC(SYSDATE) 
+			        UNION
+			        SELECT '当日释放：' AS title, COUNT(0) AS count, 1003 AS id
+			          FROM psr_prisoner_base_dtls
+			         WHERE pbd_cus_number = :cusNumber
+			           AND pbd_stts_indc = 0
+			           AND TRUNC(pbd_sntn_end_date) = TRUNC(SYSDATE) )
+			 ORDER BY id
+		</sql>
+	</item>
+
+
+	<item id="select_prisoner_panel_point_for_search_location" desc="查询罪犯面板点位用于查询搜索定位">
+		<sql>
+			SELECT ppi_point_id AS point_id,
+			       ppi_view_id  AS view_id,
+			       ppi_pos_x    AS pos_x,
+			       ppi_pos_y    AS pos_y,
+			       ppi_pos_z    AS pos_z
+			  FROM map_panel_point_info
+		</sql>
+		<where id="0">
+			 WHERE ppi_cus_number = ?
+			   AND ppi_link_type = ?
+			   AND ppi_link_id = ?
+		</where>
+	</item>
+</sqlItem>

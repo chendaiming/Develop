@@ -1,0 +1,380 @@
+<link rel='stylesheet' href='css/font/iconfont.css'/>
+<style>
+	section.callRoll{
+		position:absolute;
+		left:50%;
+		top:20%;
+		width:300px;
+	    /*border: 1px solid rgb(255, 255, 255);*/
+        border-radius: 5px;
+		z-index: 1;
+        background-color: rgba(42, 61, 82,0.9);
+       /* transition:width 0.5s linear 0.7s;*/
+	}
+	section.callRoll>div{
+		/*transition:height 0.7s ;*/
+		overflow:hidden;
+	}
+	section.callRoll> div.title{
+        background: rgba(42, 61, 82,0.5);
+	    height: 35px;
+	    line-height: 35px;
+	    font-size: large;
+	    cursor:move;
+        border-radius: 5px 5px 0 0;
+        position: relative;
+	}
+	section.callRoll> div.title >span{
+		width:100%;
+		height:30px;
+	}
+	section.callRoll> div.title >span.detail_span_title{
+		position: absolute;
+		left: 0;
+		right: 0;
+		margin: auto;
+		width: 70%;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	i.fanhiu{
+		width: 19px;
+		height: 19px;
+		display: inline-block;
+		position: absolute;
+		top: 8px;
+		left: 9px;
+		cursor: pointer;
+		background: url('./css/images/fanhiu_call.png') no-repeat center;
+		background-size: 100% 100%;
+	}
+	i.fanhiu:hover{
+		background: url('./css/images/fanhiu_call_H.png') no-repeat center;
+		background-size: 100% 100%;
+	}
+	section.callRoll>div.con{
+   	    background: rgba(42, 61, 82,0);
+	    height: 406px;
+	    margin: 1px 8px 0px 8px;
+	    border-radius: 0 0 5px 5px;
+        border-top: 1px solid rgb(255, 255, 255);
+	}
+	section.callRoll li{
+		height: 31px;
+	    margin-top: 1px;
+	    cursor:pointer;
+	    animation:prev 1.5s linear;
+	}
+	section.callRoll li:nth-child(odd){
+		background: rgba(62, 80, 99,0.7);
+	}
+	section.callRoll li:nth-child(even){
+		background: rgba(48, 75, 99,0.7);
+	}
+	section.callRoll span{
+	    width: 50%;
+	    text-align:center;
+	    height: 30px;
+	    line-height:30px;
+	    float:left;
+	}
+	.vbox.box-con.con ul li span{
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.vbox.box-con.con .nameList:nth-child(1),.vbox.box-con.con ul li span:nth-child(1){
+		width: 40%;
+	}
+	.vbox.box-con.con .nameList:nth-child(2),.vbox.box-con.con ul li span:nth-child(2){
+		width: 30%;
+	}
+	.vbox.box-con.con .nameList:nth-child(3),.vbox.box-con.con ul li span:nth-child(3){
+		width: 30%;
+	}
+	section.callRoll li:hover{
+		background:rgb(78, 122, 169);
+	}
+	#detail{
+		left:60%;
+		height:462px;
+	}
+	#detail li>span:first-child{
+		width:15%;
+	}
+	#detail li>span:last-child{
+		width:30%;
+	}
+	#detail li>span{
+		width:55%;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.h{
+		display:none
+	}
+	
+	section.callRoll div.gram{
+	    position: absolute;
+	    width: 100%;
+	    bottom: 35px;
+	    text-align: center;
+	}
+	section.callRoll div.gram>a{
+	    height: 8px;
+	    width: 8px;
+	    border-radius: 100%;
+	    background: rgb(152, 165, 179);
+	    margin: 0 6px;
+	    cursor:pointer;
+	}
+	section.callRoll div.gram>a:hover ,div.gram>a.active{
+		background-color:rgb(245, 239, 239)!important;
+     	transform: scale(1.3);
+	}
+	@keyframes next{
+		0%{
+		    transform: rotateX(0deg);
+		}
+		50%{
+		    transform: rotateX(-90deg);
+		}
+		100%{
+		    transform: rotateX(0deg);
+		}
+	}
+	@keyframes prev{
+		0%{
+		    transform: rotateX(0deg);
+		}
+		50%{
+		    transform: rotateX(-90deg);
+		}
+		100%{
+		    transform: rotateX(0deg);
+		}
+	}
+	section.callRoll ul.toggle>li{
+		animation:next 1.5s linear;
+		animation-fill-mode: forwards;
+	}
+	section.callRoll.roll>div.con>div{
+		flex:none;
+		height:0px;
+		overflow:hidden;
+	}
+	section.callRoll.roll>div.gram{
+		bottom:18px;
+	}
+	section.callRoll div.check{
+		margin-bottom:2px;
+		margin-top: 20px;
+	}
+	section.callRoll div.check>span{
+	    cursor: pointer;
+	    width: 49%;
+	    margin-left: 1%;
+        background: rgb(62, 80, 99);
+        color:rgb(242, 99, 54);
+        position:relative;
+	}
+	section.callRoll div.check>span:hover,section.callRoll div.check>span.active{
+		background:rgb(48, 75, 99);
+		color: rgb(28, 224, 214);
+	}
+	section.callRoll div.check>span:hover::before,section.callRoll div.check>span.active::before{
+		content: '';
+	    background: rgb(30, 201, 197);
+	    position: absolute;
+	    left: 10px;
+	    top: 50%;
+	    width: 10px;
+	    margin-top: -5px;
+	    height: 10px;
+	    border-radius: 100%;
+	}
+	section.callRoll div.title .iconfont,#detail div.title .iconfont,section.callRoll div.title .iconfont{
+	    position: absolute;
+	    top: 6px;
+	    right: 9px;
+	    height: 19px;
+	    width: 19px;
+	    cursor: pointer;
+	}
+	section.callRoll div.title i.icon-shouqi{
+		right: 30px;
+		line-height: 19px;
+		font-size: 16px;
+		top: 8px;
+	}
+	section.callRoll div.title i:hover{
+		color: #0ff;
+	}
+	section.callRoll div.title i.icon-houdongfangiconfont10{
+		right: 9px;
+		line-height: 19px;
+		font-size: 19px;
+		top: 6px;
+	}
+	section.callRoll div.title::after:hover,#detail div.title::before:hover,section.callRoll div.title::before:hover{
+		opacity: 0.5;
+	}
+	section.callRoll div.title::before{
+		background-image:url(./css/images/slideup.png);
+		right:25px;
+		top:5px;
+	}
+
+	#detail div.title::before{
+	    background-image: url(./css/images/detail.png);
+	    left: 5px;
+	}
+	section.callRoll>div.callbutton{
+		position: fixed;
+		top: 154px;
+		right: -62px;
+		width: 100px;
+		height: 35px;
+		font-size: 14px;
+		background: rgba(8,25,45,.8);
+		border-radius: 5px;
+		text-align: center;
+		cursor: pointer;
+		line-height: 35px;
+		color: rgb(28, 224, 214);
+		overflow: visible;
+		transition: all 0.5s;
+	}
+	section.callRoll>div.callbutton:hover{
+		box-shadow: 0 0 5px #0ff;
+		right: -5px;
+	}
+	.icon-dianming::before{
+		font-size: 25px;
+		float: left;
+		margin-left: -30px;
+		width: 42px;
+	}
+	.icon-dianming:hover .icon-dianming::before{
+
+		color: rgb(28, 224, 214) !important;
+	}
+	.callbutton .callbutton_span {
+		position: absolute;
+		display: inline-block;
+		width: 25px;
+		height: 25px;
+		line-height: 25px;
+		background: rgb(42, 61, 82);
+		border: 1px solid #fff;
+		border-radius: 50%;
+		text-align: center;
+		color: #fff;
+		top: -10px;
+		left: -10px;
+	}
+	.callbutton:hover .callbutton_span{
+		border: 1px solid #0ff !important;
+		color: rgb(28, 224, 214);
+	}
+
+	section.callRoll.slideup{
+		width:0px;
+		border: 0;
+	}
+
+	#detail .title .icon-xiangqing1{
+		left:  0px;
+		top: 0!important;
+		font-size: 20px;
+		line-height: 20px;
+		text-align: center;
+	}
+	section#detail div.title>label{
+        display: inline;
+	    width: 20px;
+	    height: 20px;
+	    float: left;
+	    cursor: pointer;
+	    position:absolute;
+		top: 6px;
+		left: 6px;
+	    z-index:1;
+	}
+	section#detail label:hover>div{
+        position: absolute;
+	    width: 150px !important;
+	    top: -4px;
+	    right: 134%;
+	    line-height: 90px;
+	    font-weight: normal;
+	    font-size: small;
+	    border-radius: 10px;
+	    text-align: center;
+	    height: 90px;
+	    background: rgba(72, 99, 130, 0.9);
+	}
+	#police_name{
+		display: none;
+	}
+</style>
+
+
+<section id="police_name" class="callRoll" style="top: 0;left: 0;border:1px solid rgb(255, 255, 255)">
+	<div class="title">
+		<span >点名监区列表</span>
+		<!--<i class="iconfont icon-shouqi" @click.self.stop="close($event,1,'shouqi');"></i>-->
+		<i class="iconfont icon-houdongfangiconfont10"  @click.self.stop="close($event,1,'shouqi');"></i>
+	</div>
+	<!-- 点名区域 -->
+	<div class="vbox box-con con">
+		<div style="background: rgb(104, 119, 133);height:30px;">
+			<span class="nameList">点名监区</span><span class="nameList">点名民警</span><span class="nameList">点名时间</span>
+		</div>
+		<ul class="hz-col-9" style="overflow-y: auto;" id="detailName">
+			<li v-for="item in callList"  @click="showDetail(item)" track-by="$index">
+				<span :title="item['crm_dprt_name']">{{item['crm_dprt_name']}}</span><span :title="item['crm_police_name']">{{item['crm_police_name']}}</span><span>{{item['crm_begin_time']}}</span>
+			</li>
+		</ul>
+		<div class="check" >
+			<span class="active"  @click.self="nameListS($event,1)">正在点名({{total}})</span><span   @click.self="nameListS($event,0)">点名历史({{totalNum}})</span>
+		</div>
+	</div>
+	<div class="gram" style="bottom:18px;display: none">
+			<a v-for="l in areaPage" @click.self="turnPage(l,$event)" :class="{'active':areaPage==l+1}"></a>
+	</div>
+</section>
+
+<!-- 点名详情 -->
+<section id="detail" :class="{'callRoll':true, 'h':true, 'roll':!currentArea.detail.flag&&!currentArea.detail.finish}" style="top: 0;left: 0;right: 0;botton:0;border: 1px solid rgb(255, 255, 255)">
+	<div class="title" style="height:53px;position:static;">
+		<i class="fanhiu"  @click.self.stop="close($event,0,'fanhiu');"></i>
+
+		<span class="detail_span_title"  v-if="!currentArea.detail.flag">{{currentArea.detail['crm_dprt_name']}}实时点名</span>
+		<span class="detail_span_title"   v-else>{{currentArea.detail['crm_dprt_name']}}点名历史记录</span>
+		<span style="font-size:xx-small;top:23px;position:absolute;">({{currentArea.detail['time']}})</span>
+		<i class="iconfont icon-houdongfangiconfont10"  @click.self.stop="close($event,1,'shouqi');"></i>
+	</div>
+	<!-- 点名区域 -->
+	<div class="vbox box-con con">
+		<div style="height: 31px;margin-top: 1px;background: rgba(104, 119, 133,0.7);">
+    		<span style="width: 15%;">序号</span><span style="width: 55%;">姓名</span><span style="width: 30%;">时间</span>
+		</div>
+		<ul class="hz-col-9" style="margin-top:0px;overflow-y: auto;" id="detail_ul">
+			<li v-for="item in currentArea.detailList"  track-by="$index">
+				<span>{{$index+1}}.</span><span> {{item['crd_prisoner_name']}}</span><span>{{item['crd_time']}}</span>
+			</li>
+		</ul>
+		<div class="check" >
+			<span class="active" @click.self="changeS($event,1)">已点({{already}})</span>
+			<span @click.self="changeS($event,2)">未点({{alreadyS}})</span>
+		</div>
+	</div>
+	
+	<!--  -->
+	<div class="gram" style="display: none;">
+		<a v-for="l in currentArea.detailPage" @click.self="turnPage(l,$event,1)" :class="{'active':currentArea.detailPage-currentArea.flag==l}"></a>
+	</div>
+</section>

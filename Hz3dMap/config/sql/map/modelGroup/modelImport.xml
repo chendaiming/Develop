@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_model_data_by_path" desc="根据path查询模型是否存在">
+		<sql>
+			SELECT mfi_cus_number, mfi_file_id
+			  FROM map_model_file_info
+			 WHERE mfi_cus_number = :mfi_cus_number
+			   AND mfi_file_path = :mfi_file_path
+		</sql>
+	</item>
+    <item id="insert_model_data" desc="插入模型数据">
+    	<seq>map_model_file_info@mfi_file_id</seq>
+    	<sql>
+    		INSERT INTO map_model_file_info
+			  (mfi_cus_number,
+			   mfi_file_id,
+			   mfi_file_pid,
+			   mfi_file_name,
+			   mfi_file_title,
+			   mfi_file_path,
+			   mfi_file_type,
+			   mfi_file_flag,
+			   mfi_file_attr,
+			   mfi_file_order,
+			   mfi_create_uid,
+			   mfi_create_datetime,
+			   mfi_update_uid,
+			   mfi_update_datetime,
+			   mfi_dept_id,
+			   mfi_load_flag)
+			VALUES
+			  (:mfi_cus_number,
+			   :mfi_file_id,
+			   :mfi_file_pid,
+			   :mfi_file_name,
+			   :mfi_file_title,
+			   :mfi_file_path,
+			   :mfi_file_type,
+			   :mfi_file_flag,
+			   :mfi_file_attr,
+			   :mfi_file_order,
+			   :mfi_create_uid,
+			    SYSDATE,
+			   :mfi_update_uid,
+			    SYSDATE,
+			   :mfi_dept_id,
+			   :mfi_load_flag)
+    	</sql>
+    </item>
+    <item id="update_model_data" desc="更新模型数据">
+    	<sql>
+	   		 UPDATE map_model_file_info
+	    		SET mfi_file_order = :mfi_file_order,
+    				mfi_file_title = :mfi_file_title,
+    				mfi_file_type  = :mfi_file_type,
+    				mfi_file_flag  = :mfi_file_flag,
+    				mfi_file_attr  = :mfi_file_attr,
+	    			mfi_update_uid = :mfi_update_uid,
+	    			mfi_update_datetime = SYSDATE
+    	</sql>
+    	<where id="0">
+    		 WHERE mfi_cus_number = :mfi_cus_number
+   		 	   AND mfi_file_path = :mfi_file_path
+    	</where>
+    </item>
+</sqlItem>

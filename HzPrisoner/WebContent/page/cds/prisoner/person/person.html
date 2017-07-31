@@ -1,0 +1,111 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<style>
+.hz-col-9{
+	text-align: center;
+	font-size:13px;
+	color: #f2dede;
+}
+.table-bordered>tbody>tr>td{
+	font-size:13px;
+	border:1px solid #1f699e;
+	text-align: center;
+	height:37px;
+}
+.imageview img{
+	width:140px;
+	height:140px;
+	cursor: pointer; 
+}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hz-col-9 right-con">
+		<form class="form-horizontal">
+		<table class="table table-bordered">
+			<tr>
+				<td class="col-xs-1">编号</td>
+				<td class="col-xs-2" v-text="prisoner.prisonerid"></td>
+				<td class="col-xs-1">监区</td>
+				<td class="col-xs-3" v-text="prisoner.pname"></td>
+				<td class="col-xs-2" rowspan="4">
+					<div class="imageview">
+						<img v-if="prisoner.img_url" :src='prisoner.img_url' >
+					</div>
+				</td>
+				<td class="col-xs-2" rowspan="4" >
+					<div class="imageview" >
+						<img v-if="prisoner.img_url_scene" :src='prisoner.img_url_scene' >
+					</div>
+				</td>	
+			</tr>
+			<tr>
+				<td class="col-xs-1">姓名</td>
+				<td class="col-xs-2" v-text="prisoner.name"></td>
+				<td class="col-xs-1">性别</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_sex_indc"></td>
+			</tr>
+			<tr>
+				<td class="col-xs-1">民族</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_nation"></td>
+				<td class="col-xs-1">籍贯</td>
+				<td class="col-xs-3" v-text="prisoner.pbd_native_addrs"></td>
+			</tr>
+			<tr>
+				<td class="col-xs-1">出生日期</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_birth_date"></td>
+				<td class="col-xs-1">证件号码</td>
+				<td class="col-xs-3" v-text="prisoner.pbd_crtfcts_id"></td>
+			</tr>
+		</table>
+		<table class="table table-bordered">
+			<tr>
+				<td class="col-xs-1">罪名</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_accstn"></td>
+				<td class="col-xs-1">入监日期</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_entry_prisoner_date"></td>
+				<td class="col-xs-1">犯人类型</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_type_indc"></td>
+			</tr>
+			<tr>
+				
+				<td class="col-xs-1">刑期</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_sntn_term"></td>
+				<td class="col-xs-1">刑期起日</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_sntn_start_date"></td>
+				<td class="col-xs-1">刑期止日</td>	
+				<td class="col-xs-2" v-text="prisoner.pbd_sntn_end_date"></td>			
+			</tr>						
+			<tr>
+				<td class="col-xs-1">剥权年限</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_sntn_dprvtn_term"></td>	
+				<td class="col-xs-1">罪犯状态</td>	
+				<td class="col-xs-2" v-text="prisoner.pbd_prsnr_stts"></td>	
+				<td class="col-xs-1">刑种</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_sntn_type"></td>
+			</tr>	
+			<tr>
+				<td class="col-xs-1">收押类别</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_detain_type"></td>
+				<td class="col-xs-1">分押类别</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_charge_type"></td>	
+				<td class="col-xs-1">分管等级</td>	
+				<td class="col-xs-2" v-text="prisoner.pbd_sprt_mnge"></td>		
+			</tr>			
+			<tr>
+				<td class="col-xs-1">文化程度</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_cltre_level"></td>
+				<td class="col-xs-1">婚姻状况</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_mrrge_stts"></td>
+				<td class="col-xs-1">捕前单位</td>
+				<td class="col-xs-2" v-text="prisoner.pbd_arrst_cmpny" colspan="3"></td>			
+			</tr>
+		</table>
+		</form>
+	</div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/prisoner/person/person"]);
+</script>

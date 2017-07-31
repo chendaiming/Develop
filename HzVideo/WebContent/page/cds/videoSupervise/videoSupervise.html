@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style>
+.top .serchinput{
+	width:25%;
+	position:absolute;
+	left: 75%;
+	top:0;
+}
+.top .searchDate{
+	width:29%;
+	position:absolute;
+	left: 46%;
+	top:0;
+}
+</style>
+</head>
+<body>
+<div class="vbox box-con" id="tabs">
+	<div class="top" >
+		<div class="tabs" style="margin-left:-20px;border-bottom:1px solid #4077ae;">
+			  <div class="tab" v-bind:class="{'active':activeTab==1}" @click="setActiveTab(1)"><span>创建监督单</span></div>
+			  <div class="tab" v-bind:class="{'active':activeTab==2}" @click="setActiveTab(2)"><span>查询监督单</span></div>
+	  	</div>
+	  	<div class="input icon serchinput">
+			 <input v-model="searchPic" placeholder="输入关键字搜索"> 
+			 <span class="find"></span>
+		</div>			
+		<div class="searchDate">
+			 <hz-date tip="选择查询日期" :val.sync="searchDay" format=Y-m-d />
+		</div>			
+	</div>
+	<div id="create" class="vbox hz-col-1" v-cloak v-show="activeTab==1">
+		<!-- 查询框  -->
+			<!-- 顶部查询条件区域 -->
+<!-- 			<div class="top"> -->
+<!-- 				<div class="input icon" style="width:25%;float:left;"> -->
+<!-- 					<input v-model="searchPic" placeholder="输入关键字搜索">  -->
+<!-- 					<span class="find"></span> -->
+<!-- 				</div>			 -->
+<!-- 				<div style="width:29%;float:left;margin-left:1%"> -->
+<!-- 				 <hz-date tip="选择查询日期" :val.sync="searchDay" format=Y-m-d /> -->
+<!-- 				</div>				 -->
+<!-- 			</div> -->
+			<div id="content" class="vbox hz-col-1">
+			</div>
+		  	<div class="bottom" style="margin-top:50px">
+		  		<div class="buttons">
+					 <a @click="" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>创建监督单</span></a>
+		  		</div>
+		  	</div>			
+	</div>
+	<div id="manager" class="vbox hz-col-1" v-cloak v-show="activeTab==2">
+		查询监督单
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/videoSupervise/videoSupervise"]);
+</script>

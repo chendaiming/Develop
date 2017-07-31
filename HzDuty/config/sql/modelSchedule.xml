@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	 <item id="insert_dty_schedule_dtls_mode" desc="值班编排信息新增">
+	 	<seq>scd_relation_id@id</seq>
+		<sql>
+			INSERT  INTO
+				dty_schedule_dtls
+				(	
+					scd_cus_number,
+					scd_relation_id,
+					scd_start_date,
+					scd_end_date,
+					scd_mode_idnty,
+					scd_mode_name,
+					scd_category_id,
+					scd_shift_id,
+					scd_shift_name,
+					scd_shift_start_time,
+					scd_shift_end_time,
+					scd_job_id,
+					scd_job_name,
+					scd_dept_id,
+					scd_crte_time,
+					scd_crte_user_id,
+					scd_updt_time,
+					scd_updt_user_id
+				)
+			    SELECT :scd_cus_number,
+			    	   :id,
+			    	   TO_DATE(:scd_start_date,'YYYY-MM-DD'),
+		    	       TO_DATE(:scd_end_date,'YYYY-MM-DD'),
+			    	   :scd_mode_idnty,
+			    	   :scd_mode_name,
+			    	   mbd_category_id,
+			    	   mbd_shift_id,
+			    	   mbd_shift_name,
+			    	   mbd_shift_start_time,
+			    	   mbd_shift_end_time,
+			    	   mbd_job_id,
+			    	   mbd_job_name,
+			    	   :scd_dept_id,
+			    	   SYSDATE,
+			    	   :scd_crte_user_id,
+			    	   SYSDATE,
+			    	   :scd_updt_user_id
+                  FROM dty_mode_base_dtls 
+                 WHERE mbd_cus_number = :mbd_cus_number AND
+                 	   mbd_mode_idnty = :mbd_mode_idnty
+		</sql>
+    </item>
+    
+    <item id="insert_dty_schedule_dtls" desc="值班编排信息新增">
+	 	<seq>scd_relation_id@id</seq>
+		<sql>
+			INSERT  INTO
+				dty_schedule_dtls
+				(	
+					scd_cus_number,
+					scd_relation_id,
+					scd_start_date,
+					scd_end_date,
+					scd_mode_idnty,
+					scd_mode_name,
+					scd_category_id,
+					scd_shift_id,
+					scd_shift_name,
+					scd_shift_start_time,
+					scd_shift_end_time,
+					scd_job_id,
+					scd_job_name,
+					scd_dept_id,
+					scd_crte_time,
+					scd_crte_user_id,
+					scd_updt_time,
+					scd_updt_user_id
+				)
+	    	values( 
+	    		   :scd_cus_number,
+		    	   :id,
+		    	   TO_DATE(:scd_start_date,'YYYY-MM-DD'),
+		    	   TO_DATE(:scd_end_date,'YYYY-MM-DD'),
+		    	   :scd_mode_idnty,
+		    	   :scd_mode_name,
+		    	   :scd_category_id,
+		    	   :scd_shift_id,
+		    	   :scd_shift_name,
+		    	   :scd_shift_start_time,
+		    	   :scd_shift_end_time,
+		    	   :scd_job_id,
+		    	   :scd_job_name,
+		    	   :scd_dept_id,
+		    	   SYSDATE,
+		    	   :scd_crte_user_id,
+		    	   SYSDATE,
+		    	   :scd_updt_user_id
+	    	   )
+		</sql>
+    </item>
+    
+    <item id="insert_dty_people_dtls" desc="值班人员信息新增">
+		<sql>
+			INSERT  INTO
+				dty_people_dtls
+				(	
+					ped_cus_number,
+					ped_relation_id,
+					ped_date,
+					ped_mode_idnty,
+					ped_shift_id,
+					ped_job_id,
+					ped_dept_id,
+					ped_id,
+					ped_name,
+					ped_seq,
+					ped_crte_time,
+					ped_crte_user_id,
+					ped_updt_time,
+					ped_updt_user_id
+				)
+		     SELECT :ped_cus_number,
+			    	:ped_relation_id,
+		    	    TO_DATE(:ped_date,'YYYY-MM-DD'),
+		    	   	scd_mode_idnty,
+		    	    scd_shift_id,
+		    	    scd_job_id,
+		    	    scd_dept_id,
+		    	    :ped_id,
+		    	    :ped_name,
+		    	    :ped_seq,
+			    	SYSDATE,
+			    	:ped_crte_user_id,
+			    	SYSDATE,
+			    	:ped_updt_user_id
+		       FROM dty_schedule_dtls
+              WHERE scd_cus_number = :scd_cus_number AND
+                    scd_relation_id = :scd_relation_id
+		</sql>
+    </item>
+    
+    <item id="select_dty_schedule_dtls" desc="查询值班编排信息">
+		<sql>
+			SELECT scd_cus_number,
+				   scd_relation_id,
+				   TO_CHAR(scd_start_date,'YYYY-MM-DD') AS scd_start_date,
+				   TO_CHAR(scd_end_date,'YYYY-MM-DD') AS scd_end_date,
+				   scd_mode_idnty,
+				   scd_mode_name,
+				   scd_category_id,
+				   scd_shift_id,
+				   scd_shift_name,
+				   scd_shift_start_time,
+				   scd_shift_end_time,
+				   scd_job_id,
+				   scd_job_name,
+				   scd_dept_id,
+				   scd_crte_user_id,
+				   sbd_seq,
+				   sbd_stime_flag,
+				   sbd_etime_flag,
+				   jbd_seq,
+				   odd_name
+			  FROM dty_schedule_dtls
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (scd_cus_number = sbd_cus_number AND
+			  	  scd_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (scd_cus_number = jbd_cus_number AND
+			  	  scd_job_id = jbd_id)
+			  LEFT JOIN sys_org_dept_dtls
+			  ON (scd_cus_number = odd_parent_id AND
+			  	  scd_dept_id = odd_id)
+		</sql>
+		<where id="0">
+			WHERE scd_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE scd_cus_number = ? AND
+				  scd_mode_idnty = ?
+		</where>
+		<order id="0">
+			ORDER BY scd_dept_id,scd_end_date DESC,sbd_seq,jbd_seq
+		</order>
+    </item>
+    
+    <item id="select_dty_people_dtls" desc="查询值班人员信息">
+		<sql>
+			SELECT ped_cus_number,
+				   ped_relation_id,
+				   TO_CHAR(ped_date,'YYYY-MM-DD') AS ped_date,
+				   ped_mode_idnty,
+				   ped_shift_id,
+			  	   ped_job_id,
+			  	   ped_dept_id,
+				   ped_id,
+				   ped_name,
+				   scd_shift_start_time AS sbd_start_time,
+				   scd_shift_end_time AS sbd_end_time
+			  FROM dty_people_dtls
+			  LEFT JOIN dty_schedule_dtls
+		  	  ON (ped_cus_number = scd_cus_number AND
+		  	 	  ped_relation_id = scd_relation_id)
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ped_cus_number = sbd_cus_number AND
+			  	  ped_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (ped_cus_number = jbd_cus_number AND
+			  	  ped_job_id = jbd_id)
+		</sql>
+		<where id="0">
+			WHERE ped_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE ped_cus_number = ? AND
+				  ped_mode_idnty = ?
+		</where>
+		<order id="0">
+			ORDER BY ped_date,sbd_seq,jbd_seq,ped_seq
+		</order>
+    </item>
+    
+    <item id="select_dty_category_dept_tree" desc="查询类别使用部门树形数据">
+		<sql>
+			 SELECT 'c_' || cbd_id AS id,
+		            cbd_name AS name,
+		            null AS pid,
+		           'category' AS type
+		       FROM (SELECT * FROM dty_category_base_dtls WHERE cbd_cus_number = ? AND cbd_id = ? ORDER BY cbd_seq)
+      		 UNION ALL
+     	     SELECT 'd_' || cdr_dept_id AS id,
+           			odd_name AS name,
+           			'c_' || cdr_category_id  AS pid,
+           			'dept' AS type
+        		FROM dty_category_dept_rltn
+			    LEFT JOIN sys_org_dept_dtls
+			    ON (cdr_cus_number = odd_parent_id AND
+			  	    cdr_dept_id = odd_id)
+              WHERE cdr_cus_number = ? AND 
+              	    cdr_category_id = ?
+		</sql>
+    </item>
+    
+    <item id="select_dty_category_dept_tree2" desc="查询类别使用部门树形数据">
+		<sql>
+     	     SELECT 'd_' || cdr_dept_id AS id,
+           			odd_name AS name,
+           			'c_' || cdr_category_id  AS pid,
+           			'dept' AS type
+        		FROM dty_category_dept_rltn
+			    LEFT JOIN sys_org_dept_dtls
+			    ON (cdr_cus_number = odd_parent_id AND
+			  	    cdr_dept_id = odd_id)
+              WHERE cdr_cus_number = ? AND 
+              	    cdr_dept_id = ?
+		</sql>
+    </item>
+    
+    <item id="select_dty_mode_schedule_tree" desc="查询模板编排树形数据">
+		<sql>
+			 SELECT 'm_' || mbd_mode_idnty AS id,
+		            mbd_mode_name AS name,
+		            null AS pid,
+		           'mode' AS type
+		       FROM (SELECT DISTINCT mbd_mode_idnty,
+			  	 					 mbd_mode_name,
+			  	 					 mbd_category_id,
+			  	 					 mbd_seq
+			   		            FROM dty_mode_base_dtls
+			   		           WHERE mbd_cus_number = ? AND
+			   		 	             mbd_category_id = ? AND
+			   		 	             (mbd_dept_id IS NULL OR
+			   		 	              mbd_dept_id = ?)
+			   		        ORDER BY mbd_seq)
+			 UNION ALL
+			 SELECT 's_' || scd_mode_idnty AS id,
+		            scd_mode_name AS name,
+		            'd_' || scd_dept_id AS pid,
+		            'schedule' AS type
+		       FROM (SELECT DISTINCT scd_mode_idnty,
+			  	 					 scd_mode_name,
+			  	 					 scd_category_id,
+			  	 					 scd_end_date,
+			  	 					 scd_dept_id
+			   		            FROM dty_schedule_dtls
+			   		           WHERE scd_cus_number = ? AND
+			   		 	             scd_dept_id = ?
+			   		        ORDER BY scd_end_date DESC)
+		</sql>
+    </item>
+    
+    <item id="select_drptmnt_police_tree"  desc="查询部门民警树形数据">
+		<sql>
+			SELECT 'd_' || odd_id AS id,
+				   odd_name AS name,
+				   'd_' || odd_parent_id  AS pid,
+				   'org.png' AS icon,
+				   'dept' AS type
+			  FROM (SELECT * FROM sys_org_dept_dtls	
+			  	    LEFT JOIN (SELECT pbd_cus_number,
+			  	    	  			  pbd_drptmnt_id 
+			  	    	  		 FROM plc_police_base_dtls 
+			  	    	  	 GROUP BY pbd_cus_number,pbd_drptmnt_id)
+			  	    ON (odd_parent_id = pbd_cus_number AND 
+			  	    	odd_id = pbd_drptmnt_id)		  
+                    START WITH odd_id = ? and odd_use = 1 
+			        CONNECT BY PRIOR odd_id = odd_parent_id AND pbd_drptmnt_id is not null
+			        ORDER BY odd_seq)
+		UNION ALL
+			SELECT 'p_' || pbd_user_id AS id,
+				   pbd_police_name AS name, 
+				   'd_' || pbd_drptmnt_id AS pid,
+				   'user.png' AS icon,
+				   'police' AS type
+			  FROM (SELECT * FROM plc_police_base_dtls
+			        WHERE pbd_cus_number = ?
+			        ORDER BY pbd_police_id)
+		</sql>
+	</item>
+	
+	<item id="select_dty_police_base_dtls"  desc="查询警员详细信息">
+		<const key="pbd_pstn_name">pbd_pstn_name</const>
+		<sql>
+		   SELECT pbd_cus_number,
+		          pbd_user_id,
+		          pbd_police_id,
+		          pbd_police_name,
+		          pbd_pstn_name,
+		   		  pbd_fixed_phone,
+		   		  pbd_ip_phone,
+		   		  pbd_phone,
+		   		  pbd_short_phone,
+		   		  pbd_fax,
+		   		  pbd_talk_num,
+		   		  pbd_police_cmmnct,
+		   		  pbd_family_phone,
+		   		  pbd_img,
+				  odd_name
+		     FROM plc_police_base_dtls
+	    LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id)   
+		</sql>
+		<where id="0">
+			WHERE pbd_cus_number = ?
+		</where>
+	</item> 
+	
+	<item id="update_dty_schedule_dtls" desc="值班编排信息修改">
+    	<sql>
+			UPDATE dty_schedule_dtls SET
+				   scd_start_date = TO_DATE(:scd_start_date,'YYYY-MM-DD'),
+				   scd_end_date = TO_DATE(:scd_end_date,'YYYY-MM-DD'),
+				   scd_mode_name = :scd_mode_name
+			 WHERE scd_cus_number = :scd_cus_number AND
+			 	   scd_mode_idnty = :scd_mode_idnty
+		</sql>
+	</item>
+    
+    <item id="delete_dty_schedule_dtls" desc="值班编排信息删除">
+    	<sql>
+			DELETE dty_schedule_dtls
+			 WHERE scd_cus_number = :scd_cus_number AND
+			 	   scd_mode_idnty = :scd_mode_idnty
+		</sql>
+	</item>
+	
+	<item id="delete_dty_people_dtls" desc="值班人员信息删除">
+    	<sql>
+			DELETE dty_people_dtls
+			 WHERE ped_cus_number = :ped_cus_number AND
+			 	   ped_mode_idnty = :ped_mode_idnty
+		</sql>
+	</item>
+</sqlItem>

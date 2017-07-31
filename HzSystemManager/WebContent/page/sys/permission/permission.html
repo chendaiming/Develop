@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+	.item{
+		position:relative;
+		width:25%;
+		float:left;
+	}
+	.item>div{
+		margin:10px;
+		height:86px;
+		margin-top:15px;
+		border:1px solid #4077ae;
+		border-radius:6px;
+		text-align:center;
+		padding-top:38px;
+		padding-bottom:8px;
+		font-size:12px;
+		color:#eee;
+		cursor:pointer;
+		
+		background-size:25px;
+		background-position:center 6px;
+		background-repeat:no-repeat;
+	}
+	.item>div:hover{
+		background-color:#4077ae;
+	}
+	.item .status{
+		color:#11cd6e;
+		font-size:10px;
+	}
+	.select>div{
+		color:#fff;
+		background-color:#4077ae;
+	}
+	.select>div::before{
+		content:'';
+   		position: absolute;
+    	right: 20px;
+        top: 20px;
+	    width:30px;
+	    height:30px;
+	    background:url('../../../css/images/icons/select.png')no-repeat;
+	}
+	.item1>div>div{
+		background-image:url(../../../css/images/icons/video.png);
+	}
+	.item2>div>div{
+		background-image:url(../../../css/images/icons/door.png);
+	}
+	.item3>div>div{
+		background-image:url(../../../libs/ztree/css/zTreeStyle/img/talk.png);
+	}
+	.item4>div>div{
+		background-image:url(../../../libs/ztree/css/zTreeStyle/img/broad.png);
+	}
+	.item6>div>div{
+		background-image:url(../../../libs/ztree/css/zTreeStyle/img/alarm.png);
+	}
+</style>
+
+<div class="vbox box-con"  >
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox">
+			<div class="input icon" >
+			  	<input id="input" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		    <div class="hz-col-1" style="overflow:auto;">
+				<ul class="ztree" id="user"></ul>
+			</div>
+		</div>
+		<div class="vbox hz-col-5" id="opr">
+			<div class="hbox hz-col-3" style="border-bottom:1px solid rgb(64, 119, 174);">
+				<div class="vbox left-con hz-col-3">
+					<div class="input icon" >
+				    </div>
+				    <div class="hz-col-1" style="overflow:auto;">
+						<ul class="ztree" id="area"></ul>
+					</div>
+				</div>
+				<div class="hz-col-4">
+					<form class="form-horizontal" style="margin:10px 0 0 10px;">
+					   <div class="form-group " >
+							<label class="col-sm-3 control-label">授权设备</label>
+					        <div class="col-sm-6">
+					           <hz-select 
+					  			tip="数据类型" 
+					  			code="DGT_DVC_TYPE"
+					  			:id.sync="type"
+					  			/>
+					        </div>
+				        </div>
+				        <div class="form-group ">
+					        <label class="col-sm-3 control-label">全选</label>
+					        <div class="col-sm-3 ">
+					        	<div class="checkbox">
+					        		<input type="checkbox"  style="margin:0px;" v-model="select">
+					        	</div>
+					        </div>
+				        </div>
+			        </form>
+				</div>
+			</div>
+			<div class="hz-col-9" id="form" style="overflow:auto;">
+				  <div v-if="remote.doors.length==0" class="empty">暂无设备</div>
+				  <div class="col-sm-12 item2">
+				  	<div class="item" v-cloak v-for="c in permission.list" data-rel="{{c.id}}">
+				  		<div>
+							<span>{{c.name}}</span>
+							<span class="status">（ {{c.status}} ）</span>
+						</div>
+					</div>
+				  </div>
+			</div>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+			<a id="permi" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span >授权</span></a>
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/sys/permission/permission"]);
+</script>

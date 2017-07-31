@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="delete_alarm_level_notice_dept" desc="删除报警分级 通知部门">
+		<sql>
+			DELETE FROM alt_alert_notice_rltn WHERE anr_cus_number = :cusNumber AND anr_handle_id = :lhs_id
+		</sql>
+	</item>
+	<item id="insert_alarm_level_notice_dept" desc="新增报警分级 通知部门">
+		<sql>
+			INSERT INTO alt_alert_notice_rltn (
+				anr_cus_number,
+			    anr_handle_id,
+			  	anr_notice_dept_id,
+			  	anr_seq  
+			) VALUES (
+				:anr_cus_number,
+			    :anr_handle_id,
+			  	:anr_notice_dept_id,
+			  	:anr_seq
+			)
+		</sql>
+	</item>
+	<item id="select_alarm_level_ids">
+		<sql>
+			SELECT lhs_cus_number,
+			       lhs_id,
+			       lhs_alertor_id,
+			       to_char(lhs_start_time, 'YYYY-MM-DD') AS lhs_start_time,
+			       to_char(lhs_end_time, 'YYYY-MM-DD') AS lhs_end_time,
+			       lhs_level,
+			       lhs_dvc_type,
+			       lhs_receive_dept_id,
+			       lhs_handle_btime,
+			       lhs_handle_etime,
+			       notice_dept_ids AS dept_ids,
+				   lhs_alarm_type
+			  FROM alt_level_handle_set
+			  LEFT JOIN (SELECT WM_CONCAT(anr_notice_dept_id) AS notice_dept_ids,
+			                    anr_handle_id
+			               FROM alt_alert_notice_rltn
+			              GROUP BY anr_handle_id) anr
+			    ON lhs_id = anr_handle_id
+		</sql>
+		<where id="0">
+			 WHERE lhs_cus_number = :cusNumber
+			   AND lhs_alertor_id = :lhs_alertor_id
+		</where>
+		<where id="1">
+			 WHERE lhs_cus_number = ?
+			   AND lhs_alertor_id = ?
+			   AND lhs_dvc_type = ?
+		</where>
+	</item>
+
+	<item id="delete_alarm_level">
+		<sql>
+			DELETE FROM  alt_level_handle_set 
+			WHERE lhs_cus_number =:cusNumber AND lhs_alertor_id = :lhs_alertor_id
+		</sql>
+	</item>
+
+	<item id="insert_alarm_level" desc="新增报警分级">
+		<seq>alt_level_handle_set@lhs_id</seq>
+		<sql >
+			INSERT INTO alt_level_handle_set (
+			    lhs_cus_number,
+			  	lhs_id,
+			  	lhs_alertor_id,
+			  	lhs_start_time,
+			  	lhs_end_time,
+			  	lhs_level,
+			  	lhs_receive_dept_id,
+			  	lhs_seq,
+			  	lhs_crte_time,
+			  	lhs_crte_user_id,
+			  	lhs_updt_time,
+			  	lhs_updt_user_id,
+			  	lhs_dvc_type,
+			  	lhs_handle_btime,
+			  	lhs_handle_etime,
+				lhs_alarm_type
+			) VALUES (
+			  	:lhs_cus_number,
+			  	:lhs_id,
+			  	:lhs_alertor_id,
+			  	TO_TIMESTAMP(:lhs_start_time, 'YYYY-MM-DD HH24:MI:SS'),
+			  	TO_TIMESTAMP(:lhs_end_time, 'YYYY-MM-DD HH24:MI:SS'),
+			  	:lhs_level,
+			  	:lhs_receive_dept_id,
+			  	:lhs_seq,
+			  	SYSDATE,
+			 	:lhs_crte_user_id,
+			  	SYSDATE,
+			  	:lhs_updt_user_id,
+			  	:lhs_dvc_type,
+			  	:lhs_handle_btime,
+			  	:lhs_handle_etime,
+				:lhs_alarm_type
+			)
+		</sql>
+	</item>
+
+    <item id="select_power_alarm" desc="查询高压电网报警设备">
+    	<sql>
+    		SELECT 
+    			DISTINCT abd_area_id AS id,
+		       	TO_CHAR(abd_area_id) AS rid,
+		  	   	abd_area_name AS name,
+		       	abd_parent_id AS pid,
+		       	abd_cus_number AS cus_number,
+		       	'-1' AS type,
+		       	'true' AS nocheck,
+		  	   	abd_seq AS seq,
+		  	   	'' AS levelids
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT pnb_area FROM pnw_power_network_base_dtls 
+			    WHERE pnb_cus_number = :cusNumber 
+			    GROUP BY pnb_area
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			
+			UNION
+			
+    		SELECT 
+			   pnb_id AS id,
+			   CONCAT('power',pnb_id) AS rid,
+			   pnb_name AS name,
+			   pnb_area AS pid,
+			   pnb_cus_number AS cus_number,
+			   :deviceType AS type,
+			   'false' AS nocheck,
+			   pnb_seq AS seq,
+			   lhs.levelids
+			FROM pnw_power_network_base_dtls pnb
+			LEFT JOIN (
+				SELECT 
+					WM_CONCAT(lhs_id) as levelids,
+					lhs_alertor_id 
+				FROM alt_level_handle_set
+				WHERE lhs_dvc_type = :deviceType
+				GROUP BY lhs_alertor_id
+			) lhs on lhs.lhs_alertor_id = pnb.pnb_id
+			WHERE pnb_cus_number =:cusNumber
+    	</sql>
+		<order id="0">
+			ORDER BY seq			
+		</order>
+    </item>
+
+    <item id="select_door_alarm" desc="查询门禁报警设备">
+    	<sql>
+    		SELECT 
+    			DISTINCT abd_area_id AS id,
+		       	TO_CHAR(abd_area_id) AS rid,
+		  	   	abd_area_name AS name,
+		       	abd_parent_id AS pid,
+		       	abd_cus_number AS cus_number,
+		       	'-1' AS type,
+		       	'true' AS nocheck,
+		  	   	abd_seq AS seq,
+		  	   	'' AS levelids
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+		    	SELECT dbd_area_id FROM dor_door_base_dtls 
+			    WHERE dbd_cus_number = :cusNumber 
+			    GROUP BY dbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+
+			UNION
+
+    		SELECT 
+			   	dbd_id AS id,
+			   	CONCAT('door',dbd_id) AS rid,
+			   	dbd_name AS name,
+			   	dbd_area_id AS pid,
+			   	dbd_cus_number AS cus_number,
+			   	:deviceType AS type,
+			   	'false' AS nocheck,
+			   	dbd_seq AS seq,
+			   	lhs.levelids
+			FROM dor_door_base_dtls dbd
+			LEFT JOIN (
+				SELECT 
+					WM_CONCAT(lhs_id) as levelids,
+					lhs_alertor_id 
+				FROM alt_level_handle_set
+				WHERE lhs_dvc_type = :deviceType
+				GROUP BY lhs_alertor_id
+			) lhs on lhs.lhs_alertor_id = dbd.dbd_id
+			WHERE dbd_cus_number =:cusNumber
+    	</sql>
+		<order id="0">
+			ORDER BY seq			
+		</order>
+    </item>
+
+    <item id="select_talkback_alarm_for_alarm_level" desc="查询对讲设备">
+    	<sql>
+			SELECT DISTINCT abd_area_id AS id,
+			                TO_CHAR(abd_area_id) AS rid,
+			                abd_area_name AS name,
+			                abd_parent_id AS pid,
+			                abd_cus_number AS cus_number,
+			                '-1' AS type,
+			                'true' AS nocheck,
+			                abd_seq AS seq,
+			                '' AS levelids
+			  FROM com_area_base_dtls
+			 START WITH abd_cus_number = :cusNumber
+			        AND abd_area_id IN (SELECT tbd_area_id
+			                              FROM tbk_talkback_base_dtls
+			                             WHERE tbd_cus_number = :cusNumber
+			                             GROUP BY tbd_area_id)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			UNION
+			SELECT tbd_id AS id,
+			       CONCAT('talkback', tbd_id) AS rid,
+			       tbd_name AS name,
+			       tbd_area_id AS pid,
+			       tbd_cus_number AS cus_number,
+			       :deviceType AS type,
+			       'false' AS nocheck,
+			       tbd_seq AS seq,
+			       lhs.levelids
+			  FROM tbk_talkback_base_dtls dbd
+			  LEFT JOIN (SELECT WM_CONCAT(lhs_id) as levelids, lhs_alertor_id
+			               FROM alt_level_handle_set
+			              WHERE lhs_dvc_type = :deviceType
+			              GROUP BY lhs_alertor_id) lhs
+			    on lhs.lhs_alertor_id = tbd_id
+			 WHERE tbd_cus_number = :cusNumber
+    	</sql>
+		<order id="0">
+			 ORDER BY seq			
+		</order>
+    </item>
+
+    <item id="select_broadcast_alarm_for_alarm_level" desc="查询广播设备">
+    	<sql>
+			SELECT DISTINCT abd_area_id AS id,
+			                TO_CHAR(abd_area_id) AS rid,
+			                abd_area_name AS name,
+			                abd_parent_id AS pid,
+			                abd_cus_number AS cus_number,
+			                '-1' AS type,
+			                'true' AS nocheck,
+			                abd_seq AS seq,
+			                '' AS levelids
+			  FROM com_area_base_dtls
+			 START WITH abd_cus_number = :cusNumber
+			        AND abd_area_id IN (SELECT bbd_area_id
+			                              FROM bct_broadcast_base_dtls
+			                             WHERE bbd_cus_number = :cusNumber
+			                             GROUP BY bbd_area_id)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			UNION
+			SELECT bbd_id AS id,
+			       CONCAT('talkback', bbd_id) AS rid,
+			       bbd_name AS name,
+			       bbd_area_id AS pid,
+			       bbd_cus_number AS cus_number,
+			       :deviceType AS type,
+			       'false' AS nocheck,
+			       bbd_seq AS seq,
+			       lhs.levelids
+			  FROM bct_broadcast_base_dtls
+			  LEFT JOIN (SELECT WM_CONCAT(lhs_id) as levelids, lhs_alertor_id
+			               FROM alt_level_handle_set
+			              WHERE lhs_dvc_type = :deviceType
+			              GROUP BY lhs_alertor_id) lhs
+			    on lhs.lhs_alertor_id = bbd_id
+			 WHERE bbd_cus_number = :cusNumber
+    	</sql>
+		<order id="0">
+			 ORDER BY seq			
+		</order>
+    </item>
+
+    <item id="select_rfid_alarm_for_alarm_level" desc="查询RFID基站设备">
+    	<sql>
+			SELECT DISTINCT abd_area_id AS id,
+			                TO_CHAR(abd_area_id) AS rid,
+			                abd_area_name AS name,
+			                abd_parent_id AS pid,
+			                abd_cus_number AS cus_number,
+			                '-1' AS type,
+			                'true' AS nocheck,
+			                abd_seq AS seq,
+			                '' AS levelids
+			  FROM com_area_base_dtls
+			 START WITH abd_cus_number = :cusNumber
+			        AND abd_area_id IN (SELECT rbd_area_id
+			                              FROM dvc_rfid_base_dtls
+			                             WHERE rbd_cus_number = :cusNumber
+			                             GROUP BY rbd_area_id)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			UNION
+			SELECT rbd_id AS id,
+			       CONCAT('talkback', rbd_id) AS rid,
+			       rbd_name AS name,
+			       rbd_area_id AS pid,
+			       rbd_cus_number AS cus_number,
+			       :deviceType AS type,
+			       'false' AS nocheck,
+			       rbd_seq AS seq,
+			       lhs.levelids
+			  FROM dvc_rfid_base_dtls
+			  LEFT JOIN (SELECT WM_CONCAT(lhs_id) as levelids, lhs_alertor_id
+			               FROM alt_level_handle_set
+			              WHERE lhs_dvc_type = :deviceType
+			              GROUP BY lhs_alertor_id) lhs
+			    on lhs.lhs_alertor_id = rbd_id
+			 WHERE rbd_cus_number = :cusNumber
+    	</sql>
+		<order id="0">
+			 ORDER BY seq			
+		</order>
+    </item>
+
+    <item id="select_wireless_master_alarm_for_alarm_level" desc="查询无线报警主机设备">
+    	<sql>
+			SELECT DISTINCT abd_area_id AS id,
+			                TO_CHAR(abd_area_id) AS rid,
+			                abd_area_name AS name,
+			                abd_parent_id AS pid,
+			                abd_cus_number AS cus_number,
+			                '-1' AS type,
+			                'true' AS nocheck,
+			                abd_seq AS seq,
+			                '' AS levelids
+			  FROM com_area_base_dtls
+			 START WITH abd_cus_number = :cusNumber
+			        AND abd_area_id IN (SELECT wam_area_id
+			                              FROM dvc_wireless_alarm_master
+			                             WHERE wam_cus_number = :cusNumber
+			                             GROUP BY wam_area_id)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			UNION
+			SELECT wam_id AS id,
+			       CONCAT('talkback', wam_id) AS rid,
+			       wam_name AS name,
+			       wam_area_id AS pid,
+			       wam_cus_number AS cus_number,
+			       :deviceType AS type,
+			       'false' AS nocheck,
+			       wam_seq AS seq,
+			       lhs.levelids
+			  FROM dvc_wireless_alarm_master
+			  LEFT JOIN (SELECT WM_CONCAT(lhs_id) as levelids, lhs_alertor_id
+			               FROM alt_level_handle_set
+			              WHERE lhs_dvc_type = :deviceType
+			              GROUP BY lhs_alertor_id) lhs
+			    on lhs.lhs_alertor_id = wam_id
+			 WHERE wam_cus_number = :cusNumber
+    	</sql>
+		<order id="0">
+			 ORDER BY seq			
+		</order>
+    </item>
+
+	<item id="select_network_alarm" desc="查询网络报警">
+		<sql>
+			SELECT DISTINCT abd_area_id AS id,
+		       	TO_CHAR(abd_area_id) AS rid,
+		  	   	abd_area_name AS name,
+		       	abd_parent_id AS pid,
+		       	abd_cus_number AS cus_number,
+		       	'-1' AS type,
+		       	'true' AS nocheck,
+		  	   	abd_seq AS seq,
+		  	   	'' AS levelids
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT nbd_area_id FROM alt_network_base_dtls 
+			    WHERE nbd_cus_number = :cusNumber 
+			    GROUP BY nbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			
+			UNION
+			
+			SELECT 
+			   	nbd_id AS id,
+			   	CONCAT('network',nbd_id) AS rid,
+			   	nbd_name AS name,
+			   	nbd_area_id AS pid,
+			   	nbd_cus_number AS cus_number,
+			   	:deviceType AS type,
+			   	'false' AS nocheck,
+			   	nbd_seq AS seq,
+			   	lhs.levelids
+			FROM alt_network_base_dtls nbd
+			LEFT JOIN (
+				SELECT 
+					WM_CONCAT(lhs_id) as levelids,
+					lhs_alertor_id 
+				FROM alt_level_handle_set
+				WHERE lhs_dvc_type = :deviceType
+				GROUP BY lhs_alertor_id
+			) lhs on lhs.lhs_alertor_id = nbd.nbd_id
+			WHERE nbd_cus_number =:cusNumber
+		</sql>
+		<order id="0">
+			ORDER BY seq			
+		</order>
+    </item>
+    <item id="select_camera_alarm" desc="查询摄像机报警">
+    	<sql>
+    		SELECT
+    		   	DISTINCT abd_area_id AS id,
+		       	TO_CHAR(abd_area_id) AS rid,
+		  	   	abd_area_name AS name,
+		       	abd_parent_id AS pid,
+		       	abd_cus_number AS cus_number,
+		       	'-1' AS type,
+		       	'true' AS nocheck,
+		  	   	abd_seq AS seq,
+		  	   	'' AS levelids  
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT cbd_area_id FROM cmr_camera_base_dtls 
+			    WHERE cbd_cus_number = :cusNumber 
+			    GROUP BY cbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			
+			UNION
+			
+    		SELECT
+    			cbd_id AS id,
+    			CONCAT('camera',cbd_id) AS rid,
+    			cbd_name AS name,
+    			cbd_area_id AS pid,
+    			cbd_cus_number AS cus_number,
+    			:deviceType AS type,
+    			'false' AS nocheck,
+    			cbd_seq AS seq,
+    			lhs.levelids
+    		FROM cmr_camera_base_dtls cbd
+    		LEFT JOIN (
+				SELECT 
+					WM_CONCAT(lhs_id) as levelids,
+					lhs_alertor_id 
+				FROM alt_level_handle_set
+				WHERE lhs_dvc_type = :deviceType
+				GROUP BY lhs_alertor_id
+			) lhs on lhs.lhs_alertor_id = cbd.cbd_id
+			WHERE cbd_cus_number =:cusNumber
+    	</sql>
+		<order id="0">
+			ORDER BY seq			
+		</order>
+    </item>
+    <item id="select_network_alrm_byid">
+    	<const key="nbd_stts_indc_name">dbd_stts_indc</const>
+    	<sql>
+    		SELECT
+    			nbd_id,
+    			nbd_name,
+    			nbd_dvc_addrs,
+    			nbd_stts,
+				nbd_stts AS nbd_stts_indc_name
+    		FROM alt_network_base_dtls
+    		WHERE nbd_id = ?  AND nbd_cus_number = ?   
+    	</sql>
+    </item>
+</sqlItem>

@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_talk_ztree">
+		<sql>
+			SELECT 
+		        CONCAT('c_',odd_id) AS id,
+		        odd_seq as seq,
+		        odd_name AS name,
+		        CONCAT('c_',odd_parent_id) AS pid,
+		        null as deviceType,
+		        null AS icon
+	      	FROM sys_org_dept_dtls
+	      	WHERE odd_data_auth = 1 
+	      	START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id=odd_id
+			
+			UNION
+			
+			SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+			  	   abd_seq as seq,
+			  	   abd_area_name AS name,
+			       CONCAT('c_',abd_parent_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT tbd_area_id FROM tbk_talkback_base_dtls 
+			    WHERE tbd_cus_number = :cusNumber
+			    GROUP BY tbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      	
+	      	UNION 
+	      	
+        	SELECT 
+	           CONCAT(tbd_id,'') AS id,
+	           tbd_seq as seq,
+	           tbd_name AS name,
+	           CONCAT('c_',tbd_area_id) AS pid ,
+	           null as deviceType,
+	           'css/images/talkztree.png' AS icon
+	      	FROM tbk_talkback_base_dtls
+	      	WHERE tbd_cus_number = :cusNumber
+	      	
+	      	ORDER BY seq
+		</sql>
+	</item>
+	<item id="select_networkalarm_ztree">
+		<sql>
+			SELECT 
+		        CONCAT('c_',odd_id) AS id,
+		        odd_seq as seq,
+		        odd_name AS name,
+		        CONCAT('c_',odd_parent_id) AS pid,
+		        null as deviceType,
+		        null AS icon
+	      	FROM sys_org_dept_dtls
+	      	WHERE odd_data_auth = 1 
+	      	START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id=odd_id
+			
+			UNION
+			
+			SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+			  	   abd_seq as seq,
+			  	   abd_area_name AS name,
+			       CONCAT('c_',abd_parent_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT nbd_area_id FROM alt_network_base_dtls 
+			    WHERE nbd_cus_number = :cusNumber
+			    GROUP BY nbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      	
+	      	UNION 
+	      	
+        	SELECT 
+	           CONCAT(nbd_id,'') AS id,
+	           nbd_seq as seq,
+	           nbd_name AS name,
+	           CONCAT('c_',nbd_area_id) AS pid ,
+	           null as deviceType,
+	           'css/images/networkalarm.png' AS icon
+	      	FROM alt_network_base_dtls
+	      	WHERE nbd_cus_number = :cusNumber
+	      	
+	      	ORDER BY seq
+		</sql>
+	</item>
+	<item id="select_door_ztree" desc="">
+		<const key="icon">DOOR_TYPE_ICON</const>
+		<sql>
+			SELECT 
+		        CONCAT('c_',odd_id) AS id,
+		        odd_seq as seq,
+		        odd_name AS name,
+		        CONCAT('c_',odd_parent_id) AS pid,
+		        null as deviceType,
+		        null AS icon
+	      	FROM sys_org_dept_dtls
+	      	WHERE odd_data_auth = 1 
+	      	START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id=odd_id
+			
+			UNION
+			
+			SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+			  	   abd_seq as seq,
+			  	   abd_area_name AS name,
+			       CONCAT('c_',abd_parent_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT dbd_area_id FROM dor_door_base_dtls 
+			    WHERE dbd_cus_number = :cusNumber
+			    GROUP BY dbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      	
+	      	UNION 
+	      	
+        	SELECT 
+	           CONCAT(dbd_id,'') AS id,
+	           dbd_seq as seq,
+	           dbd_name AS name,
+	           CONCAT('c_',dbd_area_id) AS pid ,
+	           dbd_type as deviceType,
+	           dbd_type AS icon
+	      	FROM dor_door_base_dtls
+	      	WHERE dbd_cus_number = :cusNumber
+	      	
+	      	ORDER BY seq
+		</sql>
+    </item>
+	<item id="select_camera_ztree" desc="">
+		<const key="icon">HOME_CAMERA_ICON</const>
+		<sql>
+			SELECT 
+		        CONCAT('c_',odd_id) AS id,
+		        odd_seq as seq,
+		        odd_name AS name,
+		        CONCAT('c_',odd_parent_id) AS pid,
+		        null as deviceType,
+		        null AS icon
+	      	FROM sys_org_dept_dtls
+	      	WHERE odd_data_auth = 1 
+	      	START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id=odd_id
+			
+			UNION
+			
+			SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+			  	   abd_seq as seq,
+			  	   abd_area_name AS name,
+			       CONCAT('c_',abd_parent_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT cbd_area_id FROM cmr_camera_base_dtls 
+			    WHERE cbd_cus_number = :cusNumber
+			    GROUP BY cbd_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      	
+	      	UNION 
+	      	
+        	SELECT 
+	           CONCAT(cbd_id,'') AS id,
+	           cbd_seq as seq,
+	           cbd_name AS name,
+	           CONCAT('c_',cbd_area_id) AS pid ,
+	           cbd_type as deviceType,
+	           cbd_type AS icon
+	      	FROM cmr_camera_base_dtls
+	      	WHERE cbd_cus_number = :cusNumber
+	      	
+	      	ORDER BY seq
+		</sql>
+    </item>
+
+	<item id="select_rfid_ztree_for_map_point" desc="">
+		<const key="icon">HOME_RFID_ICON</const>
+		<sql>
+	      SELECT 
+	            CONCAT('c_',odd_id) AS id,
+	            odd_seq as seq,
+	            odd_name AS name,
+	            CONCAT('c_',odd_parent_id) AS pid,
+	            null as deviceType,
+	            null AS icon
+	          FROM sys_org_dept_dtls
+	          WHERE odd_data_auth = 1 
+	          START WITH odd_id = :cusNumber
+	      CONNECT BY PRIOR odd_parent_id=odd_id 
+
+	      UNION 
+
+	      SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+	             abd_seq as seq,
+	             abd_area_name AS name,
+	             CONCAT('c_',abd_parent_id) AS pid,
+	             null as deviceType,
+	             null AS icon
+	      FROM com_area_base_dtls 
+	      START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+	          SELECT rbd_area_id FROM dvc_rfid_base_dtls 
+	          WHERE rbd_cus_number = :cusNumber
+	          GROUP BY rbd_area_id
+	      )
+	      CONNECT BY PRIOR abd_parent_id = abd_area_id 
+
+	          UNION 
+
+	          SELECT 
+	             CONCAT(rbd_id,'') AS id,
+	             rbd_seq as seq,
+	             rbd_name AS name,
+	             CONCAT('c_',rbd_area_id) AS pid ,
+	             null as deviceType,
+	             null AS icon
+	          FROM dvc_rfid_base_dtls
+	          WHERE rbd_cus_number = :cusNumber 
+
+	        	ORDER BY seq
+		</sql>
+    </item>
+
+	<item id="select_patrol_ztree_for_map_point" desc="巡更点">
+    <const key="icon">HOME_PATROL_ICON</const>
+    <sql>
+        SELECT 
+              CONCAT('c_',odd_id) AS id,
+              odd_seq as seq,
+              odd_name AS name,
+              CONCAT('c_',odd_parent_id) AS pid,
+              null as deviceType,
+              null AS icon
+            FROM sys_org_dept_dtls
+            WHERE odd_data_auth = 1 
+            START WITH odd_id = :cusNumber
+        CONNECT BY PRIOR odd_parent_id=odd_id 
+
+        UNION 
+
+        SELECT DISTINCT CONCAT('c_',abd_area_id) AS id,
+               abd_seq as seq,
+               abd_area_name AS name,
+               CONCAT('c_',abd_parent_id) AS pid,
+               null as deviceType,
+               null AS icon
+        FROM com_area_base_dtls 
+        START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+            SELECT ppi_area_id FROM ptl_patrol_point_dtls 
+            WHERE ppi_cus_number = :cusNumber
+            GROUP BY ppi_area_id
+        )
+        CONNECT BY PRIOR abd_parent_id = abd_area_id 
+
+            UNION 
+
+            SELECT 
+               CONCAT(ppi_id,'') AS id,
+               ppi_seq as seq,
+               ppi_name AS name,
+               CONCAT('c_',ppi_area_id) AS pid ,
+               null as deviceType,
+               null AS icon
+            FROM ptl_patrol_point_dtls
+            WHERE ppi_cus_number = :cusNumber 
+
+            ORDER BY seq
+    </sql>
+    </item>
+
+	<item id="select_wireless_alarm_ztree_for_map_point" desc="">
+		<const key="icon">HOME_RFID_ICON</const>
+		<sql>
+			SELECT CONCAT('c_', odd_id) AS id,
+			       odd_seq as seq,
+			       odd_name AS name,
+			       CONCAT('c_', odd_parent_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			  FROM sys_org_dept_dtls
+			 WHERE odd_data_auth = 1
+			 START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id = odd_id
+			UNION
+			SELECT DISTINCT CONCAT('c_', abd_area_id) AS id,
+			                abd_seq as seq,
+			                abd_area_name AS name,
+			                CONCAT('c_', abd_parent_id) AS pid,
+			                null as deviceType,
+			                null AS icon
+			  FROM com_area_base_dtls
+			 START WITH abd_cus_number = :cusNumber
+			        AND abd_area_id IN (SELECT wam_area_id
+			                              FROM dvc_wireless_alarm_master
+			                             WHERE wam_cus_number = :cusNumber
+			                             GROUP BY wam_area_id)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+			UNION
+			SELECT CONCAT(wam_id, '') AS id,
+			       wam_seq as seq,
+			       wam_name AS name,
+			       CONCAT('c_', wam_area_id) AS pid,
+			       null as deviceType,
+			       null AS icon
+			  FROM dvc_wireless_alarm_master
+			 WHERE wam_cus_number = :cusNumber
+			 ORDER BY seq
+		</sql>
+    </item>
+
+	<item id="select_fire_fighting_box_for_map_point">
+		<sql>
+			SELECT DISTINCT CONCAT('c_', odd_id) AS id,
+			                odd_seq as seq,
+			                odd_name AS name,
+			                CONCAT('c_', odd_parent_id) AS pid,
+			                null as deviceType,
+			                null AS icon
+			  FROM (SELECT odd_id, odd_name, odd_parent_id, odd_seq
+			          FROM sys_org_dept_dtls
+			         START WITH odd_id = :cusNumber
+			        CONNECT BY PRIOR odd_id = odd_parent_id)
+			 START WITH odd_id IN (SELECT ffb_dept_id
+			                         FROM dvc_fire_fighting_box
+			                        WHERE ffb_cus_number = :cusNumber
+			                        GROUP BY ffb_dept_id)
+			CONNECT BY PRIOR odd_parent_id = odd_id
+			UNION
+			SELECT CONCAT(ffb_id, '') AS id,
+			       ffb_id as seq,
+			       ffb_name AS name,
+			       CONCAT('c_', ffb_dept_id) AS pid,
+			       ffb_type as deviceType,
+			       null AS icon
+			  FROM dvc_fire_fighting_box
+			 WHERE ffb_cus_number = :cusNumber
+			 ORDER BY seq
+		</sql>
+	</item>
+
+	<item id="select_org_areas">
+		<sql>
+			SELECT 
+				oar_cus_number,
+				oar_area_id,
+				oar_dept_id
+			FROM com_org_area_rltn
+			WHERE oar_cus_number =? AND oar_area_id =?
+		</sql>
+	</item>
+
+	<item id="del_org_area" desc="删除组织机构区域关联">
+		<sql>
+			DELETE FROM com_org_area_rltn WHERE oar_cus_number =:cus_number AND oar_area_id =:oldId
+		</sql>
+	</item>
+
+	<item id="insert_org_area" desc="新增组织机构区域关联">
+		<sql>
+			INSERT INTO com_org_area_rltn (
+				oar_cus_number,
+				oar_area_id,
+				oar_dept_id
+			) VALUES(
+				:cus_number,
+				:area_id,
+				:dept_id
+			)
+		</sql>
+	</item>
+
+    <item id="basedata_select_area_tree" desc="区域维护中 区域树的查询">
+		<sql>
+			SELECT abd.abd_cus_number,
+			       abd.abd_area_id as id,
+			       abd.abd_area_name as name,
+			       abd.abd_area_type,
+			       abd.abd_area_level,
+			       abd.abd_parent_id as pid,
+			       abd.abd_2dmap_id,
+			       abd.abd_3dmap_id,
+			       abd.abd_seq,
+			       abd.abd_crte_time,
+			       abd.abd_crte_user_id,
+			       abd.abd_updt_time,
+			       abd.abd_updt_user_id,
+			       A.dept_ids,
+			       A.dept_names
+			FROM com_area_base_dtls abd
+			LEFT JOIN (
+			      SELECT
+			      	 wm_concat(odd.odd_id) AS dept_ids,
+			      	 wm_concat(odd.odd_name) AS dept_names,
+			      	 oar.oar_area_id 
+			      FROM com_org_area_rltn oar 
+			      INNER JOIN sys_org_dept_dtls odd ON oar.oar_dept_id = odd.odd_id
+			      GROUP BY oar.oar_area_id
+			) A ON abd.abd_area_id = A.oar_area_id
+		</sql>
+		<where id="0">
+			WHERE abd.abd_cus_number=?
+			ORDER BY abd.abd_seq
+		</where>
+    </item>
+
+    <item id="insert_area" desc="新增区域">
+    	<sql>
+    		INSERT INTO com_area_base_dtls(
+    			abd_cus_number,
+				abd_area_id,
+				abd_area_name,
+				abd_area_type,
+				abd_area_level,
+				abd_parent_id,
+				abd_2dmap_id,
+				abd_3dmap_id,
+				abd_seq,
+				abd_crte_time,
+				abd_crte_user_id,
+				abd_updt_time,
+				abd_updt_user_id
+    		) VALUES (
+    			:abd_cus_number,
+				:id,
+				:name,
+				:abd_area_type,
+				:abd_area_level,
+				:pid,
+				:abd_2dmap_id,
+				:abd_3dmap_id,
+				:abd_seq,
+				SYSDATE,
+				:abd_crte_user_id,
+				SYSDATE,
+				:abd_updt_user_id	
+    		)
+    	</sql>
+    </item>
+     <item id="update_area" desc="修改区域">
+    	<sql>
+    		UPDATE com_area_base_dtls SET 
+				abd_area_id=:id,
+				abd_area_name=:name,
+				abd_area_type=:abd_area_type,
+				abd_area_level=:abd_area_level,
+				abd_parent_id=:pid,
+				abd_2dmap_id=:abd_2dmap_id,
+				abd_3dmap_id=:abd_3dmap_id,
+				abd_seq=:abd_seq,
+				abd_updt_time=SYSDATE,
+				abd_updt_user_id=:abd_updt_user_id
+			WHERE abd_area_id =:oldId AND abd_cus_number=:abd_cus_number
+    	</sql>
+    </item>
+    <item id="update_area_pid" desc="修改子区域的pid">
+    	<sql>
+    		UPDATE com_area_base_dtls SET 
+				abd_parent_id=:id
+			WHERE abd_parent_id =:oldId AND abd_cus_number=:abd_cus_number
+    	</sql>
+    </item>
+     <item id="delete_area" desc="删除区域">
+    	<sql>
+    		DELETE FROM com_area_base_dtls 
+    	</sql>
+    	<where id="0">
+    		WHERE abd_parent_id =:oldId AND abd_cus_number = :abd_cus_number
+    	</where>
+    	<where id="1">
+    		WHERE abd_area_id = :oldId AND abd_cus_number = :abd_cus_number
+    	</where>
+    </item>
+    <item id="update_video_area" desc="更新视频设备区域">
+    	<sql>
+    		UPDATE cmr_video_device_dtls SET vdd_area_id = :id WHERE vdd_area_id=:oldId AND vdd_cus_number = :cus_number
+    	</sql>
+    </item>
+    <item id="update_camera_area" desc="更新摄像机设备区域">
+    	<sql>
+    		UPDATE cmr_camera_base_dtls SET cbd_area_id = :id WHERE cbd_area_id=:oldId AND cbd_cus_number = :cus_number
+    	</sql>
+    </item>
+</sqlItem>

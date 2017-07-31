@@ -1,0 +1,82 @@
+/* *****************************************************************
+ * SQL配置文件的格式
+ * *****************************************************************/
+<sqlItem>
+    <item id="" desc="">
+    	<filter id="" type=""></filter>
+    	<const key="" module=""></const>
+    	<seq>表名@ID字段名@字段别名</seq>
+		<sql></sql>
+		<where id=""></where>
+		<order id=""></order>
+    </item>
+</sqlItem>
+
+
+
+/* *****************************************************************
+ * SQL配置节点说明 
+ * *****************************************************************/
+节点说明：
+	sqlItem：整个SQL配置文件的根节点
+	item: 每个SQL配置的主节点（必填）
+	filter: 数据权限过滤配置节点（查询数据时使用）（可选）
+	const: 数据常量转换节点（查询数据时使用）（可选）
+	seq: 序列号配置节点（插入数据时使用）（可选）
+	sql: 执行SQL的主体部分（必填）
+	where: 执行SQL的条件部分（可选）
+	order: 执行SQL的排序部分（可选）
+
+节点属性说明：
+	item.id：SQL执行语句的唯一ID（必填）
+	item.desc：SQL配置的作用描述（可选）
+
+	filter.id：代表ID字段的字段名（必填）
+	filter.type: 代表类型字段的字段名（必填）
+
+	const.key：需要数据转换的字段的字段名（必填）
+	const.module: 需要数据转换的服务类表示（默认是常量转换，一些其它转换服务待定义，可选）
+
+	where.id：执行SQL条件部分的编号（必填）
+	order.id：执行SQL排序部分的编号（必填）
+
+节点内容说明：
+	const: 对应常量表的常量编号
+	seq: 序列号生产参数，格式：table@field@byname
+		 table: 插入数据的表名
+		 field：插入序列号的表字段名（如果使用的是key-value的传参格式，field的名称要和参数里面表示序列号的key同名）
+		 byname: 如果定义了此属性则在生成序列号时，序列表记录的是byname的字段名
+
+
+
+
+
+
+
+/* *****************************************************************
+ * 公共函数使用说明
+ * *****************************************************************/
+ 
+-- 获取权限部门列表函数的用法
+-- 函数语法：dvc_pkg_permission.getdep(args1, args2, args3)
+-- 参数说明：args1-部门编号、args2-权限标识、args3-机构号
+-- 返回数据：参考sys_org_dept_dtls表的数据格式
+-- 使用事例：
+	select * from table(dvc_pkg_permission.getdep()) // 默认查询出所有的部门
+	select * from table(dvc_pkg_permission.getdep(3012, 1, 3001))	// 此为测试数据，使用时请以自己的实际数据测试
+
+
+
+-- 字符串分割函数的用法（一般用于带有 IN 条件的SQL）
+-- 函数语法：SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(args1, args2))
+-- 参数说明：args1-分割的字符串；args2-分割标识
+-- 参考数据：args1="a,b,c,d", args2=","
+-- 使用事例：
+	-- 简单的使用IN条件查询的例子：
+		SELECT * FROM 表名 WHERE id IN (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA('1,2,3,4', ',')))
+
+
+
+
+
+

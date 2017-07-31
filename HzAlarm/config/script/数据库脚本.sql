@@ -1,0 +1,222 @@
+/* ==============================================================
+ * 版本：2.0.3
+ * 时间：2017.06.19
+ * 作者：xie.yh
+ * 描述: 新增历史处置流程主表
+ * ============================================================== */
+create table ALT_HANDLE_FLOW_MASTER_H 
+(
+   HFM_CUS_NUMBER       NUMBER(28)           not null,
+   HFM_ALARM_RECORD_ID  NUMBER(28)           not null,
+   HFM_FLOW_ID          NUMBER(28)           not null,
+   HFM_FLOW_NAME        VARCHAR2(80),
+   HFM_TYPE_INDC        NUMBER(2),
+   HFM_SHOW_SEQ         NUMBER(18),
+   HFM_CRTE_TIME        TIMESTAMP,
+   HFM_CRTE_USER_ID     NUMBER(28),
+   HFM_UPDT_TIME        TIMESTAMP,
+   HFM_UPDT_USER_ID     NUMBER(28)
+);
+
+comment on table ALT_HANDLE_FLOW_MASTER_H is
+'历史处置流程主表';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_CUS_NUMBER is
+'机构号';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_ALARM_RECORD_ID is
+'报警记录编号';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_FLOW_ID is
+'流程编号';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_FLOW_NAME is
+'流程名称';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_TYPE_INDC is
+'流程类型 0 、标准流程（监狱不可修改）1、定制流程';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_SHOW_SEQ is
+'显示序号';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_CRTE_TIME is
+'创建时间';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_CRTE_USER_ID is
+'创建人';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_UPDT_TIME is
+'更新时间';
+
+comment on column ALT_HANDLE_FLOW_MASTER_H.HFM_UPDT_USER_ID is
+'更新人';
+
+alter table ALT_HANDLE_FLOW_MASTER_H
+   add constraint PK_ALT_HANDLE_FLOW_MASTER_H primary key (HFM_CUS_NUMBER, HFM_ALARM_RECORD_ID, HFM_FLOW_ID);
+
+
+
+
+
+
+
+/* ==============================================================
+ * 版本：2.0.3
+ * 时间：2017.06.19
+ * 作者：xie.yh
+ * 描述: 新增历史处理流程详情表
+ * ============================================================== */
+create table ALT_HANDLE_FLOW_DTLS_H 
+(
+   HFD_CUS_NUMBER       NUMBER(28)           not null,
+   HFD_ALARM_RECORD_ID  NUMBER(28)           not null,
+   HFD_FLOW_ID          NUMBER(28)           not null,
+   HFD_FLOW_ITEM_ID     NUMBER(28)           not null,
+   HFD_FLOW_ITEM_NAME   VARCHAR2(2560),
+   HFD_FLOW_ORDER       NUMBER(18)           not null,
+   HFD_CRTE_TIME        TIMESTAMP,
+   HFD_CRTE_USER_ID     NUMBER(28),
+   HFD_UPDT_TIME        TIMESTAMP,
+   HFD_UPDT_USER_ID     NUMBER(28)
+);
+
+comment on table ALT_HANDLE_FLOW_DTLS_H is
+'历史处理流程详情表';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_CUS_NUMBER is
+'机构号';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_ALARM_RECORD_ID is
+'报警记录编号';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_FLOW_ID is
+'流程编号';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_FLOW_ITEM_ID is
+'流程项编号';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_FLOW_ITEM_NAME is
+'流程项名称';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_FLOW_ORDER is
+'流程序号';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_CRTE_TIME is
+'创建时间';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_CRTE_USER_ID is
+'创建人';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_UPDT_TIME is
+'更新时间';
+
+comment on column ALT_HANDLE_FLOW_DTLS_H.HFD_UPDT_USER_ID is
+'更新人';
+
+alter table ALT_HANDLE_FLOW_DTLS_H
+	add constraint PK_ALT_HANDLE_FLOW_DTLS_H primary key (HFD_CUS_NUMBER, HFD_FLOW_ID, HFD_FLOW_ITEM_ID, HFD_ALARM_RECORD_ID);
+
+
+
+
+
+
+/* ==============================================================
+ * 版本：2.0.3
+ * 时间：2017.06.23
+ * 作者：xie.yh
+ * 描述: 报警分级处置设计表新增处置时段
+ * ============================================================== */
+-- Add/modify columns 
+alter table ALT_LEVEL_HANDLE_SET add lhs_handle_btime VARCHAR2(8);
+-- Add/modify columns 
+alter table ALT_LEVEL_HANDLE_SET add lhs_handle_etime VARCHAR2(8);
+-- Add comments to the columns 
+comment on column ALT_LEVEL_HANDLE_SET.lhs_handle_btime is '接警处置开始时段，默认00:00:00';
+comment on column ALT_LEVEL_HANDLE_SET.lhs_handle_etime is '接警处置结束时段，默认23:59:59';
+
+
+
+
+
+
+/* ==============================================================
+ * 版本：2.0.3
+ * 时间：2017.06.28
+ * 作者：xie.yh
+ * 描述: 新增预警信息表
+ * ============================================================== */
+create table ALT_EARLY_WARNING_INFO 
+(
+   EWI_CUS_NUMBER       NUMBER(28)           not null,
+   EWI_ID               NUMBER(28)           not null,
+   EWI_TITLE            VARCHAR2(80)         not null,
+   EWI_CONTENT          CLOB                 not null,
+   EWI_LEVEL            NUMBER(2)            not null,
+   EWI_STATUS           NUMBER(2)            default 0 not null,
+   EWI_CRTE_UID         NUMBER(28)           not null,
+   EWI_CRTE_TIME        TIMESTAMP            not null,
+   EWI_PUBLISH_UID      NUMBER(28),
+   EWI_UPDT_UID         NUMBER(28),
+   EWI_UPDT_TIME        TIMESTAMP,
+   EWI_PUBLISH_TIME     TIMESTAMP,
+   constraint UK_EWI_ID unique (EWI_ID)
+);
+
+comment on table ALT_EARLY_WARNING_INFO is
+'预警信息管理表';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_CUS_NUMBER is
+'机构号';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_ID is
+'系统编号';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_TITLE is
+'预警标题';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_CONTENT is
+'预警内容';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_LEVEL is
+'预警级别';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_STATUS is
+'状态:0.新建、1.已发布、2.已撤销';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_CRTE_UID is
+'创建人';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_CRTE_TIME is
+'创建时间';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_PUBLISH_UID is
+'发布人';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_UPDT_UID is
+'更新人';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_UPDT_TIME is
+'更新时间';
+
+comment on column ALT_EARLY_WARNING_INFO.EWI_PUBLISH_TIME is
+'发布时间';
+
+alter table ALT_EARLY_WARNING_INFO 
+	add constraint PK_EARLY_WARNING_INFO primary key (EWI_CUS_NUMBER, EWI_ID);
+
+
+
+
+
+
+/* ==============================================================
+ * 版本：2.0.3
+ * 时间：2017.07.17
+ * 作者：xie.yh
+ * 描述: 报警分级管理表新增 *报警类型
+ * ============================================================== */
+alter table ALT_LEVEL_HANDLE_SET add lhs_alarm_type NUMBER(2);
+-- Add comments to the columns 
+comment on column ALT_LEVEL_HANDLE_SET.lhs_alarm_type 
+	is '（必填项）报警类型，根据报警设备类型不同定义不同';

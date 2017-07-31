@@ -1,0 +1,66 @@
+.condition{
+    border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    top: 10px;
+    width: 18%;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 10;
+    border-radius: 15px;
+    line-height: 32px;
+}
+.condition >.input{
+    border: 0;
+    border-radius: 30px;
+}
+.condition >.input >input{
+    border-radius: 30px;
+}
+.condition >input{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    float: left;
+    outline: none;
+    border-radius: 30px;
+    text-indent: 10px;
+    position:absolute;
+    top:0;
+    left:0;
+}
+.condition_btn{
+    position: absolute;
+    top: 10px;
+    border: 1px solid rgba(31, 105, 158, 0.22);
+    border-radius: 5px;
+    background-color: #054f9a;
+    height: 34px;
+    width: 5%;
+    line-height: 34px;
+}
+.condition_btn >button{
+    width: 100%;
+    height: 100%;
+    line-height: 34px;
+    outline: none;
+}
+.condition_btn:hover{
+    background-color: #08417a;
+}
+.fixed-table-toolbar .columns-right{
+    margin-right: 10px;
+}
+ tbody tr td.text {
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fixed-table-container .table td .ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_lineid_bypointid">
+		<sql>
+			SELECT
+				plr_line_id,
+				plr_plan_time,
+				plr_point_id
+			FROM ptl_patrol_line_rltn
+			WHERE plr_cus_number = :cusNumber AND plr_point_id = :pointId
+		</sql>
+	</item>
+
+	<item id="select_police_bydoorordeviceid">
+		<sql>
+			SELECT dcd_people_id AS people_id, 
+			       pbd_police_name AS people_name
+			  FROM dor_door_card_dtls
+			 INNER JOIN plc_police_base_dtls
+			    ON dcd_cus_number = pbd_cus_number
+			   AND dcd_people_id = pbd_user_id
+			 WHERE dcd_people_type = 1
+			   AND dcd_door_card_id = :cardId
+			   AND dcd_cus_number = :cusNumber
+		</sql>
+	</item>
+
+	<item id="delete_route_point" >
+		<sql>
+			DELETE FROM  ptl_route_point_dtls WHERE rpd_route_id = ?
+		</sql>
+	</item>
+	<item id="select_route_points">
+		<sql>
+			SELECT 
+				rpd_cus_number,
+				rpd_route_id,
+				rpd_pos_x AS x,
+				rpd_pos_y AS y,
+				rpd_pos_z AS z,
+				rpd_seq
+			FROM ptl_route_point_dtls
+			WHERE rpd_cus_number=? AND rpd_route_id=?
+		</sql>
+	</item>
+	<item id="insert_route_point">
+		<sql>
+			INSERT INTO ptl_route_point_dtls(
+				rpd_cus_number,
+				rpd_route_id,
+				rpd_pos_x,
+				rpd_pos_y,
+				rpd_pos_z,
+				rpd_seq
+			) VALUES (
+				:rpd_cus_number,
+				:rpd_route_id,
+				:rpd_pos_x,
+				:rpd_pos_y,
+				:rpd_pos_z,
+				:rpd_seq
+			)
+		</sql>
+	</item>
+
+	<item id="select_patrol_line_record">
+		<const key="prd_status_name">patrol_status</const>
+		<sql>
+			SELECT prd_police_id,
+			       prd_point_id,
+			       pbd_police_name,
+			       to_char(prd_real_time, 'hh24:mi') AS real_time,
+			       prd_status,
+			       prd_status AS prd_status_name
+			  FROM ptl_patrol_record_dtls
+			 INNER JOIN plc_police_base_dtls
+			    ON prd_police_id = pbd_police_id
+		</sql>
+		<where id="0">
+			 WHERE prd_cus_number = ?
+			   AND prd_line_id = ?
+			   AND to_char(SYSDATE, 'yyyy-mm-dd') =
+			       to_char(prd_real_time, 'yyyy-mm-dd')
+			 ORDER BY prd_real_time
+		</where>
+		<where id="1">
+			 WHERE prd_cus_number = :cusNumber
+			   AND prd_line_id = :lineId
+			   AND to_char(SYSDATE, 'yyyy-mm-dd') =
+			       to_char(prd_real_time, 'yyyy-mm-dd')
+			 ORDER BY prd_real_time DESC
+		</where>
+	</item>
+
+	<item id="select_patrol_line_rltn">
+		<sql>
+			SELECT 
+			  plr_cus_number,
+			  plr_line_id,
+			  plr_point_id,
+			  to_char(plr_plan_time,'hh24:mi') AS plr_plan_time ,
+			  plr_seq,
+			  ppi_name
+			FROM ptl_patrol_line_rltn
+			INNER JOIN ptl_patrol_point_dtls ON ppi_id = plr_point_id
+		</sql>
+		<where id="0">
+			WHERE plr_cus_number = ? AND plr_line_id = ?
+			ORDER BY plr_seq
+		</where>
+	</item>
+	<item id="select_patrol_line">
+		<sql>
+			SELECT 
+				pli_cus_number,
+				pli_id,
+				pli_name,
+				pli_seq,
+				pli_float_time,
+				pli_crte_time,
+				pli_crte_user_id,
+				pli_updt_time,
+				pli_updt_user_id,
+				'false' AS selected
+			FROM ptl_patrol_line_dtls
+		</sql>
+		<where id="0">
+			WHERE pli_cus_number = ?
+		</where>
+	</item>
+	<item id="update_patrol_line">
+		<sql>
+			UPDATE ptl_patrol_line_dtls SET 
+				pli_name =:pli_name,
+				pli_float_time=:pli_float_time,
+				pli_updt_time  =SYSDATE,
+				pli_updt_user_id =:pli_updt_user_id
+			WHERE pli_cus_number =:pli_cus_number AND pli_id  =:pli_id
+		</sql>
+	</item>
+	<item id="insert_patrol_line">
+		<seq>ptl_patrol_line_dtls@pli_id@ppi_id</seq>
+		<sql>
+			INSERT INTO ptl_patrol_line_dtls(
+				pli_cus_number,
+				pli_id,
+				pli_name,
+				pli_seq,
+				pli_float_time,
+				pli_crte_time,
+				pli_crte_user_id,
+				pli_updt_time,
+				pli_updt_user_id
+			) VALUES(
+				:pli_cus_number,
+				:pli_id,
+				:pli_name,
+				:pli_id,
+				:pli_float_time,
+				SYSDATE,
+				:pli_crte_user_id,
+				SYSDATE,
+				:pli_updt_user_id
+			)
+		</sql>
+	</item>
+	<item id="delete_line_rltn">
+		<sql>
+			DELETE FROM ptl_patrol_line_rltn WHERE plr_line_id = ?
+		</sql>
+	</item>
+	<item id="insert_line_rltn">
+		<sql>
+			INSERT INTO ptl_patrol_line_rltn (
+				plr_cus_number,
+				plr_line_id,
+				plr_point_id,
+				plr_plan_time,
+				plr_seq
+			) VALUES(
+				:plr_cus_number,
+				:plr_line_id,
+				:plr_point_id,
+				to_date(:plr_plan_time,'hh24:mi'),
+				:plr_seq
+			)
+		</sql>
+	</item>
+	
+	<item id="select_patrol_forselect">
+		<sql>
+			SELECT 
+		        CONCAT('p_',odd_id) AS id,
+		        odd_seq as seq,
+		        odd_name AS name,
+		        CONCAT('p_',odd_parent_id) AS pid,
+		        'org' as deviceType,
+		        null AS icon
+	      	FROM sys_org_dept_dtls
+	      	WHERE odd_data_auth = 1 
+	      	START WITH odd_id = :cusNumber
+			CONNECT BY PRIOR odd_parent_id=odd_id
+			
+			UNION
+			
+			SELECT DISTINCT CONCAT('p_',abd_area_id) AS id,
+			  	   abd_seq as seq,
+			  	   abd_area_name AS name,
+			       CONCAT('p_',abd_parent_id) AS pid,
+			       'area' as type,
+			       null AS icon
+			FROM com_area_base_dtls 
+			START WITH abd_cus_number = :cusNumber AND abd_area_id IN (
+			    SELECT ppi_area_id FROM ptl_patrol_point_dtls 
+			    WHERE ppi_cus_number = :cusNumber
+			    GROUP BY ppi_area_id
+			)
+			CONNECT BY PRIOR abd_parent_id = abd_area_id
+	      	
+	      	UNION 
+	      	
+        	SELECT 
+	           CONCAT(ppi_id,'') AS id,
+	           ppi_seq as seq,
+	           ppi_name AS name,
+	           CONCAT('p_',ppi_area_id) AS pid ,
+	           'ppi' as type,
+	           'image/point.png' AS icon
+	      	FROM ptl_patrol_point_dtls
+	      	WHERE ppi_cus_number = :cusNumber
+	      	
+	      	ORDER BY seq
+		</sql>
+	</item>
+	<item id="insert_patrol">
+		<seq>ptl_patrol_point_dtls@id@ppi_id</seq>
+		<sql>
+			INSERT INTO ptl_patrol_point_dtls (
+				ppi_cus_number,
+				ppi_id,
+				ppi_other_id,
+				ppi_name,
+				ppi_brand,
+				ppi_dept_id,
+				ppi_area_id,
+				ppi_rlan_ctrl,
+				ppi_dvc_addrs,
+				ppi_dvc_stts,
+				ppi_seq,
+				ppi_crte_time,
+				ppi_crte_user_id,
+				ppi_updt_time,
+				ppi_updt_user_id
+			) VALUES (
+				:ppi_cus_number,
+				:id,
+				:ppi_other_id,
+				:name,
+				:ppi_brand,
+				:ppi_dept_id,
+				:ppi_area_id,
+				:ppi_rlan_ctrl,
+				:ppi_dvc_addrs,
+				:ppi_dvc_stts,
+				:id,
+				SYSDATE,
+				:ppi_crte_user_id,
+				SYSDATE,
+				:ppi_updt_user_id
+			)
+		</sql>
+	</item>
+	<item id="update_patrol">
+		<sql>
+			UPDATE ptl_patrol_point_dtls SET
+				ppi_cus_number = :ppi_cus_number,
+				ppi_other_id= :ppi_other_id,
+				ppi_name= :name,
+				ppi_brand= :ppi_brand,
+				ppi_dept_id= :ppi_dept_id,
+				ppi_area_id= :ppi_area_id,
+				ppi_rlan_ctrl= :ppi_rlan_ctrl,
+				ppi_dvc_addrs= :ppi_dvc_addrs,
+				ppi_dvc_stts= :ppi_dvc_stts,
+				ppi_updt_time = SYSDATE,
+				ppi_updt_user_id= :ppi_updt_user_id
+			WHERE ppi_cus_number = :ppi_cus_number AND ppi_id = :id
+		</sql>
+	</item>
+	<item id="delete_patrol_line">
+		<sql>
+			DELETE FROM ptl_patrol_line_dtls WHERE  pli_cus_number = ? AND pli_id = ?
+		</sql>
+	</item>
+	<item id="delete_patrol">
+		<sql>
+			DELETE FROM ptl_patrol_point_dtls WHERE  ppi_cus_number = ? AND ppi_id = ?
+		</sql>
+	</item>
+	<item id="select_patrol_device_ztree" desc="">
+		<sql>
+			SELECT
+				abd_cus_number AS ppi_cus_number,
+				CONCAT('p_',abd_area_id) AS id,
+				abd_area_name AS name,
+				CONCAT('p_',abd_parent_id) AS pid,
+				abd_seq	AS seq,
+				'' AS ppi_other_id,
+				-1 AS ppi_brand,
+				-1 AS ppi_dept_id,
+				-1 AS ppi_area_id,
+				'' AS ppi_dvc_addrs,
+				-1 AS ppi_dvc_stts,
+				'area' AS tree_type,
+				'' AS ppi_area_name,
+				-1 AS ppi_rlan_ctrl
+			FROM com_area_base_dtls
+			WHERE abd_cus_number =:cusNum
+
+			UNION
+
+			SELECT
+				ppi_cus_number,
+				CONCAT('',ppi_id) AS id,
+				ppi_name AS name,
+				CONCAT('p_',ppi_area_id) AS pid,
+				ppi_seq AS seq,
+				ppi_other_id,
+				ppi_brand,
+				ppi_dept_id,
+				ppi_area_id,
+				ppi_dvc_addrs,
+				ppi_dvc_stts,
+				'ppi' AS tree_type,
+				abd_area_name AS ppi_area_name,
+				ppi_rlan_ctrl
+			FROM ptl_patrol_point_dtls
+			INNER JOIN com_area_base_dtls ON ppi_area_id = abd_area_id
+			WHERE ppi_cus_number =:cusNum
+			ORDER BY seq
+		</sql>
+    </item>
+
+	<item id="query_route_linkdvc_points">
+		<sql>
+			SELECT mpi_point_id   AS id,
+			       mpi_point_name AS name,
+			       mpi_pos_x      AS x1,
+			       mpi_pos_y      AS y1,
+			       mpi_pos_z      AS z1,
+			       rdl_pos_x      AS x2,
+			       rdl_pos_y      AS y2,
+			       rdl_pos_z      AS z2
+			  FROM map_route_patrol_master
+			 INNER JOIN map_route_device_link
+			    ON rdl_cus_number = rpm_cus_number
+			   AND rdl_route_id = rpm_route_id
+			 INNER JOIN map_model_point_info
+			    ON mpi_cus_number = rdl_cus_number
+			   AND mpi_link_type = rdl_dvc_type
+			   AND mpi_link_id = rdl_dvc_id
+		</sql>
+		<where id="0">
+			WHERE rpm_cus_number = ?
+			  AND rpm_route_id = ?
+		</where>
+	</item>
+</sqlItem>

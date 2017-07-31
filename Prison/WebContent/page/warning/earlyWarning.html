@@ -1,0 +1,147 @@
+
+<link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../css/warning/earlyWarning.css"/>
+<style>
+    @media screen and (min-width: 768px) {
+        form.form-horizontal .form-group{
+             position: relative;
+         }
+        form.form-horizontal .form-group label{
+            width:20%;
+        }
+        form.form-horizontal .form-group >div{
+            padding-top:7px;
+        }
+        form.form-horizontal .form-group.wirtetime{
+            width:50%;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
+    form.form-horizontal div.form-group.textarea div textarea{
+        width:100%;
+        height:200px;
+        border:1px solid #1f699e;
+        padding-top: 6px;
+        padding-left: 12px;
+    }
+    .fixed-table-container .fixed-table-body{
+        overflow-x:auto;
+    }
+    #infotd{
+        overflow-y:auto;
+    }
+    #back{
+        float:left;
+        margin-left:24px;
+        padding:0 18px;
+    }
+</style>
+<div class="condition" style="left:1%">
+    <input placeholder="标题"  v-model="condition['org']" >
+</div>
+<div class="condition" style="left:22%">
+    <input placeholder="内容" v-model="condition['ffdm_name']" >
+</div>
+<div class="condition" style="left:43%">
+    <input placeholder="预警级别" v-model="condition['ffdm_asset_code']" >
+</div>
+<div class="vbox box-con" id="infolist">
+    <div class="hbox hz-col-1">
+        <div class="hz-col-1">
+            <table id="table" ></table>
+        </div>
+    </div>
+
+    <div class="bottom" >
+        <div class="buttons" id="oprbutton">
+            <a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>
+            <a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+        </div>
+    </div>
+
+    <div class="vbox hz-col-1" id="infotd" style="display:none;">
+        <div class="hz-col-3">
+            <form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">标题</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control"  v-model="infogroup['odd_name']" placeholder="请输入标题">
+                    </div>
+                </div>
+
+                <div class="form-group textarea">
+                    <label class="col-sm-3 control-label">内容</label>
+                    <div class="col-sm-8">
+                        <textarea placeholder="最多可输入800字" maxlength="800" v-model="infogroup['per_petition_content']"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="form-group ">
+                    <label class="col-xs-2 control-label">预警级别</label>
+                    <div class="col-sm-8" style="padding-top:0;">
+                        <hz-select
+                                tip="预警级别"
+                                code="warningw_level"
+                                :id.sync="door.dbd_dvc_stts"
+                                />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">创建人</label>
+                    <div class="col-sm-8">
+                        <span>{{infogroup['per_create_us']}}</span>
+                    </div>
+                    <div class="form-group wirtetime">
+                        <label class="col-sm-3 control-label">创建时间</label>
+                        <div class="col-sm-8">
+                            <span class="date"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" v-if="flag">
+                    <label class="col-sm-3 control-label">发布人</label>
+                    <div class="col-sm-8">
+                        <span>{{infogroup['per_create_us']}}</span>
+                    </div>
+                    <div class="form-group wirtetime">
+                        <label class="col-sm-3 control-label">发布时间</label>
+                        <div class="col-sm-8">
+                            <span class="date"></span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+        <div class="hz-col-1">
+            <div class="hbtn btn_primary btn_mini pull-right" id="quit" style="margin-right:15px;margin-bottom:10px;padding:0 14px;"><span>取消</span></div>
+            <a class="hbtn btn_primary btn_mini pull-right" id="save" style="margin-right:15px;margin-bottom:10px;"><i class="btn_icon icon_save"></i><span>保存</span></a>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="../../js/require.js"  data-main="../../js/config" ></script>
+<script>
+    require(["../js/src/warning/earlyWarning"]);
+    function showTime(){
+        var dates=new Date();
+        var hh=dates.getHours();
+        var mm=dates.getMinutes();
+        var ss=dates.getSeconds();
+        hh=hh<10?('0'+hh):hh;
+        mm=mm<10?('0'+mm):mm;
+        ss=ss<10?('0'+ss):ss;
+        document.querySelectorAll(".wirtetime div span")[0].innerHTML=hh+":"+mm+":"+ss;
+    }
+    setInterval("showTime()",100);
+</script>

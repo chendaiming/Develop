@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>菜单样式</title>
+<link rel="stylesheet" href="./css/map/map.main.css" charset="utf-8">
+<style type="text/css">
+
+</style>
+</head>
+<body>
+<div id="mapLoading" style="display:none;">
+	<div class="splash" id="splash">
+	    <div class="splash-inner">
+	        <div class="loading-circle" id="loadingCircle">
+	            <p><span id="loadedNum">0</span>%</p>
+	            <canvas class="mask" id="loadingProgress" width="204" height="204"></canvas>
+	            <canvas class="bg" width="204" height="204"></canvas>
+	        </div>
+	        <h3>正在加载地图...</h3>
+	    </div>
+	</div>
+</div>
+<div id="hzMap" style="display:none;">
+	<div class="map-cross x"></div>
+	<div class="map-cross y"></div>
+	<div class="map-console"><div><ul class="contents"></ul></div></div>
+</div>
+</body>
+</html>

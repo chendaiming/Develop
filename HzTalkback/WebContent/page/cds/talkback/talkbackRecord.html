@@ -1,0 +1,94 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+.table-bordered>tbody>tr>td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+    height:37px; 
+}
+.table-bordered>tbody>tr>th{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:16px;
+    height:42px; 
+}
+.play{
+	color:#33ccff;
+	cursor: pointer; 
+}
+.col-xs-1{
+  width: 6%;
+  padding-right: 2px;
+  padding-left: 2px;
+}
+.col-xs-2{
+  padding-right: 2px;
+  padding-left: 2px;
+  padding-top: 1px;	
+}
+.row{
+    margin-right: 0px;
+    margin-left: 0px;
+}
+</style>
+<body>
+	<div class="row" style="margin-top: 1%;">
+		<form class="form-horizontal">
+		<div class="form-group ">
+			<div class="col-xs-4">
+				<label class="col-xs-4 control-label">类型:</label>
+				<div class="col-xs-8">
+					<hz-select tip="对讲类型" code="talk_call_type" :id.sync="call_type" />
+				</div>
+			</div>
+			<div class="col-xs-4">
+				<label class="col-xs-4 control-label">主叫:</label>
+				<div class="col-xs-8">
+					<hz-select tip=主叫
+					sqlid="select_talkback_otherid_name"
+					whereid=0
+					:params=[cusNumber] 
+					 :id.sync="caller" />
+				</div>
+			</div>	
+			<div style="font-size:15px;margin-left:50%;margin-top:9px;">共 &nbsp;&nbsp;<span style="color:#33ccff" v-text="total"></span>&nbsp;&nbsp;条记录</div> 
+		</div>
+	
+		</form>
+	</div>
+	<div class="hbox box-con">
+		<table class="table table-bordered">
+			<tr>
+				<th></th>
+				<th>类型</th>
+				<th>主叫</th>
+				<th>被叫</th>
+				<th>时间</th>
+				<th>录音</th>
+			</tr>
+			<tr v-cloak v-for="record in records">
+				<td v-text="($index+1)"></td>
+				<td class="col-xs-1" v-text="record.call_type"></td>
+				<td class="col-xs-2" v-text="record.caller"></td>
+				<td class="col-xs-3" v-text="record.callees"></td>
+				<td class="col-xs-3" v-text="record.start_time"></td>
+				<td v-if="record.record_file" class="col-xs-2"><a class="play" @click="audition(record.record_file)">录音播放</a></td>
+				<td v-if="!record.record_file" class="col-xs-2" >没有录音</td>
+			</tr>
+		</table>
+	</div>
+		<!-- 播放器 -->
+	<div id="audio-div" style="display:none;">
+		<audio id="audio-path"  controls="controls">
+		  <source v-bind:src="auditionAudio" type="audio/mp3">
+		</audio>
+	</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/talkback/talkbackRecord"]);
+</script>

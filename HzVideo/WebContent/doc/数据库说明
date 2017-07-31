@@ -1,0 +1,3 @@
+视频巡视记录表增加  巡视结果备注字段  vpp_check_record   vcr_mark  varchar2(560)
+
+alter table vpp_check_record add (vcr_mark varchar2(560));

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_map_device_model_bind" desc="新增设备模型绑定">
+		<sql>
+			 INSERT INTO map_device_model_bind
+			   (dmb_cus_number,
+			    dmb_dvc_id,
+			    dmb_dvc_type,
+			    dmb_dvc_name,
+			    dmb_model_name,
+			    dmb_crte_uid,
+			    dmb_crte_time)
+			 VALUES
+			   (:dmb_cus_number,
+			    :dmb_dvc_id,
+			    :dmb_dvc_type,
+			    :dmb_dvc_name,
+			    :dmb_model_name,
+			    :dmb_crte_uid,
+			    SYSDATE)
+
+		</sql>
+	</item>
+	
+	<item id="query_map_device_model_bind" desc="设备模型绑定信息">
+		<const key="dmb_dvc_type_name">securityDeviceType</const>
+		<const key="dmb_crte_name" module="user"></const>
+		<const key="dmb_updt_name" module="user"></const>
+		<sql>
+			SELECT dmb_cus_number,
+			       dmb_dvc_id,
+			       dmb_dvc_type,
+			       dmb_dvc_type AS dmb_dvc_type_name,
+			       dmb_dvc_name,
+			       dmb_model_name,
+			       dmb_crte_uid,
+			       dmb_crte_uid AS dmb_crte_name,
+			       to_char(dmb_crte_time,'yyyy-mm-dd hh24:mi:ss') AS dmb_crte_time,
+			       dmb_updt_uid,
+			       dmb_updt_uid AS dmb_updt_name,
+			       to_char(dmb_updt_time,'yyyy-mm-dd hh24:mi:ss') AS dmb_updt_time
+			  FROM map_device_model_bind
+			 WHERE dmb_cus_number = :dmb_cus_number
+		</sql>
+		 <where id="0">
+			AND
+			(:dmb_dvc_name    IS  NULL  OR  dmb_dvc_name LIKE CONCAT('%',CONCAT(:dmb_dvc_name,'%')))
+			AND
+			(:dmb_dvc_type    IS  NULL  OR  dmb_dvc_type = :dmb_dvc_type)
+		</where>
+		<where id="1">
+			OR
+			(:dmb_dvc_name    IS  NULL  OR  dmb_dvc_name LIKE CONCAT('%',CONCAT(:dmb_dvc_name,'%')))
+			OR
+			(:dmb_dvc_type    IS  NULL  OR  dmb_dvc_type LIKE CONCAT('%',CONCAT(:dmb_dvc_type,'%')))
+		</where> 
+		<where id="2">
+			AND dmb_dvc_id = :dmb_dvc_id
+		</where>
+	</item>
+	<item id="delete_map_device_model_bind" desc="删除">
+		<sql>
+			DELETE FROM map_device_model_bind
+			 WHERE dmb_cus_number = :dmb_cus_number
+			   AND dmb_dvc_id = :dmb_dvc_id
+
+		</sql>
+
+	</item> 
+	
+	
+
+	<item id="select_dptt_tree_for_model_bind" desc="查询部门树">
+		<sql>
+			SELECT odd_id AS id, 
+			       odd_name AS name, 
+			       odd_parent_id AS pid,
+			       '1' AS type
+			  FROM sys_org_dept_dtls
+		</sql>
+		<where id="0">
+			 START WITH odd_id = ?
+			CONNECT BY PRIOR odd_id = odd_parent_id
+		</where>
+	</item>
+	<item id="select_network_alarm_for_model_bind" desc="查询网络报警">
+		<sql>
+			SELECT nbd_cus_number AS cus_number,
+			       nbd_id AS id,
+			       CONCAT('network', nbd_id) AS rid,
+			       nbd_name AS name,
+			       nbd_dept_id AS pid,
+			       '0' AS type
+			  FROM alt_network_base_dtls
+		</sql>
+		<where id="1">
+			 WHERE nbd_cus_number = :cus_number
+			 AND nbd_dept_id = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_camera_alarm_for_model_bind" desc="查询摄像机报警">
+    	<sql>
+			SELECT cbd_cus_number AS cus_number,
+		       cbd_id AS id,
+		       CONCAT('camera', cbd_id) as rid,
+		       cbd_name AS name,
+		       cbd_dept_id AS pid,
+		       '0' AS type
+		  FROM cmr_camera_base_dtls
+    	</sql>
+    	<where id="1">
+			 WHERE cbd_cus_number = :cus_number
+		   	   AND cbd_dept_id = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_door_alarm_for_model_bind" desc="查询门禁报警设备">
+    	<sql>
+			SELECT dbd_cus_number AS cus_number,
+			       dbd_id AS id,
+			       CONCAT('door', dbd_id) as rid,
+			       dbd_name AS name,
+			       dbd_dept_id AS pid,
+			       '0' AS type
+			  FROM dor_door_base_dtls
+    	</sql>
+    	<where id="1">
+			 WHERE dbd_cus_number = :cus_number
+			 AND dbd_dept_id = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_broadcast_alarm_for_model_bind" desc="查询广播报警设备">
+    	<sql>
+			SELECT bbd_cus_number AS cus_number,
+	             bbd_id AS id,
+	             CONCAT('broadcast', bbd_id) as rid,
+	             bbd_name AS name,
+	             bbd_dept_id AS pid,
+	             '0' AS type
+	        FROM bct_broadcast_base_dtls
+    	</sql>
+    	<where id="1">
+			 WHERE bbd_cus_number = :cus_number
+			 AND bbd_dept_id = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_rfid_alarm_for_model_bind" desc="查询RFID报警设备">
+    	<sql>
+			SELECT rbd_cus_number AS cus_number,
+	             rbd_id AS id,
+	             CONCAT('rfid', rbd_id) as rid,
+	             rbd_name AS name,
+	             rbd_dept_id AS pid,
+	             '0' AS type
+	        FROM dvc_rfid_base_dtls
+	       
+    	</sql>
+    	<where id="1">
+			 WHERE rbd_cus_number = :cus_number
+			 AND rbd_dept_id = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_talkback_alarm_for_model_bind" desc="查询对讲报警设备">
+    	<sql>
+	      SELECT tbd_cus_number AS cus_number,
+                 tbd_id AS id,
+                 CONCAT('talkback', tbd_id) as rid,
+                 tbd_name AS name,
+                 tbd_dept_id AS pid,
+                 '0' AS type
+            FROM tbk_talkback_base_dtls
+    	</sql>
+    	<where id="1">
+			 WHERE tbd_cus_number = :cus_number
+			 AND tbd_dept_id = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_power_network_alarm_for_model_bind" desc="查询高压电网报警设备">
+    	<sql>
+			SELECT pnb_cus_number AS cus_number,
+	              pnb_id AS id,
+	              CONCAT('power_network', pnb_id) as rid,
+	              pnb_name AS name,
+	              pnb_dprtmnt AS pid,
+	              '0' AS type
+	         FROM pnw_power_network_base_dtls
+    	</sql>
+    	<where id="1">
+			 WHERE pnb_cus_number = :cus_number
+			 AND pnb_dprtmnt = :dept_id
+		</where>
+    </item>
+    
+    <item id="select_wireless_alarm_master_for_model_bind" desc="查询无线报警主机设备">
+    	<sql>
+			  SELECT wam_cus_number AS cus_number,
+		             wam_id AS id,
+		             CONCAT('wireless_alarm', wam_id) as rid,
+		             wam_name AS name,
+		             wam_dept_id AS pid,
+		             '0' AS type
+		        FROM dvc_wireless_alarm_master
+    	</sql>
+    	<where id="1">
+			 WHERE wam_cus_number = :cus_number
+			 AND wam_dept_id = :dept_id
+		</where>
+    </item>
+</sqlItem>

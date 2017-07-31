@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+
+    <item id="test_query_dprt_for_ztree" desc="">
+    	<sql>
+			SELECT odd_id AS id, 
+			       odd_name AS name, 
+			       odd_parent_id AS pid
+			  FROM sys_org_dept_dtls
+    	</sql>
+    </item>
+
+    <item id="test_query_prisoner_for_ztree" desc="">
+    	<sql>
+			SELECT pbd_cus_number, 
+			       pbd_prsnr_id AS id, 
+			       pbd_prsnr_name AS name
+			  FROM psr_prisoner_base_dtls
+			 WHERE pbd_cus_number = ?
+			   AND pbd_prsn_area_id = ?
+			 ORDER BY pbd_prsnr_id
+    	</sql>
+    </item>
+
+    <item id="test_query_police_for_ztree" desc="">
+    	<sql>
+			SELECT pbd_cus_number, 
+			       pbd_user_id AS id, 
+			       pbd_police_name AS name
+			  FROM plc_police_base_dtls
+			 WHERE pbd_cus_number = ?
+			   AND pbd_drptmnt_id = ?
+			 ORDER BY pbd_user_id
+    	</sql>
+    </item>
+</sqlItem>

@@ -1,0 +1,84 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+	div.content>p{
+	    float: left;
+	    min-height: 75px;
+	    line-height:75px;
+	    width: 22.5%;
+	    border-radius: 10px;
+	    margin: 7px 0 7px 2%;
+	    text-align: center;
+	    background-repeat: no-repeat;
+	    position: relative;
+	    background-position: center 5px;
+	    cursor: pointer;
+	    border: 1px solid #4077ae;
+	    background-image: url(../../../libs/ztree/css/zTreeStyle/img/prisoner.png);
+	}
+	div.content>p:hover{
+	    background-color: #4077ae;
+	}
+	div.content>p >span{
+	    display: initial;
+	}
+	p::after{
+	    content: '';
+	    position: absolute;
+	    top: 0px;
+	    right: 0px;
+	    width: 30px;
+	    height: 30px;
+	    background-image: url(../../../css/images/icons/select.png);
+	}
+	p.select::after{
+		content:initial;
+	}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" style="width:450px;">
+				<div class="input icon" >
+				  	<input id="input" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+				 <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+		<div class="vbox hz-col-9 right-con" style="display:none;margin:10px 0px;">
+			<div class="hz-col-1 vbox">
+					<div class="hbox">
+						<div class="radio hz-col-1" @click="radioCheck">
+						    <label>
+						      <span>框选区域：</span>
+						      <span v-text="remote.currentarea"></span>
+						    </label>
+					  	</div>
+					  	<div class="input icon"  style="float:right">
+						  	<input id="tab" placeholder="输入关键字搜索">
+						  	<span class="find"></span>
+					    </div>
+					</div>
+					
+					<div class="hz-col-9" style="overflow:auto;margin-top:5px;" >
+						  <div class="content" v-cloak>
+						  	<p v-for="t in prisons" @click.self="choose($event,t,$index)"><span>{{t.name}}</span></p>
+						  </div>
+					</div>
+				</div>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"  @click="save"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/cds/alarm/areaAlarm"]);
+</script>

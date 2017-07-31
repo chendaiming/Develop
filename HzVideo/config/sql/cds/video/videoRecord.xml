@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_video_record" desc="新增视频录像">
+		<seq>cds_video_record_dtls@id@vrd_id</seq>
+		<sql>
+			INSERT INTO cds_video_record_dtls
+			  (vrd_cus_number,
+			   vrd_id,
+			   vrd_title,
+			   vrd_start_time,
+			   vrd_end_time,
+			   vrd_duration,
+			   vrd_remark,
+			   vrd_place,
+			   vrd_path,
+			   vrd_file_name,
+			   vrd_img_name,
+			   vrd_format_type,
+			   vrd_type,
+			   vrd_state,
+			   vrd_flag,
+			   vrd_create_user,
+			   vrd_create_time,
+			   vrd_update_user,
+			   vrd_update_time)
+			VALUES
+			  (:vrd_cus_number,
+			   :id,
+			   :vrd_title,
+			   to_date(:vrd_start_time, 'yyyy-mm-dd hh24:mi:ss'),
+			   to_date(:vrd_end_time, 'yyyy-mm-dd hh24:mi:ss'),
+			   :vrd_duration,
+			   :vrd_remark,
+			   :vrd_place,
+			   :vrd_path,
+			   :vrd_file_name,
+			   :vrd_img_name,
+			   :vrd_format_type,
+			   :vrd_type,
+			   1,
+			   1,
+			   :user_id,
+			   sysdate,
+			   :user_id,
+			   sysdate)
+		</sql>
+	</item>
+	<item id="insert_video_supervise_main" desc="新增视频监督检查">
+		<seq>cds_video_supervise_main@id@vsm_id</seq>
+		<sql>
+			INSERT INTO cds_video_supervise_main
+			  (vsm_cus_number,
+			   vsm_id,
+			   vsm_title,
+			   vsm_remark,
+			   vsm_type,
+			   vsm_push_range,
+			   vsm_push_time,
+			   vsm_state,
+			   vsm_level,
+			   vsm_flag,
+			   vsm_create_user,
+			   vsm_create_time,
+			   vsm_update_user,
+			   vsm_update_time)
+			VALUES
+			  (:vsm_cus_number,
+			   :id,
+			   :vsm_title,
+			   :vsm_remark,
+			   :vsm_type,
+			   :vsm_push_range,
+			   to_date(:vsm_push_time, 'yyyy-mm-dd hh24:mi:ss'),
+			   :vsm_state,
+			   :vsm_level,
+			   1,
+			   :user_id,
+			   to_date(:vsm_create_time, 'yyyy-mm-dd hh24:mi:ss'),
+			   :user_id,
+			   to_date(:vsm_create_time, 'yyyy-mm-dd hh24:mi:ss'))
+		</sql>
+	</item>
+	<item id="insert_video_supervise_detail" desc="新增视频监督检查明细">
+		<seq>cds_video_supervise_detail@id@vsd_id</seq>
+		<sql>
+			INSERT INTO cds_video_supervise_detail
+			  (vsd_cus_number,
+			   vsd_id,
+			   vsd_vsm_id,
+			   vsd_receive_user,
+			   vsd_state)
+			VALUES
+			  (:vsd_cus_number,
+			   :id,
+			   :vsd_vsm_id,
+			   :vsd_receive_user,
+			   1)
+		</sql>
+	</item>
+	<item id="insert_video_supervise_rltn" desc="新增视频监督检查关联">
+		<seq>cds_video_supervise_rltn@id@vsr_id</seq>
+		<sql>
+			INSERT INTO cds_video_supervise_rltn
+			  (vsr_cus_number,
+			   vsr_id,
+			   vsr_vsm_id,
+			   vsr_vrd_id,
+			   vsr_type)
+			VALUES
+			  (:vsr_cus_number,
+			   :id,
+			   :vsr_vsm_id,
+			   :vsr_vrd_id,
+			   :vsr_type)
+		</sql>
+	</item>
+	<item id="select_video_record" desc="查询视频录像">
+		<const key="vrd_format_type_name">VIDEO_RECORD_FORMAT_TYPE</const>
+		<const key="vrd_type_name">VIDEO_RECORD_TYPE</const>
+		<sql>
+			SELECT a.vrd_cus_number,
+			       a.vrd_id,
+			       a.vrd_title,
+			       to_char(a.vrd_start_time, 'yyyy-mm-dd hh24:mi:ss') vrd_start_time,
+			       to_char(a.vrd_end_time, 'yyyy-mm-dd hh24:mi:ss') vrd_end_time,
+			       a.vrd_duration,
+			       a.vrd_remark,
+			       a.vrd_place,
+			       a.vrd_path,
+			       a.vrd_file_name,
+			       a.vrd_img_name,
+			       a.vrd_format_type,
+			       a.vrd_format_type vrd_format_type_name,
+			       a.vrd_type,
+			       a.vrd_type vrd_type_name,
+			       a.vrd_state,
+			       a.vrd_flag,
+			       a.vrd_create_user,
+			       to_char(a.vrd_create_time, 'yyyy-mm-dd hh24:mi:ss') vrd_create_time,
+			       b.ubd_name
+			  FROM cds_video_record_dtls a, sys_user_base_dtls b
+			 WHERE a.vrd_create_user = b.ubd_id
+			   AND a.vrd_flag = 1 
+			   AND a.vrd_cus_number = :vrd_cus_number
+			   AND a.vrd_create_user = :user_id
+		</sql>
+		<where id="0">
+			   AND a.vrd_state = 1
+		</where>
+		<!-- <where id="1">
+			   AND (a.vrd_create_user = :user_id or
+			       a.vrd_id in
+			       (SELECT DISTINCT b.vsr_vrd_id
+			           FROM cds_video_supervise_main a, cds_video_supervise_rltn b
+			          WHERE a.vsm_id = b.vsr_vsm_id
+			            AND a.vrd_cus_number = :vrd_cus_number
+			            AND a.vsm_state = 2
+			            AND a.vsm_flag = 1
+			            AND b.vsr_type = 1
+			            AND (a.vsm_push_range = 1 or
+			                (a.vsm_push_range = 2 and
+			                a.vsm_id in
+			                (SELECT DISTINCT vsd_vsm_id
+			                     FROM cds_video_supervise_detail
+			                    WHERE vsd_receive_user = :user_id)))))
+		</where> -->
+		<order id="0">
+			 ORDER BY vrd_update_time DESC
+		</order>
+	</item>
+	<item id="update_video_record" desc="更新视频录像">
+		<sql>
+			UPDATE cds_video_record_dtls
+		</sql>
+		<where id="0">
+			   SET vrd_title       = :vrd_title,
+			       vrd_remark      = :vrd_remark,
+			       vrd_type        = :vrd_type,
+			       vrd_update_user = :user_id,
+			       vrd_update_time = sysdate
+			 WHERE vrd_cus_number = :vrd_cus_number
+			   AND vrd_id = :vrd_id
+			   AND vrd_state = 1
+		</where>
+		<where id="1" desc="更新视频录像是否引用">
+			   SET vrd_state       = :vrd_state,
+			       vrd_update_user = :user_id,
+			       vrd_update_time = sysdate
+			 WHERE vrd_cus_number = :vrd_cus_number
+			   AND vrd_id = :vrd_id
+		</where>
+		<where id="2">
+			   SET vrd_state = 1,
+			       vrd_update_user = :user_id,
+			       vrd_update_time = sysdate
+			 WHERE vrd_cus_number = :vrd_cus_number 
+			   AND vrd_id IN (SELECT vsr_vrd_id 
+			 					FROM cds_video_supervise_rltn 
+			 				   WHERE vsr_vsm_id = :vsr_vsm_id)
+		</where>
+	</item>
+	<item id="delete_video_record" desc="删除视频录像">
+		<sql>
+			UPDATE cds_video_record_dtls 
+			   SET vrd_flag = 0
+		</sql>
+		<where id="0">
+			 WHERE vrd_cus_number = :vrd_cus_number
+			   AND vrd_id = :vrd_id
+			   AND vrd_state = 1
+		</where>
+	</item>
+	<item id="select_video_supervise_main" desc="查询视频监督检查">
+		<sql>
+			SELECT a.vsm_cus_number,
+			       a.vsm_id,
+			       a.vsm_title,
+			       a.vsm_remark,
+			       a.vsm_type,
+			       a.vsm_push_range,
+			       to_char(a.vsm_push_time, 'yyyy-mm-dd hh24:mi:ss') vsm_push_time,
+			       a.vsm_state,
+			       a.vsm_level,
+			       a.vsm_flag,
+			       a.vsm_create_user,
+			       to_char(a.vsm_create_time, 'yyyy-mm-dd hh24:mi:ss') vsm_create_time,
+			       b.ubd_name
+			  FROM cds_video_supervise_main a, sys_user_base_dtls b
+			 WHERE a.vsm_create_user = b.ubd_id 
+			   AND a.vsm_cus_number = :vsm_cus_number
+			   AND a.vsm_flag = 1
+			   AND (a.VSM_CREATE_USER = :user_id or a.vsm_push_range = 1 or
+			       a.vsm_id IN
+			       (SELECT DISTINCT vsd_vsm_id
+			           FROM cds_video_supervise_detail a, cds_video_supervise_main b
+			          WHERE b.vsm_id = a.vsd_vsm_id
+			            AND a.vsd_receive_user = :user_id
+			            AND b.vsm_cus_number = :vsm_cus_number
+			            AND b.vsm_flag = 1
+			            AND b.vsm_state = 2))
+			 ORDER BY a.vsm_update_time DESC
+		</sql>
+	</item>
+	<item id="select_video_supervise_detail" desc="查询视频监督检查明细">
+		<sql>
+			SELECT b.ubd_id,
+			       b.ubd_name
+			  FROM cds_video_supervise_detail a, sys_user_base_dtls b
+			 WHERE a.vsd_receive_user = b.ubd_id
+			   AND a.vsd_cus_number = :vsd_cus_number
+		</sql>
+		<where id="0">
+			  AND vsd_vsm_id = :vsd_vsm_id
+		</where>
+	</item>
+	<item id="select_video_supervise_rltn" desc="查询视频监督检查关联表">
+		<sql>
+			SELECT b.vrd_id,
+			       b.vrd_title,
+			       b.vrd_remark,
+			       b.vrd_place,
+			       to_char(b.vrd_start_time, 'yyyy-mm-dd hh24:mi:ss') vrd_start_time,
+			       b.vrd_path,
+			       b.vrd_file_name,
+			       b.vrd_img_name,
+			       b.vrd_format_type,
+			       a.vsr_type
+		</sql>
+		<where id="0">
+			 FROM cds_video_supervise_rltn a, cds_video_record_dtls b
+			WHERE a.vsr_vrd_id = b.vrd_id
+			  AND a.vsr_cus_number = :vsr_cus_number
+			  AND a.vsr_vsm_id = :vsr_vsm_id
+			  AND a.vsr_type = 1
+		</where>
+	</item>
+	<item id="delete_video_supervise_main" desc="删除视频监督检查">
+		<sql>
+			UPDATE cds_video_supervise_main
+			   SET vsm_flag = 0
+		</sql>
+		<where id="0">
+			 WHERE vsm_cus_number = :vsm_cus_number
+			   AND vsm_id = :vsm_id
+			   AND vsm_state = 1
+		</where>
+	</item>
+	<item id="update_video_supervise_main" desc="更新视频监督检查">
+		<sql>
+			UPDATE cds_video_supervise_main
+		</sql>
+		<where id="0">
+			   SET vsm_title       = :vsm_title,
+			       vsm_remark      = :vsm_remark,
+			       vsm_type        = :vsm_type,
+			       vsm_push_range  = :vsm_push_range,
+			       vsm_push_time   = to_date(:vsm_push_time, 'yyyy-mm-dd hh24:mi:ss'),
+			       vsm_state       = :vsm_state,
+			       vsm_level       = :vsm_level,
+			       vsm_update_user = :user_id,
+			       vsm_update_time = sysdate
+			 WHERE vsm_cus_number = :vsm_cus_number
+			   AND vsm_id = :vsm_id
+			   AND vsm_state = 1
+		</where>
+		<where id="1" desc="更新视频监督检查是否推送">
+			   SET vsm_state       = :vsm_state,
+			       vsm_update_user = :user_id,
+			       vsm_update_time = sysdate
+			 WHERE vsm_cus_number = :vsm_cus_number
+			   AND vsm_id = :vsm_id
+		</where>
+	</item>
+	<item id="update_video_supervise_detail" desc="更新视频监督检查明细表">
+		<sql>
+			UPDATE cds_video_supervise_detail
+			   SET vsd_state = :vsd_state
+			 WHERE vsd_cus_number = :vsd_cus_number
+			   AND vsd_id = :vsd_id
+		</sql>
+	</item>
+	<item id="delete_video_supervise_detail" desc="删除视频监督检查明细表">
+		<sql>
+			DELETE cds_video_supervise_detail WHERE 1 = 1
+		</sql>
+		<where id="0">
+			   AND vsd_vsm_id = :vsd_vsm_id
+		</where>
+		<where id="1">
+			   AND vsd_id = :vsd_id
+		</where>
+	</item>
+	<item id="delete_video_supervise_rltn" desc="删除视频监督检查关联表">
+		<sql>
+			DELETE cds_video_supervise_rltn WHERE 1 = 1
+		</sql>
+		<where id="0">
+			   AND vsr_vsm_id = :vsr_vsm_id
+		</where>
+		<where id="1">
+			   AND vsr_id = :vsr_id
+		</where>
+	</item>
+	<item id="query_user_tree" desc="查询用户树">
+		<sql>
+			WITH t AS
+			 (SELECT odd_id, odd_name, odd_parent_id, odd_data_auth auth
+			    FROM sys_org_dept_dtls
+			   START WITH odd_id = :odd_id
+			  CONNECT BY PRIOR odd_id = odd_parent_id)
+			SELECT DISTINCT '1-' || (odd_id) id,
+			                odd_name name,
+			                '1-' || odd_parent_id pid,
+			                'org.png' icon,
+			                auth
+			  FROM t
+			 START WITH odd_id IN (SELECT DISTINCT (ubd_dept_id)
+			                         FROM sys_user_base_dtls
+			                        WHERE ubd_id != :user_id
+			                          AND ubd_admin != 1)
+			CONNECT BY odd_id = PRIOR odd_parent_id
+			UNION ALL
+			SELECT id, name, pid, icon, -1
+			  FROM (SELECT '' || ubd_id id,
+			               ubd_name name,
+			               '1-' || ubd_dept_id pid,
+			               'user.png' icon
+			          FROM sys_user_base_dtls z
+			         INNER JOIN t
+			            ON odd_id = ubd_dept_id
+			         WHERE ubd_id != :user_id
+			           AND ubd_admin != 1)
+		</sql>
+	</item>
+</sqlItem>

@@ -1,0 +1,137 @@
+
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+	@media screen and (min-width: 768px) {
+		label.col-sm-3{
+			font-size:1.16vw;
+			padding-right: 2%;
+    		padding-left: 2%;
+		}
+		form.form-horizontal div.form-group{
+		width:50%;
+		float:left;
+		}
+		form.form-horizontal div.form-group label{
+		width:29%;
+		}
+		form.form-horizontal div.form-group > div > span{
+		margin-top:9px;
+		}
+		.form-horizontal div.form-group{
+		margin-left:-5px;
+		} 
+		form.form-horizontal div.form-group div div.input input{
+	    height: 32px;
+	    line-height: 32px;
+	 	}
+	 	.input.date-input input{
+		height:32px;
+		}
+		span.datetime{
+		top:-4px;
+		}
+	}
+	#compotd{
+	overflow-y:auto;
+	}
+	.fixed-table-container .fixed-table-body{
+	overflow-x:auto;
+	}
+	#back{
+	float:left;
+	margin-left:24px;
+	padding:0 18px;
+	}
+	.combox_panel{
+		max-height: 80px!important;
+	}
+</style>
+<div class="vbox box-con" id="compolist">
+	<div class="hbox hz-col-1">
+<!-- 		<div class="left-con vbox" > -->
+			
+<!-- 		</div> -->
+		
+		<div class="hz-col-9 right-con">
+	       	<table id="table" ></table>
+		</div>
+	</div>
+	
+	<div class="bottom" >
+		<div class="buttons" id="oprbutton">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div> 
+	
+	<div class="vbox hz-col-1" id="compotd" style="display:none;">
+		<div class="hz-col-9">
+			<form class="form-horizontal" style="margin-top:20px;">
+		
+		    	<div class="form-group ">
+			        <label class="col-sm-3 control-label">组件名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="25" v-model="compogroup['mci_name']" placeholder="请输入组件名称">
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">组件路径</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="40" v-model="compogroup['mci_path']" placeholder="请输入组件路径">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">组件文件名1</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="25" v-model="compogroup['mci_file_name1']" placeholder="请输入组件文件名1">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">组件文件名2</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" maxlength="25" v-model="compogroup['mci_file_name2']" placeholder="请输入组件文件名2">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">组件类别</label>
+			        <div class="col-sm-8">
+			            <hz-select code="mci_class" :id.sync="compogroup['mci_class']" tip="请选择组件类别" />
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">组件类型</label>
+			        <div class="col-sm-8">
+			            <hz-select v-ref:mcitype :code="mci_type" :id.sync="compogroup['mci_type']" tip="请选择组件类型" />
+			        </div>
+			    </div>
+			    <div class="form-group">
+			        <label class="col-sm-3 control-label">创建人</label>
+			        <div class="col-sm-8">
+			            <span>{{compogroup['mci_create_us']}}</span>
+			        </div>
+			    </div>
+			    <div class="form-group wirtetime">
+			        <label class="col-sm-3 control-label">填报时间</label>
+			        <div class="col-sm-8">
+			            <span>{{compogroup['mci_create_datetime']}}</span>
+			        </div>
+			    </div>
+			    
+			</form>
+		</div>
+		 <div class="hz-col-1">
+		 			<div class="hbtn btn_primary btn_mini pull-right" id="quit" style="margin-right:15px;margin-bottom:10px;padding:0 14px;"><span>取消</span></div>
+					<a class="hbtn btn_primary btn_mini pull-right" id="save" style="margin-right:15px;margin-bottom:10px;"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		 </div>	
+	</div>
+	
+</div>
+
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+	requirejs(["hz/map/modelComponent/component"]);
+</script>

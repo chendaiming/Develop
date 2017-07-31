@@ -1,0 +1,58 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# 创建的文件:01.04.2017 15:23:19
+
+newmtl camera_white_002_jpg
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka camera_white_002.jpg
+	map_Kd camera_white_002.jpg
+
+newmtl Material__28
+	Ns 10.000000
+	Ni 1.500000
+	d 0.150000
+	Tr 0.850000
+	Tf 0.150000 0.150000 0.150000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka camera_black_003.jpg
+	map_Kd camera_black_003.jpg
+
+newmtl camera_black_001_jpg
+	Ns 10.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.000000 0.000000 0.000000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka camera_black_001.jpg
+	map_Kd camera_black_001.jpg
+
+newmtl camera_pink_jpg
+	Ns 47.000000
+	Ni 1.500000
+	d 1.000000
+	Tr 0.000000
+	Tf 1.000000 1.000000 1.000000 
+	illum 2
+	Ka 0.588000 0.588000 0.588000
+	Kd 0.588000 0.588000 0.588000
+	Ks 0.576000 0.576000 0.576000
+	Ke 0.000000 0.000000 0.000000
+	map_Ka camera_pink.jpg
+	map_Kd camera_pink.jpg

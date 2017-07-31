@@ -1,0 +1,24 @@
+1. css：存放网页样式及图片的目录：
+	1. css/images：存放图片；
+	2. common.css 重置样式以及默认样式
+
+
+2. js：存放网页JS文件目录：
+	1. js/frm: 存放我们自己开发的 组件 源代码；
+	2. js/src: 存放我们项目的模块代码
+	3. hz.frm.js：是我们源代码的压缩文件；
+
+
+
+3. libs：存放第三方插件目录：
+	1. hzui：我们自己DIY的插件库；
+	2. ztree：第三方的树控件；
+	3. bootstrap
+	4. echarts 图表插件
+	5. fastclick 消除移动端300ms点击延迟
+	6. jquery jquery
+	7. layer 弹出层、模板数据渲染插件
+
+
+
+4. page：功能页面目录：

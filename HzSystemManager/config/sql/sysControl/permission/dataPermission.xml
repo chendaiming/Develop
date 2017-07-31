@@ -1,0 +1,632 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item  id="select_permission_"  desc="所有的">
+		<sql>
+		
+			WITH t AS
+			 (
+			  SELECT DISTINCT (oar_area_id) oar_area_id
+			    FROM (SELECT odd_id
+			             FROM sys_org_dept_dtls
+			            START WITH odd_id = :org
+			           CONNECT BY PRIOR odd_id = odd_parent_id
+			           UNION ALL
+			           SELECT 3 odd_id
+			             FROM DUAL)
+			   INNER JOIN com_org_area_rltn
+			      ON odd_id = oar_dept_id
+			  )
+			  
+			SELECT
+				WM_CONCAT( id ) id
+			FROM  
+				(
+				SELECT
+		            DISTINCT(cbd_id) id
+	            FROM 
+	              t
+		        INNER JOIN 
+		            cmr_camera_base_dtls
+		        ON cbd_area_id = oar_area_id
+		        
+		        LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+		                         FROM com_dvc_auth_set
+		                        WHERE
+		                           das_dvc_type = 1
+		                          AND das_user_id = :user
+		                       )
+		              ON cbd_id = das_dvc_id WHERE  das_dvc_id is null
+		         
+		        UNION  ALL
+		        
+		        SELECT
+		        	DISTINCT(dbd_id) id
+		       	FROM
+		       		t
+		        INNER JOIN dor_door_base_dtls
+				    ON dbd_area_id = oar_area_id
+				 LEFT JOIN com_dvc_auth_set
+				    ON dbd_id = das_dvc_id
+				 WHERE
+				 	das_dvc_type=2
+				 AND das_user_id = :user
+				 
+				 UNION  ALL
+		        
+		        SELECT
+		        	   DISTINCT(tbd_id) id
+		       	FROM
+		       		t
+		         INNER JOIN tbk_talkback_base_dtls
+		              ON tbd_area_id = oar_area_id
+		             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+		                         FROM com_dvc_auth_set
+		                        WHERE 
+		                           das_dvc_type = 3
+		                          AND das_user_id = :user
+		                       )
+		              ON tbd_id = das_dvc_id  WHERE das_dvc_id is null
+				 
+				 UNION  ALL
+		        
+		        SELECT
+		        	   DISTINCT(bbd_id) id
+		       	FROM
+		       		t
+		        INNER JOIN bct_broadcast_base_dtls
+		              ON bbd_area_id = oar_area_id
+		             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+		                         FROM com_dvc_auth_set
+		                        WHERE
+		                        	das_dvc_type = 4
+		                          AND das_user_id = :user
+		                       )
+		              ON bbd_id = das_dvc_id WHERE das_dvc_id is null
+				 UNION  ALL
+		        SELECT
+		        	   DISTINCT(nbd_id) id
+		       	FROM
+		       		t
+		         INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 6
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+	              
+	              UNION ALL
+	              
+	               SELECT
+		        	   DISTINCT(wam_id) id
+		       	   FROM
+		       			t
+	               INNER JOIN dvc_wireless_alarm_master
+		              ON wam_area_id = oar_area_id
+		             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+		                         FROM com_dvc_auth_set
+		                        WHERE
+		                        	das_dvc_type = 17
+		                          AND das_user_id = :user
+		                       )
+		              ON wam_id = das_dvc_id WHERE das_dvc_id is null
+			 )
+		</sql>
+	</item>
+	<item  id="select_permission_1"  desc="查询当前用户能看的摄像机">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(cbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                  UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	            INNER JOIN cmr_camera_base_dtls
+	              ON cbd_area_id = oar_area_id
+	            LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                           das_dvc_type = 1
+	                          AND das_user_id = :user
+	                       )
+	              ON cbd_id = das_dvc_id WHERE  das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_2"  desc="查询当前用户能看的门禁">
+		<sql>
+			SELECT 
+				WM_CONCAT(DISTINCT(dbd_id))id
+			  FROM (SELECT odd_id
+			          FROM sys_org_dept_dtls
+			         START WITH odd_id = :org
+			        CONNECT BY PRIOR odd_id = odd_parent_id)
+			 INNER JOIN com_org_area_rltn
+			    ON odd_id = oar_dept_id
+			 INNER JOIN dor_door_base_dtls
+			    ON dbd_area_id = oar_area_id
+			 INNER JOIN com_dvc_auth_set
+			    ON dbd_id = das_dvc_id
+			 WHERE
+			 	das_dvc_type=2
+			 AND das_user_id = :user
+		</sql>
+	</item>
+	
+	<item  id="select_permission_3"  desc="查询当前用户能看的对讲机">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(tbd_id))id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                  UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN tbk_talkback_base_dtls
+	              ON tbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE 
+	                           das_dvc_type = 3
+	                          AND das_user_id = :user
+	                       )
+	              ON tbd_id = das_dvc_id  WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_permission_4"  desc="查询当前用户能看的广播">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(bbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN bct_broadcast_base_dtls
+	              ON bbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 4
+	                          AND das_user_id = :user
+	                       )
+	              ON bbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_permission_5"  desc="电视墙">
+		<sql>
+			SELECT
+	          distinct(BBD_ID) id
+	          WM_CONCAT(DISTINCT(bbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN screen_base_info
+	              ON bbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON BBD_ID = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_permission_6"  desc="网络报警器">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 6
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_permission_7"  desc="高压电网">
+		<sql>
+			SELECT
+	           WM_CONCAT(DISTINCT(pnb_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN pnw_power_network_base_dtls
+	              ON pnb_area = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON pnb_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_permission_8"  desc="周界红外">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_permission_9"  desc="周界光纤">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_10"  desc="蛇腹网">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_11"  desc="电子围栏">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_12"  desc="消防报警器">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_13"  desc="智能钥匙箱">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_14"  desc="智能监舍">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(nbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN alt_network_base_dtls
+	              ON nbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 5
+	                          AND das_user_id = :user
+	                       )
+	              ON nbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_15"  desc="RFID基站">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(rbd_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN psr_rfid_base_dtls
+	              ON rbd_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 15
+	                          AND das_user_id = :user
+	                       )
+	              ON rbd_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_16"  desc="巡更刷卡器">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(ppi_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN ptl_patrol_point_dtls
+	              ON ppi_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 16
+	                          AND das_user_id = :user
+	                       )
+	              ON ppi_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_17"  desc="无线报警主机">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(wam_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN dvc_wireless_alarm_master
+	              ON wam_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 17
+	                          AND das_user_id = :user
+	                       )
+	              ON wam_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	<item  id="select_permission_18"  desc="无线报警终端">
+		<sql>
+			SELECT
+	          WM_CONCAT(DISTINCT(wam_id)) id
+	            FROM (SELECT odd_id
+	                    FROM sys_org_dept_dtls
+	                   START WITH odd_id = :org
+	                  CONNECT BY PRIOR odd_id = odd_parent_id
+	                   UNION  ALL
+	                  SELECT 
+	                  	:org odd_id
+	                  FROM 
+	                  	DUAL
+	                  )
+	           INNER JOIN
+	          com_org_area_rltn
+	              ON odd_id = oar_dept_id
+	             INNER JOIN dvc_wireless_alarm_master
+	              ON wam_area_id = oar_area_id
+	             LEFT JOIN (SELECT das_dvc_id, das_dvc_type
+	                         FROM com_dvc_auth_set
+	                        WHERE
+	                        	das_dvc_type = 18
+	                          AND das_user_id = :user
+	                       )
+	              ON wam_id = das_dvc_id WHERE das_dvc_id is null
+		</sql>
+	</item>
+	
+	<item  id="select_dvc_auth_all" desc="查询设备权限表——所有">
+		<sql>
+			SELECT 
+				das_dvc_id id,
+				das_dvc_type type
+			FROM
+				com_dvc_auth_set
+		</sql>
+	</item>
+</sqlItem>
+ 

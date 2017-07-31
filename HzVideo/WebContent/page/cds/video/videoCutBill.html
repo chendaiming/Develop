@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title></title>
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+	 	max-height: 200px;
+	  	min-height: 150px;
+	  	overflow: auto;
+	  	z-index: 99;
+	  	position:fixed;
+	  	width:218px;
+	}
+	.personKey{
+	 	display:none;
+	    position: absolute;
+	    color: rgb(255, 255, 0);
+	    transition: height .5s;
+	    background: rgb(21, 67, 82);
+	    text-align: left;
+	    max-height: 200px;
+	    overflow: auto;
+	 }
+	 .personKey li{
+		padding-top:10px;
+		cursor:pointer;
+		padding-left: 13px;
+ 	}
+</style>
+</head>
+<body>
+<div class="vbox box-con" >
+	<div class="top" >
+		<div class="tabs" style="margin-left:-20px;border-bottom:1px solid #4077ae">
+			  <div class="tab" v-bind:class="{'active':activeTab==1}" @click="setActiveTab(1)"><span>截图信息</span></div>
+	  	</div>
+	</div>
+	<div class="vbox hz-col-1" v-show="activeTab==1">
+		<div class="hbox hz-col-1">
+			<div class="hz-col-9 right-con">
+		       	<table id="table1" ></table>
+			</div>
+		</div>
+		<div class="bottom">
+			<div class="buttons">
+				<a @click="showTableSearch(1)" class="hbtn btn_primary btn_large"><span>查询</span></a>
+			</div>
+		</div>		
+	</div>
+</div>
+
+<!-- 截图信息查询弹出框 -->
+<div class="vbox hz-col-1" id="searchTable1" style="display:none;">
+	<div class="hz-col-9">
+		<form class="form-horizontal" style="margin-top:20px;overflow-x: hidden;">
+	
+		    <div class="form-group ">
+		        <label class="col-sm-3 control-label">开始时间</label>
+		        <div class="col-sm-8">
+		            	<hz-date 
+				      		tip="选择开始日期" 
+				      		:val.sync="search.startTime"
+				      	 	format='Y-m-d H:i:S'
+				      	 	enabletime=1
+			      	 		enablesecond=1
+				      	/>
+		        </div>
+		    </div>
+		    <div class="form-group ">
+		        <label class="col-sm-3 control-label">结束时间</label>
+		        <div class="col-sm-8">
+		            	<hz-date 
+				      		tip="选择结束日期" 
+				      		:val.sync="search.endTime"
+				      	 	format='Y-m-d H:i:S'
+				      	 	enabletime=1
+				      	 	enablesecond=1
+				      	/>
+		        </div>
+		    </div>
+		</form>
+	</div>
+	 <div class="hz-col-1">
+		<a class="hbtn btn_primary btn_mini pull-right" @click="resetSearchTable()" style="margin-right:15px;margin-bottom:10px">
+			<i class="btn_icon icon_reset"></i><span>重置</span>
+		</a>
+		<a class="hbtn btn_primary btn_mini pull-right" @click="searchTable(1)" style="margin-right:15px;margin-bottom:10px">
+			<i class="btn_icon icon_save"></i><span>查询</span>
+		</a>
+	 </div>	
+</div>
+
+<!--<div class="combox_panel personKey">
+	<ul>
+		<li v-for="item in person" @click.self="selectKey(item)" >{{item.ubd_name}}</li>
+	</ul>
+</div>-->
+<div id="showImg" style="display:none;text-align: center;">
+	<img :src="img" style="padding: 3px;">
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/video/videoCutBill'])
+</script>
+</html>

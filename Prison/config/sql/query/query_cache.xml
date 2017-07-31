@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="sys_query_constant_code_dtls">
+    	<sql>
+			SELECT ccd_type_id   AS type_id,
+			       ctd_type_name AS type_name,
+			       ctd_type_seq  AS type_seq,
+			       ccd_key       AS key,
+			       ccd_value     AS value,
+			       ccd_seq       AS seq
+			  FROM sys_constant_code_dtls
+			  LEFT JOIN sys_constant_type_dtls
+			    ON ccd_type_id = ctd_type_id
+    	</sql>
+    	<order id="0">
+			 ORDER BY type_seq, type_id, seq
+    	</order>
+    </item>
+
+    <item id="query_user_base_dtls_for_cache">
+    	<sql>
+			SELECT ubd_cus_number,
+			       ubd_id,
+			       ubd_name,
+			       ubd_pass,
+			       ubd_dept_id,
+			       ubd_use,
+			       ubd_admin
+			  FROM sys_user_base_dtls
+    	</sql>
+    </item>
+
+    <item id="query_org_dept_dtls_for_cache">
+    	<sql>
+			SELECT odd_id, 
+			       odd_name 
+			FROM sys_org_dept_dtls
+    	</sql>
+    </item>
+</sqlItem>

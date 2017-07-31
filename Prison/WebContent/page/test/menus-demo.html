@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<title>菜单样式</title>
+<!-- <link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8"> -->
+<style type="text/css">
+html, body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	position: relative;
+	background-color: #4f7f9b;
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#4f7f9b), to(#293c55));
+	background-image: -webkit-linear-gradient(top, #4f7f9b, #293c55);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#4f7f9b), to(#293c55));
+	background-image: linear-gradient(to bottom, #4f7f9b, #293c55);
+	background-repeat: repeat-x;
+	background-size: 100% 100%;
+	line-height: normal !important;
+}
+
+div.my-menus {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+}
+div.my-menus * {
+	box-sizing: border-box;
+	transition: all .5s;
+	font-family: '微软雅黑';
+	font-size: .9em;
+	color: #F2F2F2;
+}
+
+div.my-menus ::-webkit-scrollbar {
+	width: 4px; 
+	height: 4px;
+}
+div.my-menus ::-webkit-scrollbar-track-piece {
+	background-color: transparent; 
+	margin: 0px;
+}
+div.my-menus ::-webkit-scrollbar-thumb {
+	min-height: 100px; 
+	min-width: 100px; 
+	border: 0 none;
+	border-radius: 5px;
+	background: rgba(255,255,255, 0.3); 
+}
+div.my-menus ::-webkit-scrollbar-thumb:vertical:hover {
+	background: rgba(255,255,255, 0.6); 
+}
+div.my-menus ::-webkit-scrollbar-thumb:horizontal:hover {
+	background: rgba(255,255,255, 0.6);
+}
+
+
+
+div.my-menus a.main-menu-btn {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 50px;
+	height: 50px;
+	border-radius: 0 60px 0 0;
+	background: url(../../css/image/menus/main.png) left 3px bottom 3px no-repeat rgba(12,34,48,.8);
+	background-size: 28px 28px;
+	cursor: pointer;
+	z-index: 2;
+}
+div.my-menus >a.main-menu-btn:hover {
+	box-shadow: 0 0 5px #FF6600;
+}
+
+
+
+div.my-menus >div.main-menu-panel {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	padding: 1px;
+	width: 800px;
+	height: 500px;
+	border-top: 1px solid rgba(255,255,255,.5);
+	border-right: 1px solid rgba(255,255,255,.5);
+	border-radius: 0 3px 0 0;
+	background-color: rgba(12,34,48,.9);
+	box-shadow: 0 0 5px rgba(0,0,0,.6);
+	overflow: hidden;
+	opacity: 0;
+	z-index: 1;
+}
+
+
+
+div.my-menus.opened {}
+div.my-menus.opened >a.main-menu-btn {
+	background-color: rgba(255,102,0,.8);
+}
+div.my-menus.opened div.main-menu-panel {
+	height: 600px;
+	opacity: 1;
+}
+
+
+
+div.my-menus input.search-menu {
+    padding: 10px 5px 10px 40px;
+    width: 100%;
+    border: 0 none;
+    border-bottom: 1px solid #666;
+    background: url(../../css/image/menus/search.png) 7px center no-repeat;
+    outline: none;
+    color: #C5C5C5;
+}
+div.my-menus input.search-menu:hover,
+div.my-menus input.search-menu:active {
+	background-color: rgba(255,255,255,.05);
+}
+
+
+
+div.my-menus div.one-menu {
+	float: left;
+	width: 28%;
+	height: 100%;
+	background-color: rgba(12,34,48,.8);
+	overflow: hidden;
+}
+div.my-menus div.one-menu >.node-menu {
+	position: relative;
+	margin-bottom: 1px;
+	padding-left: 65px;
+	width: 100%;
+	height: 50px;
+	border-left: 3px solid rgba(0,0,0,0);
+	background-color: rgba(0,0,0,.3);
+	background: url(../../css/image/menus/left.png) right -20px center no-repeat rgba(0,0,0,.3);
+	text-align: left;
+	font-weight: bold;
+	cursor: pointer;
+	display: table;
+	opacity: .8;
+}
+div.my-menus div.one-menu >.node-menu >.mm-icon {
+	position: absolute;
+    padding: 25px;
+    left: 0px;
+    background: url(../../css/image/menus/menu-icon.png) left 10px center no-repeat;
+}
+div.my-menus div.one-menu >.node-menu .text {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+div.my-menus div.one-menu >.node-menu.selected,
+div.my-menus div.one-menu >.node-menu:hover {
+	border-left-color: #FF6600;
+	background-position: right 2px center;
+	background-color: rgba(67,67,67,.5);
+	opacity: 1;
+}
+div.my-menus div.one-menu >.node-menu.selected .text,
+div.my-menus div.one-menu >.node-menu:hover .text {
+	text-shadow: 1px 1px 2px #181818;
+	color: #FF8800;
+}
+
+
+
+div.my-menus div.child-menu {
+	float: left;
+	width: 72%;
+	height: 100%;
+	overflow: hidden;
+	overflow-y: auto;
+}
+div.my-menus div.child-menu .right-panel,
+div.my-menus div.child-menu .left-panel {
+	float: left;
+	padding: 3px 5px 10px 30px;
+	width: 50%;
+	height: 100%;
+}
+
+div.my-menus div.menu-area {
+	float: left;
+	width: 100%;
+	margin-bottom: 45px;
+}
+div.my-menus div.menu-area:hover {
+	background-color: rgba(255,255,255,.02);
+}
+div.my-menus div.menu-area:hover div.two-menu {
+	background-color: rgba(255,255,255,.1);
+}
+div.my-menus div.menu-area:hover div.two-menu span.text {
+	color: #FF8800;
+}
+
+
+
+div.my-menus div.two-menu {
+	margin: 1px 1px;
+    padding: 10px 0px 5px 12px;
+    background-color: rgba(255,255,255,.05);
+}
+div.my-menus div.two-menu a.mm-icon {
+	padding: 6px 0 5px 28px;
+	background: url(../../css/image/menus/menu-icon.png) left center no-repeat;
+	background-size: 24px;
+	text-decoration: none;
+	cursor: default;
+}
+
+
+
+div.my-menus div.three-menu {
+	float: left;
+	padding: 1px;
+	width: 100%;
+	border-top: 1px solid #666;
+}
+div.my-menus ul.three-menu-ul {
+	list-style: none;
+    width: 100%;
+    padding: 0px;
+}
+div.my-menus ul.three-menu-ul li {
+	float: left;
+	padding: 10px 0px 10px 13px;
+    width: 50%;
+    border-left: 2px solid rgba(0,0,0,0);
+    text-align: left;
+    white-space: nowrap;
+    color: #aaa;
+    cursor: pointer;
+    overflow: hidden;
+}
+div.my-menus ul.three-menu-ul li:hover {
+	border-left-color: #FF8800;
+	padding-left: 15px;
+	background-color: rgba(255,255,255,.03);
+	color: #eee;
+}
+
+
+
+div.my-menus div.fixed-menus {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100px;
+	height: 100px;
+	border-top: 1px solid #FF6600;
+	border-right: 1px solid #FF6600;
+	border-radius: 0 100px 0 0;
+	background-color: rgba(255,255,255,.1);
+}
+div.my-menus div.fixed-menus a.menu-btn {
+	position: absolute;
+	width: 28px;
+	height: 28px;
+	background: url() center center no-repeat;
+	background-size: 100%;
+	cursor: pointer;
+	opacity: .5;
+}
+div.my-menus div.fixed-menus a.menu-btn:hover {
+	opacity: 1;
+}
+div.my-menus div.fixed-menus a.menu-btn.user {
+	top: 10px;
+	left: 5px;
+	background-image: url(../../css/image/menus/user.png);
+}
+div.my-menus div.fixed-menus a.menu-btn.refresh {
+	top: 31px;
+	left: 38px;
+	background-image: url(../../css/image/menus/refresh.png);
+}
+div.my-menus div.fixed-menus a.menu-btn.logout {
+	top: 66px;
+	left: 59px;
+	background-image: url(../../css/image/menus/logout.png);
+}
+</style>
+</head>
+<body>
+
+<div class="my-menus opened">
+	<a class="main-menu-btn"></a>
+	<div class="main-menu-panel">
+		<div class="fixed-menus">
+			<a class="menu-btn user" title="用户信息"></a>
+			<a class="menu-btn refresh"  title="刷新菜单"></a>
+			<a class="menu-btn logout" title="退出系统"></a>
+		</div>
+		<div class="one-menu">
+			<input class="search-menu" placeholder="搜索菜单...">
+			<div class="node-menu">
+				<a class="mm-icon" style="background-image: url(../../css/image/menus/xxhj.png);"></a>
+				<span class="text">信息汇聚</span>
+			</div>
+			<div class="node-menu">
+				<a class="mm-icon" style="background-image: url(../../css/image/menus/aqfk.png);"></a>
+				<span class="text">安全防控</span>
+			</div>
+			<div class="node-menu">
+				<a class="mm-icon" style="background-image: url(../../css/image/menus/zhdd.png);"></a>
+				<span class="text">指挥调度</span>
+			</div>
+			<div class="node-menu">
+				<a class="mm-icon" style="background-image: url(../../css/image/menus/system.png);"></a>
+				<span class="text">系统管理</span>
+			</div>
+		</div>
+		<div class="child-menu">
+			<div class="left-panel">
+				<div class="menu-area">
+					<div class="two-menu">
+						<a class="mm-icon" style="background-image: url(../../css/image/menus/spjk.png);"><span class="text">视频监控</span></a>
+					</div>
+					<div class="three-menu">
+						<ul class="three-menu-ul">
+							<li>视频监控</li>
+							<li>录像回放</li>
+							<li>视频巡更</li>
+							<li>摄像机设备</li>
+							<li>录像查询播放</li>
+							<li>三维巡视</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="menu-area">
+					<div class="two-menu">
+						<a class="mm-icon" style="background-image: url(../../css/image/menus/bjgl.png);"><span class="text">报警管理</span></a>
+					</div>
+					<div class="three-menu">
+						<ul class="three-menu-ul">
+							<li>报警分级管理</li>
+							<li>报警预案管理</li>
+							<li>越界框选记录</li>
+							<li>越界框选</li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="menu-area">
+					<div class="two-menu">
+						<a class="mm-icon" style="background-image: url(../../css/image/menus/dpgl.png)"><span class="text">大屏管理</span></a>
+					</div>
+					<div class="three-menu">
+						<ul class="three-menu-ul">
+							<li>大屏设置</li>
+							<li>大屏控制</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="right-panel">
+				<div class="menu-area">
+					<div class="two-menu">
+						<a class="mm-icon" style="background-image: url(../../css/image/menus/znxg.png);"><span class="text">智能巡更</span></a>
+					</div>
+					<div class="three-menu">
+						<ul class="three-menu-ul">
+							<li>巡更点维护</li>
+							<li>巡更线路查询</li>
+							<li>巡更记录</li>
+						</ul>
+					</div>
+				</div>
+				<div class="menu-area">
+					<div class="two-menu">
+						<a class="mm-icon"><span class="text">门禁设备</span></a>
+					</div>
+					<div class="three-menu">
+						<ul class="three-menu-ul">
+							<li>远程开关门</li>
+							<li>门禁刷卡记录</li>
+							<li>门禁维护</li>
+							<li>门禁控制器</li>
+							<li>门禁卡管理</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../libs/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../js/require.js"></script>
+<script type="text/javascript" src="../../js/config.js"></script>
+<script type="text/javascript">
+(function () {
+	$('.main-menu-btn').on('click', function () {
+		$('.my-menus').toggleClass('opened');
+	});
+})();
+
+function loadMenus () {
+
+}
+
+</script>
+</html>

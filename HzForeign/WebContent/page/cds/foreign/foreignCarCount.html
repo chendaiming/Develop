@@ -1,0 +1,138 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+ img{
+	width:110;
+	height:110;
+	cursor: pointer; 
+}
+.info{
+	color:#32cd32;
+	font-weight: bold;
+}
+#infoUl li{
+	margin-top:15px;
+}
+.col-xs-6 {
+    margin: 5px 1%;
+    width: 48%;
+    background: rgba(199, 239, 252, 0);
+    text-align: center;
+}
+.table-bordered>tbody>tr>td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+    height:37px; 
+}
+.cursor-default{
+	cursor: default; 
+}
+.label-success,
+.label-info {
+    line-height:30px;
+    font-size:15px;
+}
+.table {
+    margin-bottom: 0px;
+}
+ .panel-info>.panel-heading {
+    color: white;
+    background-color: rgba(199, 239, 252, 0);
+    border-color: #1f699e;
+}
+.panel-info {
+    border-color: #1f699e;
+}
+.text-bold{
+	font-weight: bold;
+}
+.btn_mini {
+    margin-left: 15px;
+}
+.buttons{
+	margin-bottom:10px;
+}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class="left-con hz-col-5 vbox">
+			    <div class="hz-col-1 vbox" style="overflow:auto;color:rgb(255, 255, 255);">
+					<div class="hz-col-1 item">
+						<label style="color:white;" v-text="'总数:'+count.total"></label>
+						<br/>
+						<label style="color:#32cd32;"  v-text="'在监:'+count.inPrison"></label>
+						
+						<label style="color:#c23531;"  v-text="'离监:'+count.outPrison"></label>
+						
+						<label style="color:#1f699e;"  v-text="'待进:'+count.wait"></label>
+					</div>
+					<div class="hz-col-4" id="tableshow" ></div>
+					<div class="hz-col-5" id="tableBar" style="margin-top:25px;"></div>
+				</div>
+		</div>
+		<div class="hz-col-7 right-con" id="carinfo">
+		<div class="buttons">
+			<a  @click="reset()" class="hbtn btn_primary btn_mini" ><i class="btn_icon icon_reset"></i><span>重置</span></a>
+			当前显示:<span v-text="viewtext" style="color:#32cd32;"></span>
+		</div>
+		<div id="infoUl" v-cloak v-if="carinfo.length>0" v-for="info in carinfo" >
+			<div class="col-xs-12"  >
+					<table class="table table-bordered">
+						<tr>
+							<td rowspan="3" class="col-xs-2">
+								<div  id="imageview">
+									<img v-if="info.image" :src='info.image' >
+<!-- 									<img v-if="!info.pbd_img" src='image/police.jpg' title="未获取到照片"> -->
+								</div>
+							</td>
+							<td class="col-xs-1 text-bold">车牌</td>
+							<td class="col-xs-2 cursor-default" v-text="info.fcd_car_lcns_id" :title="info.fcd_car_lcns_id"></td>
+							<td class="col-xs-1 text-bold" title="驾驶员姓名">姓名</td>
+							<td class="col-xs-2 cursor-default" v-text="info.fcd_driver_name"></td>
+							<td class="col-xs-2 text-bold" title="所属单位">单位</td>
+							<td class="col-xs-3 cursor-default" v-text="info.fcd_car_cmpny"></td>
+						</tr>
+						<tr>
+							<td class="col-xs-1 text-bold">去向</td>
+							<td class="col-xs-2 cursor-default" v-text="info.fcd_direction"></td>
+							<td class="col-xs-1 text-bold">事由</td>
+							<td class="col-xs-2 cursor-default" v-text="info.fcd_reason"></td>
+							<td class="col-xs-2 text-bold">陪同警员</td>
+							<td class="col-xs-3 cursor-default" v-text="info.fcd_lead_police_name" :title="info.fcd_oprtn_police_id"></td>					
+						</tr>
+						<tr>
+							<td class="col-xs-1 text-bold">状态</td>
+							<td class="col-xs-2 cursor-default" v-if="info.fcd_inout_stts" v-text="info.fcd_inout_stts"></td>
+							<td class="col-xs-2 cursor-default" v-if="!info.fcd_inout_stts" v-text="info.fcd_check_stts"></td>
+							<td class="col-xs-1 text-bold">电话</td>
+							<td class="col-xs-2 cursor-default" v-text="info.fcd_phone"></td>
+							<td class="col-xs-2 text-bold">办证警员</td>
+							<td class="col-xs-3 cursor-default" v-text="info.fcd_oprtn_police_name" :title="info.fcd_oprtn_police_id"></td>
+						</tr>
+					</table>
+				<!-- 进出记录 -->
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" datachildren="panel2" data-parent="#accordion" :href="'#panel_'+info.id" onmouseover="gotoPanel(this)" > 进出记录 </a>
+						</h4>
+					</div>
+					<div :id="'panel_'+info.id" class="panel-collapse collapse">
+						<div class="panel-body" style="padding: 0;">
+									<div v-if="inoutinfo.length > 0" v-for="info in inoutinfo" class='col-xs-6'>
+										<span   v-bind:class="{'label  label-success':info.flag == '进','label label-info':info.flag=='出'}" 
+											   v-text='info.time+"("+info.flag+")"'></span>
+									</div>
+						</div>
+					</div>
+				</div>
+			</div>			
+		</div>	
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/foreign/foreignCarCount"]);
+</script>

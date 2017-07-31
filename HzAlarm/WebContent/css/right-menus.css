@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+.right-menus {
+	position: absolute;
+    padding: 5px 0px;
+    left: 100px;
+    top: 130px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px #1a1a1a;
+    background: rgba(245, 245, 245, 0.95);
+    color: #282828;
+    z-index: 999;
+}
+.right-menus >ul {}
+.right-menus >ul >li {
+	padding: 3px 25px;
+	cursor: default;
+}
+.right-menus >ul >li:hover {
+    text-shadow: 1px 1px 1px #333;
+	background: #789abd;
+}

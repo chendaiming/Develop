@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem> 
+	<item id="select_police_base_dtls_cache"  desc="根据警员编号查询详细信息">
+		<sql>
+		   SELECT pbd_cus_number,
+		          pbd_user_id,
+		          pbd_police_id,
+		          pbd_police_name,
+		          pbd_pstn_name,
+		   		  pbd_sex,
+		   		  TO_CHAR(SYSDATE,'YYYY') - TO_CHAR(pbd_birth_date, 'YYYY') AS pbd_age,
+		   		  pbd_political_status,
+		   		  pbd_official_title,
+		   		  TO_CHAR(pbd_birth_date,'YYYY-MM-DD') AS pbd_birth_date,
+		   		  pbd_fixed_phone,
+		   		  pbd_ip_phone,
+		   		  pbd_phone,
+		   		  pbd_short_phone,
+		   		  pbd_fax,
+		   		  pbd_talk_num,
+		   		  pbd_email,
+		   		  pbd_oa_system,
+		   		  pbd_police_cmmnct,
+		   		  pbd_family_phone,
+		   		  pbd_police_type_indc,
+		   		  pbd_degree_indc,
+		   		  pbd_profession,
+		   		  TO_CHAR(pbd_job_date,'YYYY-MM-DD') AS pbd_job_date,
+		   		  pbd_img,
+		   		  pbd_remark,
+				  odd_name
+		     FROM plc_police_base_dtls
+	    LEFT JOIN sys_org_dept_dtls
+	           ON (odd_id = pbd_drptmnt_id)   
+		</sql>
+		<where id="0">
+			WHERE pbd_cus_number = ?
+			  AND pbd_user_id = ?
+		</where>
+		<where id="1">
+			WHERE pbd_cus_number = ?
+			  AND pbd_police_id = ?
+		</where>
+		<where id="2">
+			WHERE pbd_cus_number = ?
+		</where>
+	</item>  
+	<item id="insert_plc_police_inout_record"  desc="插入民警进出记录表">
+		<sql>
+			INSERT INTO plc_police_inout_record
+			  (pir_cus_number,
+			   pir_record_id,
+			   pir_bsns_date,
+			   pir_police_id,
+			   pir_user_id,
+			   pir_bsns_time,
+			   pir_inout_flag,
+			   pir_remark,
+			   pir_crte_time,
+			   pir_crte_user_id,
+			   pir_updt_time,
+			   pir_updt_user_id)
+			VALUES
+			  (:pir_cus_number,
+			   :pir_record_id,
+			    TRUNC(SYSDATE),
+			   :pir_police_id,
+			   :pir_user_id,
+			   TO_TIMESTAMP(:pir_bsns_time, 'YYYY-MM-DD HH24:MI:SS'),
+			   :pir_inout_flag,
+			   :pir_remark,
+			   SYSDATE,
+			   0,
+			   SYSDATE,
+			   0)
+		</sql>
+	</item>	 
+	<item id="update_police_inout_status" desc="更新民警在监状态">
+		<sql>
+			UPDATE plc_police_base_dtls
+			   SET pbd_in_prison = :pbd_in_prison
+			 WHERE pbd_cus_number = :pbd_cus_number
+			   AND pbd_user_id = :pbd_user_id	
+		</sql>
+	</item>
+</sqlItem>

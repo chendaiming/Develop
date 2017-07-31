@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+    <item id="insert_map_view_menu" desc="">
+    	<seq>map_view_menu_info@id</seq>
+		<sql>
+			INSERT INTO map_view_menu_info
+			  (vmi_cus_number,
+			   vmi_id,
+			   vmi_pid,
+			   vmi_name,
+			   vmi_type,
+			   vmi_icon_url,
+			   vmi_host_key,
+			   vmi_status,
+			   vmi_order,
+			   vmi_is_default,
+			   vmi_model_group_id,
+			   vmi_pos_x,
+			   vmi_pos_y,
+			   vmi_pos_z,
+			   vmi_rot_x,
+			   vmi_rot_y,
+			   vmi_rot_z,
+			   vmi_tar_x,
+			   vmi_tar_y,
+			   vmi_tar_z,
+			   vmi_create_uid,
+			   vmi_create_datetime,
+			   vmi_update_uid,
+			   vmi_update_datetime,
+			   vmi_area_id
+			   )
+			VALUES
+			  (:cus_number,
+			   :id,
+			   :pid,
+			   :name,
+			   :type,
+			   :icon_url,
+			   :host_key,
+			   :status,
+			   :order,
+			   :is_default,
+			   :model_group_id,
+			   :pos_x,
+			   :pos_y,
+			   :pos_z,
+			   :rot_x,
+			   :rot_y,
+			   :rot_z,
+			   :tar_x,
+			   :tar_y,
+			   :tar_z,
+			   :create_uid,
+			   SYSDATE,
+			   :update_uid,
+			   SYSDATE,
+			   :area_id)
+		</sql>
+    </item>
+
+    <item id="update_map_view_menu" desc="">
+		<sql>
+			UPDATE map_view_menu_info
+			   SET vmi_pid             = :pid,
+			       vmi_name            = :name,
+			       vmi_type            = :type,
+			       vmi_icon_url        = :icon_url,
+			       vmi_host_key        = :host_key,
+			       vmi_status          = :status,
+			       vmi_order           = :order,
+			       vmi_is_default      = :is_default,
+			       vmi_model_group_id  = :model_group_id,
+			       vmi_pos_x           = :pos_x,
+			       vmi_pos_y           = :pos_y,
+			       vmi_pos_z           = :pos_z,
+			       vmi_rot_x           = :rot_x,
+			       vmi_rot_y           = :rot_y,
+			       vmi_rot_z           = :rot_z,
+			       vmi_tar_x           = :tar_x,
+			       vmi_tar_y           = :tar_y,
+			       vmi_tar_z           = :tar_z,
+			       vmi_update_uid      = :update_uid,
+			       vmi_update_datetime = SYSDATE,
+			       vmi_area_id 		   = :area_id
+		</sql>
+		<where id="1">
+			 WHERE vmi_cus_number = :cus_number 
+			   AND vmi_id = :id
+		</where>
+    </item>
+
+    <item id="update_cancel_default_view_menu" desc="取消默认视角菜单">
+		<sql>
+			UPDATE map_view_menu_info
+			   SET vmi_is_default = 0
+		</sql>
+		<where id="0">
+			 WHERE vmi_cus_number = :cus_number
+			   AND vmi_is_default = 1
+		</where>
+		<where id="1">
+			 WHERE vmi_cus_number = ?
+			   AND vmi_is_default = 1
+		</where>
+    </item>
+
+    <item id="delete_map_view_menu" desc="">
+		<sql>
+			DELETE FROM map_view_menu_info
+		</sql>
+		<where id="1">
+			 WHERE vmi_id IN (SELECT vmi_id
+			                    FROM (SELECT vmi_id, vmi_pid
+			                            FROM map_view_menu_info
+			                           WHERE vmi_cus_number = ?)
+			                  CONNECT BY PRIOR vmi_id = vmi_pid
+			                   START WITH vmi_id = ?)
+		</where>
+    </item>
+
+    <item id="select_map_view_menu_detail" desc="">
+		<sql>
+			SELECT A.vmi_cus_number      AS cus_number,
+			       A.vmi_pid             AS pid,
+			       B.vmi_name            AS pname,
+			       A.vmi_id              AS id,
+			       A.vmi_name            AS name,
+			       A.vmi_type            AS type,
+			       A.vmi_icon_url        AS icon_url,
+			       A.vmi_host_key        AS host_key,
+			       A.vmi_status          AS status,
+			       A.vmi_order           AS "order",
+			       A.vmi_is_default      AS is_default,
+			       A.vmi_model_group_id  AS model_group_id,
+			       A.vmi_pos_x           AS pos_x,
+			       A.vmi_pos_y           AS pos_y,
+			       A.vmi_pos_z           AS pos_z,
+			       A.vmi_rot_x           AS rot_x,
+			       A.vmi_rot_y           AS rot_y,
+			       A.vmi_rot_z           AS rot_z,
+			       A.vmi_tar_x           AS tar_x,
+			       A.vmi_tar_y           AS tar_y,
+			       A.vmi_tar_z           AS tar_z,
+			       A.vmi_create_uid      AS create_uid,
+			       A.vmi_create_uid      AS create_user,
+			       to_char(A.vmi_create_datetime, 'YYYY-MM-DD HH24:MI:SS') AS create_datetime,
+			       A.vmi_update_uid      AS update_uid,
+			       A.vmi_update_uid      AS update_user,
+			       to_char(A.vmi_update_datetime, 'YYYY-MM-DD HH24:MI:SS') AS update_datetime,
+			       A.vmi_area_id		 AS area_id
+			  FROM map_view_menu_info A
+			  LEFT JOIN map_view_menu_info B
+			    ON A.vmi_pid = B.vmi_id
+		</sql>
+		<where id="1">
+			 WHERE A.vmi_cus_number = ?
+			   AND A.vmi_id = ?
+		</where>
+    </item>
+
+    <item id="select_map_view_menu" desc="">
+		<sql>
+			SELECT DISTINCT
+				   vmi_cus_number      AS cus_number,
+			       vmi_pid             AS pid,
+			       vmi_id              AS id,
+			       vmi_name            AS name,
+			       vmi_type            AS type,
+			       vmi_icon_url        AS icon_url,
+			       vmi_host_key        AS host_key,
+			       vmi_status          AS status,
+			       vmi_order           AS "order",
+			       vmi_is_default      AS is_default,
+			       vmi_model_group_id  AS model_group_id,
+			       vmi_pos_x           AS pos_x,
+			       vmi_pos_y           AS pos_y,
+			       vmi_pos_z           AS pos_z,
+			       vmi_rot_x           AS rot_x,
+			       vmi_rot_y           AS rot_y,
+			       vmi_rot_z           AS rot_z,
+			       vmi_tar_x           AS tar_x,
+			       vmi_tar_y           AS tar_y,
+			       vmi_tar_z           AS tar_z
+			  FROM map_view_menu_info
+		</sql>
+		<where id="1">
+			 WHERE vmi_cus_number = ?
+		</where>
+		<where id="2">
+			 WHERE vmi_cus_number = ?
+			   AND vmi_area_id IN (SELECT oar_area_id
+			                         FROM com_org_area_rltn
+			                        WHERE oar_cus_number = ?
+			                          AND oar_dept_id = ?)
+		</where>
+		<where id="3">
+			 START WITH vmi_cus_number = ?
+			        AND vmi_area_id IN (SELECT oar_area_id
+			                              FROM com_org_area_rltn
+			                             WHERE oar_cus_number = ?
+			                               AND oar_dept_id = ?)
+			CONNECT BY PRIOR vmi_pid = vmi_id
+		</where>
+		<where id="4">
+			 START WITH vmi_cus_number = ?
+			        AND vmi_area_id IN (SELECT oar_area_id
+										  FROM com_org_area_rltn
+										 INNER JOIN TABLE(dvc_pkg_permission.getdep(?, ?, ?))
+										    ON oar_dept_id = odd_id)
+			CONNECT BY PRIOR vmi_pid = vmi_id
+		</where>
+		<order id="1">
+			 ORDER BY vmi_pid, vmi_order
+		</order>
+    </item>
+
+    <item id="select_default_view_menu" desc="查询默认视角菜单">
+		<sql>
+			SELECT vmi_id         AS id,
+			       vmi_pid        AS pid,
+			       vmi_name       AS name
+			  FROM map_view_menu_info
+		</sql>
+		<where id="0">
+			 WHERE vmi_cus_number = ?
+			   AND vmi_is_default = 1
+		</where>
+    </item>
+
+    <item id="select_map_view_menu_list" desc="">
+		<sql>
+			SELECT vmi_cus_number AS cus_number,
+			       vmi_id         AS id,
+			       vmi_pid        AS pid,
+			       vmi_name       AS name,
+			       vmi_order      AS "order"
+			  FROM map_view_menu_info
+		</sql>
+		<where id="1">
+			 WHERE vmi_cus_number = ?
+		</where>
+		<order id="1">
+			 ORDER BY vmi_pid, vmi_order
+		</order>
+    </item>
+
+    <item id="select_map_model_group_list_for_view" desc="">
+		<sql>
+			 SELECT mgm_cus_number AS cus_number,
+			        mgm_group_id   AS id,
+			        mgm_group_pid AS pid,
+			        mgm_group_name AS name,
+			        mgm_order AS "order",
+			        mgm_group_type AS type
+			   FROM map_model_group_manager
+		</sql>
+		<where id="1">
+			  WHERE mgm_cus_number = ?
+		</where>
+		<order id="1">
+			  ORDER BY mgm_group_pid, mgm_order
+		</order>
+    </item>
+
+    <item id="select_map_model_file_list_for_view" desc="">
+		<sql>
+			SELECT mfi_cus_number AS cus_number,
+			       mfi_file_id    AS id,
+			       mfi_file_pid   AS pid,
+			       mfi_file_title AS name,
+			       mfi_file_order AS "order",
+			       mfi_file_flag  AS type
+			  FROM map_model_file_info
+		</sql>
+		<where id="1">
+			 WHERE mfi_cus_number = ?
+			   AND mfi_file_flag IN (0, 1, 2)
+		</where>
+		<order id="1">
+			 ORDER BY mfi_file_order
+		</order>
+    </item>
+</sqlItem>

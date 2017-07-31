@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="select_led_id_for_alarm_handle" desc="">
+		<sql>
+			SELECT lbd_id
+			  FROM tbk_led_base_dtls
+		</sql>
+		<where id="0">
+			 WHERE lbd_cus_number = ?
+			   AND lbd_dept_id = ?
+		</where>
+    </item>
+</sqlItem>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>模型分组管理</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+	html, body {padding: 0; margin: 0; width: 100%; height: 100%; overflow: hidden;}
+
+	.treeContent {
+		background: rgba(21, 67, 82, 0.9);
+		padding:5px 0;
+	  	overflow: auto;
+	  	z-index: 99;
+	  	position:absolute;
+	  	top:36px;
+	  	left:15px;
+  	    width: 95%;
+	}
+	.control-label font.must {
+		color: red;
+		font-weight: bolder;
+	}
+
+	div.no-tree {
+		width: 100%;
+		height: 75%;
+	}
+	div.no-tree .dis-tab {
+		width: 100%;
+		height: 100%;
+		display: table;
+	}
+	div.no-tree .dis-tab div {
+		display: table-cell;
+		vertical-align: middle;
+		width: 100%;
+		height: auto;
+		text-align: center;
+	}
+</style>
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 100%; text-align: center;">
+	<tr><td>该功能已停止使用</td></tr>
+</table>
+<div class="vbox box-con" style="visibility: hidden;">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox">
+			<div class="input icon" >
+			  	<input v-model="searchVal" placeholder="输入关键字搜索">
+			  	<span class="find"></span>
+		    </div>
+		    <div class="no-tree">
+			    <div class="dis-tab">
+		    		<div>正在加载列表...</div>
+		    	</div>
+	    	</div>
+		    <div class="hz-col-1" style="overflow:auto">
+				<ul id="modelGroupTree" class="ztree"></ul>
+		    </div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form id="modelGroupForm" class="form-horizontal" role="form">
+				<div class="col-xs-12" style="display: none;">
+					<div class="form-group">
+						<label class="col-xs-2 control-label">机构名称</label>
+						<div class="col-xs-10">
+					      	<input class="form-control" v-model="params.cus_number_cn" type="text" readonly placeholder="机构名称">
+					      	<input type="hidden" v-model="params.cus_number">
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-2 control-label">父级名称</label>
+						<div class="col-xs-10">
+					      	<input class="form-control" v-model="params.pname" type="text" readonly placeholder="父级名称">
+					      	<input type="hidden" v-model="params.pid">
+						</div>
+					</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-2 control-label" ><font class="must">*</font>分组名称</label>
+						<div class="col-xs-10">
+				     		<input class="form-control" v-model="params.name" type="text" placeholder="分组名称">
+				     		<input type="hidden" v-model="params.id">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-2 control-label"><font class="must">*</font>分组类型</label>
+						<div class="col-xs-10">
+				      		<hz-select tip="分组类型" code="MGM_GROUP_TYPE" :id.sync="params.type"/>
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-2 control-label" >模型名称</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="params.model_name" type="text" placeholder="模型名称">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-2 control-label" ><font class="must">*</font>分组排序</label>
+				   		<div class="col-xs-10">
+				      		<input class="form-control" v-model="params.order" type="text" placeholder="分组排序">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-2 control-label" >创建用户</label>
+				   		<div class="col-xs-10">
+				 			<input class="form-control" v-model="params.create_user" type="text" readonly>
+				     		<input type="hidden" v-model="params.create_uid">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+					<div class="form-group">
+				   		<label class="col-xs-2 control-label">创建时间</label>
+				   		<div class="col-xs-10">
+				 			<input class="form-control" v-model="params.create_datetime" type="text" readonly>
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+				 	<div class="form-group">
+				   		<label class="col-xs-2 control-label" >更新用户</label>
+				   		<div class="col-xs-10">
+				 			<input class="form-control" v-model="params.update_user" type="text" readonly>
+				     		<input type="hidden" v-model="params.update_uid">
+				   		</div>
+				 	</div>
+				</div>
+
+				<div class="col-xs-12">
+				 	<div class="form-group">
+				   		<label class="col-xs-2 control-label">更新时间</label>
+				   		<div class="col-xs-10">
+				 			<input class="form-control" v-model="params.update_datetime" type="text" readonly>
+				   		</div>
+				 	</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons" >
+			<a @click="save" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a @click="remove" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			<a @click="reset" class="hbtn btn_primary btn_large"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div>
+</div>
+<!-- 
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+	//requirejs(['hz/map/modelGroup/modelGroupManager']);
+</script>
+ -->
+</body>
+</html>

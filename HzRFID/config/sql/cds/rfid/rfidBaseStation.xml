@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_station_info">
+		<cosnt key="rbd_brand">RBD_BRAND</cosnt>
+		<const key="rbd_stts">RBD_STTS</const>
+		<sql>
+		 SELECT 
+				'1-'||odd_id        id,
+				'1-'||odd_parent_id pid,
+				odd_name            name,
+				null				cus,
+				null				rbd_other_id,
+		        null				rbd_dept_id,
+		        null				rbd_brand,
+		        null				rbd_room_id,
+              	null				rbd_ip,
+              	null				rbd_port,
+              	null                rbd_dvc_addrs,
+              	null                rbd_stts,
+              	null				stts,
+              	'org.png' 			icon,
+              	0					type,
+              	odd_seq 			seq
+	    FROM sys_org_dept_dtls
+	    WHERE LEVEL &lt; ?
+	    START WITH odd_id=? CONNECT BY PRIOR odd_id = odd_parent_id 
+	    UNION ALL
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					''||rbd_id          id,	
+					'1-'||rbd_area_id   pid,
+					rbd_name	        name,
+					rbd_cus_number      cus,
+					rbd_other_id	  ,
+					rbd_dept_id       ,
+					rbd_brand         ,
+					rbd_room_id       ,
+					rbd_ip            ,
+					rbd_port		  ,
+					rbd_dvc_addrs     ,
+					rbd_stts          ,
+					rbd_stts          stts,
+					'control.png'     icon,
+					1			  	  type,
+					rbd_seq           seq 
+				FROM
+					dvc_rfid_base_dtls
+				UNION ALL
+				SELECT
+					'1-'||abd_area_id   id,
+					'1-'||abd_parent_id pid,
+					abd_area_name       name,
+					abd_cus_number      cus,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					null,
+					'area.png'          icon,
+					0			        type,
+					abd_seq   			seq
+				FROM
+					com_area_base_dtls
+			)t
+		<where id="0">
+			WHERE
+					t.cus=?
+		</where>
+		<order id="0">
+			ORDER BY
+					seq
+		</order>
+		</sql>
+	</item>
+	
+	<item id="insert_station_info">
+		<seq>dvc_rfid_base_dtls@id@rbd_id</seq>
+		<sql>
+			INSERT INTO dvc_rfid_base_dtls
+			  (rbd_id,
+			   rbd_area_id,
+			   rbd_name,
+			   rbd_cus_number,
+			   rbd_other_id,
+			   rbd_dept_id,
+			   rbd_brand,
+			   rbd_room_id,
+			   rbd_ip,
+			   rbd_port,
+			   rbd_dvc_addrs,
+			   rbd_stts,
+			   rbd_seq,
+			   rbd_crte_time,
+			   rbd_crte_user_id,
+			   rbd_updt_time,
+			   rbd_updt_user_id
+			   )
+			VALUES
+			  (:id,
+			   :pid,
+			   :name,
+			   :rbd_cus_number,
+			   :rbd_other_id,
+			   :rbd_dept_id,
+			   :rbd_brand,
+			   :rbd_room_id,
+			   :rbd_ip,
+			   :rbd_port,
+			   :rbd_dvc_addrs,
+			   :rbd_stts,
+			   :rbd_seq,
+			   SYSDATE,
+			   :rbd_crte_user_id,
+			   SYSDATE,
+			   :rbd_updt_user_id
+			   )
+
+		</sql>
+	</item>
+	
+	<item id="update_station_info">
+		<sql>
+			UPDATE dvc_rfid_base_dtls
+			   SET rbd_area_id       = :pid,
+			   	   rbd_name          = :name,
+			       rbd_other_id      = :rbd_other_id,
+			       rbd_dept_id       = :rbd_dept_id,
+			       rbd_brand         = :rbd_brand,
+			       rbd_ip            = :rbd_ip,
+			       rbd_port          = :rbd_port,
+			       rbd_room_id       = :rbd_room_id,
+			       rbd_dvc_addrs     = :rbd_dvc_addrs,
+			       rbd_stts          = :rbd_stts,
+			       rbd_seq           = :rbd_seq,
+			       rbd_updt_time     = SYSDATE,
+			       rbd_updt_user_id  = :rbd_updt_user_id
+			 WHERE rbd_id = :id
+		</sql>
+	</item>
+	
+	<item id="delete_station_info">
+		<sql>
+			DELETE FROM
+				dvc_rfid_base_dtls
+			WHERE
+				rbd_id=:id
+		</sql>
+	</item>
+	<item id="select_org_area" desc="根据父id查询所有区域">
+		<sql>
+			SELECT abd_area_id   AS id,
+			        abd_area_name AS name,
+			        abd_parent_id AS pid,
+			        level
+			  FROM com_area_base_dtls
+		</sql>
+		<where id="0">
+			START WITH abd_parent_id = ?
+			CONNECT BY PRIOR abd_area_id = abd_parent_id
+		</where>
+		<order id="0">
+			ORDER BY abd_area_name
+		</order>
+    </item>
+</sqlItem>

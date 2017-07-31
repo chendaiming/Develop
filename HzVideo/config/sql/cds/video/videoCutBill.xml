@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_video_cut_bill_info" desc="新增视频截图监督单信息">
+		<seq>cmr_video_cut_bill@vcb_bill_id</seq>
+		<sql>
+			INSERT INTO cmr_video_cut_bill
+			  (vcb_cus_number,
+			   vcb_bill_id,
+			   vcb_use_cut_id,
+			   vcb_name,
+			   vcb_create_user,
+			   vcb_create_time,
+			   vcb_push_user,
+			   vcb_push_time,
+			   vcb_receive_user,
+			   vcb_receive_time,
+			   vcb_use_status)
+			VALUES
+			  (:vcb_cus_number,
+			   :vcb_bill_id,
+			   :vcb_use_cut_id,
+			   :vcb_name,
+			   :vcb_create_user,
+			   :vcb_create_time,
+			   :vcb_push_user,
+			    SYSDATE,
+			   :vcb_receive_user,
+			    SYSDATE,
+			   :vcb_use_status)
+		</sql>
+	</item>
+	<item id="select_video_cut_bill_list" desc="查询视频截图监督单列表">
+		<const key="vcd_problem_type">VIDEO_CUT_PROBLEAM_TYPE</const>
+		<sql>
+			SELECT vcb_cus_number,
+			   vcb_bill_id,
+			   vcb_use_cut_id,
+			   vcb_name,
+			   vcb_create_user,
+			   to_char(vcb_create_time,'yyyy-mm-dd hh24:mi:ss') AS vcb_create_time,
+			   vcb_push_user,
+			   to_char(vcb_push_time,'yyyy-mm-dd hh24:mi:ss') AS vcb_push_time,
+			   vcb_receive_user,
+			   to_char(vcb_receive_time,'yyyy-mm-dd hh24:mi:ss') AS vcb_receive_time,
+			   vcb_use_status,
+			   ubd_name,
+			   vcd_time,
+			   vcd_place,
+   			   vcd_problem_type
+			FROM cmr_video_cut_bill v
+			INNER JOIN cmr_video_cut_dtls d
+			ON d.vcd_cut_id = v.vcb_use_cut_id
+			INNER JOIN sys_user_base_dtls u 
+		</sql>
+		<where id="0">
+			ON v.vcb_create_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+		</where>
+		<where id="1">
+			ON v.vcb_create_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+			AND (:createUser is null or :createUser = '' or vcb_create_user = :createUser)
+			AND (:startTime is null or :startTime = '' or TO_TIMESTAMP(:startTime,'yyyy-MM-dd hh24:mi:ss') # vcb_create_time)
+			AND (:endTime is null or :endTime = '' or TO_TIMESTAMP(:endTime,'yyyy-MM-dd hh24:mi:ss') > vcb_create_time)
+		</where>
+		<where id="2">
+			ON v.vcb_create_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+			AND vcb_name LIKE CONCAT('%',CONCAT(:vcb_name,'%'))
+		</where>
+		<where id="3">
+			ON v.vcb_push_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+		</where>
+		<where id="4">
+			ON v.vcb_push_user = u.ubd_id  
+			WHERE vcb_cus_number = :cusNumber
+			AND (:pushUser is null or :pushUser = '' or vcb_push_user = :pushUser)
+			AND (:startTime is null or :startTime = '' or TO_TIMESTAMP(:startTime,'yyyy-MM-dd hh24:mi:ss') # vcb_push_time)
+			AND (:endTime is null or :endTime = '' or TO_TIMESTAMP(:endTime,'yyyy-MM-dd hh24:mi:ss') > vcb_push_time)
+		</where>
+		<where id="5">
+			ON v.vcb_push_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+			AND vcb_name LIKE CONCAT('%',CONCAT(:vcb_name,'%'))
+		</where>
+		<where id="6">
+			ON v.vcb_receive_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+		</where>
+		<where id="7">
+			ON v.vcb_receive_user = u.ubd_id  
+			WHERE vcb_cus_number = :cusNumber
+			AND (:receiveUser is null or :receiveUser = '' or vcb_receive_user = :receiveUser)
+			AND (:startTime is null or :startTime = '' or TO_TIMESTAMP(:startTime,'yyyy-MM-dd hh24:mi:ss') # vcb_receive_time)
+			AND (:endTime is null or :endTime = '' or TO_TIMESTAMP(:endTime,'yyyy-MM-dd hh24:mi:ss') > vcb_receive_time)
+		</where>
+		<where id="8">
+			ON v.vcb_receive_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+			AND vcb_name LIKE CONCAT('%',CONCAT(:vcb_name,'%'))
+		</where>
+	</item>
+	
+	<item id="select_video_cut_bill_user" desc="查询监督单操作用户">
+		<sql>
+			SELECT ubd_name
+			FROM cmr_video_cut_bill v
+			INNER JOIN sys_user_base_dtls u 
+		</sql>
+		<where id="1">
+			ON v.vcb_create_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+		</where>
+		<where id="2">
+			ON v.vcb_push_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+		</where>
+		<where id="3">
+			ON v.vcb_receive_user = u.ubd_id 
+			WHERE vcb_cus_number = :cusNumber
+		</where>
+	</item>
+</sqlItem>

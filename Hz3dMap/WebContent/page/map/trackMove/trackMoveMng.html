@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>添加移动轨迹</title>
+	<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+	<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+	#trackMoveEdit{
+		padding:10px 10px 0 10px;
+		height:100%;
+	}
+	.movelist .title{
+		padding:10px 5px;
+		font-size:15px;
+		font-weight:bold;
+		border-bottom:1px solid #1f699e;
+	}
+	.movelist .cb{
+		width:50px;
+	}
+	.list{
+		overflow:auto;
+	}
+	.list .item{
+		padding:0 5px;
+		font-size:14px;
+	}
+	.list .item div{
+		padding:10px 0;
+		color:#1AFA29;
+		cursor: pointer;
+	}
+	.list .item .start{
+		background:url(image/starticon.png) no-repeat;
+		background-size:25px;
+		background-position:0px center;
+		padding-left:30px;
+	}
+	.list .item .end{
+		background:url(image/endicon.png) no-repeat;
+		background-size:25px;
+		background-position:0px center;
+		padding-left:30px;
+	}
+</style>
+<doby>
+	<div id="trackMoveEdit" class="vbox">
+		<div class="input icon" >
+			<input v-model="pointName" placeholder="起始点或终点名称搜索">
+			<span class="find"></span>
+		</div>
+		<div class="movelist hz-col-1 vbox">
+			<div class="title hbox">
+				<div class="cb"><input type="checkbox" v-model="checkAll"/></div>
+				<div class="hz-col-1">起点名称</div>
+				<div class="hz-col-1" style="padding-left:10px;">至</div>
+				<div class="hz-col-1">终点名称</div>
+			</div>
+			<div class="list hz-col-1">
+				<div class="hbox item"  v-for="item in routes | filterBy pointName in 'omg_origin_name' 'omg_destination_name'">
+					<div class="cb"><input type="checkbox" :value="item" v-model="checkeds"/></div>
+					<div @click="trackClick(item)" class="hz-col-1 start" v-text="item.omg_origin_name"></div>
+					<div class="hz-col-1">&rarr;</div>
+					<div @click="trackClick(item)" class="hz-col-1 end" v-text="item.omg_destination_name"></div>
+				</div>
+			</div>
+		</div>
+		<div class="bottom">
+			<div class="buttons" >
+				<a @click="delTrackMove" v-bind:class="{'btn_disabled':checkeds.length==0}" :disabled="checkeds.length==0" class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			</div>
+		</div>
+	</div>
+</doby>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+	requirejs(['hz/map/trackMove/trackMoveMng']);
+</script>
+</html>

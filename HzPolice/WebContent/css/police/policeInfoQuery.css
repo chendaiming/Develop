@@ -1,0 +1,139 @@
+#imageview { 
+ 	text-align: center;
+/*  	margin-top:5px; */
+ } 
+#imageview img{
+	width:110px;
+	height:110px;
+	text-align: center;
+}
+#achievement{
+	margin-top:2px;
+	height:36px;
+	text-align: center;
+	overflow-y:auto;
+	display:none;
+}
+#achievement img{
+	margin:3px 5px 3px 4px;
+	width:30px;
+	height:30px;
+}
+.col-xs-5{
+	width: 41.66666667%;
+	height:37px; 
+}
+.text-label {
+    padding-top: 7px;
+    margin-bottom: 0;
+    text-align: center;
+ }
+ .panel-info>.panel-heading {
+    color: #f2dede;
+    background-color: #3d6579;
+    border-color: #bce8f1;
+}
+.table-bordered>tbody>tr:nth-of-type(odd) {
+    background-color: rgba(249, 249, 249, 0);
+    height:20px;
+}
+#inoutDiv{
+	margin-left:1%;
+	width:36%;
+	float:left; 
+	height:268px;
+	overflow-y:auto;
+}
+#doorCardDiv{
+	margin-left:2%;
+	margin-right:0%;
+	width:60.5%;
+	float:left; 
+	height:268px; 
+	overflow-y:auto;
+}
+caption {
+    padding-top: 5px;
+    padding-bottom: 6px;
+    color: #e4d4d5;
+    text-align: center;
+}
+.caption_title {
+    padding-top: 5px;
+    padding-bottom: 6px;
+    color: #e4d4d5;
+    text-align: center;
+}
+.panel-group {
+    margin-bottom: 10px;
+}
+.dateline .in {
+    background: #5cb85c;
+}
+.dateline .out{
+	background:#68b0dd;
+}
+input:read-only {
+/*     background: rgba(199, 239, 252, 0); */
+    border:0px;
+}
+.dateline>li> span {
+    top: 64%;
+    left: 50%;
+    margin-left: -22.5px;
+    margin-top: -30px;
+    background-size: 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.dateline>li>div::after, li>div::before {
+    top: 105%;
+}
+ul.dateline, ul.dateline * {
+    position: relative;
+    text-align: center;
+}
+.dateline>li>a {
+    top: 72%;
+    margin-left: 25px;
+}
+.dateline span {
+    margin-top: 3;
+}
+.label-success,
+.label-info {
+    line-height:30px;
+    font-size:15px;
+    margin-left:26%;
+}
+
+#inoutinfo div{
+	margin-top:3%;
+}
+.dateline>li>div::after, li>div::before{
+	border: 5px solid transparent;
+	margin-right:1;
+}
+.dateline>li:nth-child(odd)>div::after {
+    border-left: 5px solid #699ead;
+    margin-left:1;
+}
+
+.dateline>li:nth-child(even)>div::after {
+    border-right: 5px solid #699ead;
+}
+.table {
+    margin-bottom: 10px;
+}
+.table-bordered>tbody>tr>td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+    height:42px; 
+}
+.btn_mini {
+    margin-left: 15px;
+}
+.buttons{
+	margin-bottom:10px;
+}

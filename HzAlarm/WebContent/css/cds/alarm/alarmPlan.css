@@ -1,0 +1,144 @@
+@CHARSET "UTF-8";
+div.over-panel {
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(245,245,245,0.1);
+	display: none;
+	z-index: 5;
+}
+div.overflow-border-t {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+
+	width: 100%;
+	height: 20px;
+	background: -webkit-linear-gradient(top, rgba(24,25,27,0.5), rgba(0,0,0,0));
+}
+div.overflow-border-r {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	z-index: 1;
+
+	width: 20px;
+	height: 100%;
+	background: -webkit-linear-gradient(right, rgba(24,25,27,0.5), rgba(0,0,0,0));
+}
+div.overflow-border-b {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	z-index: 1;
+
+	width: 100%;
+	height: 20px;
+	background: -webkit-linear-gradient(bottom, rgba(24,25,27,0.5), rgba(0,0,0,0));
+}
+div.overflow-border-l {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+
+	width: 20px;
+	height: 100%;
+	background: -webkit-linear-gradient(left, rgba(24,25,27,0.5), rgba(0,0,0,0));
+}
+
+span.msg-status {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	color: #CEC222;
+}
+
+/* 自定义mindMap样式 */
+div.hz-mm-scene .hz-mm-box.hz-mm-child >.hz-mm-node.add {}
+div.hz-mm-scene .hz-mm-box.hz-mm-child >.hz-mm-node.add >.hz-mm-body {
+	background-color: rgba(102,102,102,0.5);
+}
+div.hz-mm-scene .hz-mm-box.hz-mm-child >.hz-mm-node.add >.hz-mm-body >.hz-mm-name {
+	font-size: 58px;
+	font-weight: bold;
+	color: rgba(102,102,102,0.5);
+	cursor: pointer;
+}
+div.hz-mm-scene .hz-mm-box.hz-mm-child >.hz-mm-node.small.add >.hz-mm-body {
+	background-color: rgba(102,102,102,0.5);
+}
+div.hz-mm-scene .hz-mm-box.hz-mm-child >.hz-mm-node.small.add >.hz-mm-body >.hz-mm-name {
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	color: rgba(102,102,102,0.5);
+	cursor: pointer;
+}
+
+
+div.link-panel {
+	position: absolute;
+    z-index: 9;
+    height: 100%;
+    width: 100%;
+	display: none;
+}
+
+div.dvc-type-panel {
+	float: left;
+    width: 201px;
+    height: 100%;
+    background: rgba(53,77,95,0.8);
+}
+div.dvc-type-panel.left-con {
+	padding: 0px;
+	border-right: 1px solid rgba(0,0,0,0.9);
+}
+div.dvc-type-panel .dvc-type-box {
+    float: left;
+    width: 200px;
+    height: 40px;
+    background: rgba(0,118,137,0.95);
+    display: table;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 1px;
+}
+div.dvc-type-panel .dvc-type-box >div {
+	display: table-cell;
+    vertical-align: middle;
+}
+
+div.dvc-type-panel .dvc-type-box.selected {
+	background: rgba(17,77,97,.9);
+}
+div.dvc-type-panel .dvc-type-box.selected >div {
+	color: rgb(255, 167, 0);
+	text-shadow: 1px 1px 1px rgb(0,0,0);
+}
+
+div.link-dvc-panel {
+	position: relative; 
+	overflow: hidden;
+	height: 100%;
+	background: rgba(53,77,95,0.8);
+	box-sizing: border-box;
+	padding: 5px;
+}
+div.link-dvc-panel.active {
+	background: rgba(18,76,96,.9);
+}
+div.link-dvc-panel div.bottom-btn {
+	position: absolute;
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+    padding: 0 5px;
+}
+
+div.layui-layer-content >span {
+	color: #f3d80d;
+}

@@ -1,0 +1,158 @@
+﻿        .zoom-button {
+            background-color: rgba(255, 255, 255, 1);
+            border-radius: 2px;
+            display: block;
+            height: 29px;
+            left: 0px;
+            overflow: hidden;
+            position: absolute;
+            cursor: pointer;
+            width: 29px;
+            z-index: 3;
+            box-sizing: border-box;
+            transition: background-color 0.16s ease-out;
+            border-bottom-left-radius: 2px;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 1);
+            margin: 0;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font: inherit;
+            vertical-align: baseline;
+            list-style: none;
+            overflow: visible;
+        }
+        
+        .zoom-icon {
+            background: transparent url(icon-sprite-1x.png) 0 0 no-repeat;
+            background-size: 120px 30px;
+            display: block;
+            height: 15px;
+            left: 7px;
+            position: absolute;
+            top: 7px;
+            width: 15px;
+        }
+        
+        .zoom-in {
+            top: 0px;
+        }
+        
+        .zoom-out {
+            bottom: 0px;
+        }
+        
+        button:hover .zoom-icon {
+            background-position: -30px 0;
+            background-position-x: -30px;
+            background-position-y: 0px;
+        }
+        
+        button:hover .zoom-out-icon {
+            background-position: -30px -15px;
+            background-position-x: -30px;
+            background-position-y: -15px;
+        }
+        
+        .zoom-out-icon {
+            background-position: 0 -15px;
+        }
+        
+        #zoom_bar {
+            width: 29px;
+            height: 156px;
+            position: absolute;
+            margin: 0;
+            margin-top: 29px;
+        }
+        
+        .widget-zoom-slider-seek-bar {
+            width: 3px;
+            height: 157px;
+            position: absolute;
+            margin-left: 13px;
+            margin-top: 29px;
+            background-color: rgb(255, 255, 255);
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .widget-zoom-slider-scrubber {
+            width: 25px;
+            height: 8px;
+            position: absolute;
+            margin-top: 2px;
+            margin-left: -11px;
+            z-index: 1;
+            background-color: #fff;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            padding: 0;
+            border: 0;
+            outline: 0;
+            font: inherit;
+            vertical-align: baseline;
+            list-style: none;
+            overflow: visible;
+            text-decoration: none;
+            outline: none;
+            color: #4285F4;
+            pointer-events: visible;
+        }
+        
+        .widget-zoom-slider-scrubber::after {
+            height: 2px;
+            width: 11px;
+            margin-top: 3px;
+            margin-left: 7px;
+            background-color: #6b6b6b;
+            position: absolute;
+            content: "";
+        }
+        
+        #zoom-div {
+            position: absolute;
+            right: 20px;
+            bottom: 33px;
+            width: 29px;
+            height: 214px;
+            display: none;
+            z-index: 99;
+        }
+        /*下边为label样式表*/
+        
+        div.map-label {}
+        
+        div.map-label image.label-image {}
+        
+        div.map-label span.label-span {
+            font-size: 16px;
+        }
+        
+        div.prisoner-count {}
+        div.prisoner-count span.label-span {
+        	color: #fff900;
+        	font-size: 16px;
+    		text-shadow: 1px 0 1px #FF0000, 0 01px 1px #FF0000, 0 -1px 1px #FF0000, -1px 0 1px #FF0000;
+        }
+            #compass {
+                position: absolute;
+                top: 20px;
+                right: 20px;
+                width: 129px;
+                height: 129px;
+                background: transparent url(compass_bg.png) 0 0 no-repeat;
+                background-size: 129px 129px;
+                pointer-events: none;
+            }
+            #compass-pointer {
+                position: absolute;
+                width: 20px;
+                height: 88px;
+                top: 21px;
+                left: 56px;
+                background: transparent url(compass.png) 0 0 no-repeat;
+                background-size: 20px 88px;
+            }

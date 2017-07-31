@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+</head>
+<title>信息发布</title>
+<body></body>
+<script type="text/javascript" src="../../../js/src/cds/infopublish/des.js"></script>
+<script type="text/javascript">
+	var _server = 'http://10.43.239.25:6101/action.aspx?'; //信息发布服务器地址
+	var resp = 'responderId=login&action=login&';
+	var login = 'account=hz&password=admin&';
+	var role = 'roles='+encodeURI('节目操作员');
+	
+	var key  =  '123#ckiosk';  //加密密钥
+	var message = resp + login + role; //需要加密的部分
+	var ciphertext = stringToHex(des (key, message, true, false,'')); //加密
+	window.location = _server + ciphertext;
+</script>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>模型组件管理</title>
+	<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+	<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+	<link rel="stylesheet" href="../../../css/common.css" >
+</head>
+<body>
+	<div id="modelComponentMng" class="vbox" style="width:350px;height:300px;padding:5px 10px;">
+		<div class="input icon" >
+		  	<input v-model="searchTree" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+		<div class="hz-col-1" style="overflow: auto">
+			<ul class="ztree" id="mngTree"></ul>	
+		</div>
+		<div style="height:35px;border-top:1px solid #0076ad;padding-top:5px">
+			<a @click="delComponents" v-bind:class="{'btn_disabled':checked.length==0}" style="float:right" class="hbtn btn_primary btn_large"><span>删除</span></a>
+			<a @click="refresh" style="float:right" class="hbtn btn_primary btn_large"><span>刷新</span></a>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+	requirejs(['hz/map/modelComponent/modelComponentMng'])
+</script>
+</html>

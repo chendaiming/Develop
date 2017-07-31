@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/common.css">
+<body>
+<div class="vbox box-con scheduling_mini">
+	<!-- 呼叫面板 start -->
+	<div class="vbox hz-col-1" id="call_dialog">
+		<form class="form-horizontal">
+			<div class="col-xs-12">
+				<div class="form-group ">
+					<label class="col-xs-5 control-label">当前呼叫:</label>
+					<div class="col-xs-7">
+						<span class="form-control" style="border: none;"
+							v-text="sphone.substr(0,sphone.length-1)"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12">
+				<div class="form-group ">
+					<label class="col-xs-5 control-label">状态:</label>
+					<div class="col-xs-7">
+						<span class="form-control" style="border: none;"
+							v-text="status.msg"></span>
+					</div>
+				</div>
+			</div>
+		</form>
+		<center>
+			<a class="hbtn btn_primary btn_large" @click="closeDialog()"><i
+				class="btn_icon icon_del"></i><span>挂断</span></a>
+		</center>
+	</div>
+</div>	
+<script>
+	requirejs(['hz/cds/scheduling/hz.hf.scheduling']);
+</script>
+</body>

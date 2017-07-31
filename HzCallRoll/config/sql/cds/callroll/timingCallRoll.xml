@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_timing_call_roll_list" desc="查询点名配置数据表格">
+		<sql>
+			SELECT * FROM (
+				SELECT  tcm_cus_number,
+						tcm_id,
+						tcm_begin_time,
+						tcm_max_time,
+						tcm_dept_id,
+						odd_name AS tcm_dept_name,
+						tcm_area_id,
+						tcm_crte_time,
+						tcm_crte_user_id,
+						tcm_updt_time,
+						tcm_updt_user_id,
+						(
+							SELECT COUNT(*) FROM psr_prisoner_base_dtls p
+							INNER JOIN dvc_rfid_label_people_bind b
+							ON p.pbd_other_id = b.rpb_people_id
+							WHERE p.pbd_prsn_area_id = r.tcm_dept_id
+							AND p.pbd_cus_number = r.tcm_cus_number
+						) AS count
+				FROM cds_timing_call_roll_master r
+				LEFT JOIN sys_org_dept_dtls d
+				on r.tcm_dept_id = d.odd_id
+			)
+		</sql>
+		<where id="0">
+		  	WHERE tcm_cus_number = :tcm_cus_number
+		</where>
+		<where id="1">
+		  	WHERE tcm_cus_number = :tcm_cus_number
+			AND (:tcm_begin_time IS NULL OR :tcm_begin_time = '' OR :tcm_end_time IS NULL OR :tcm_end_time = '' OR
+				to_number(replace(tcm_begin_time,':',''))
+				between replace(:tcm_begin_time,':','') AND  replace(:tcm_end_time,':',''))
+			AND (:tcm_dept_id IS NULL OR :tcm_dept_id = '' OR tcm_dept_id = :tcm_dept_id
+				or tcm_dept_id = '' or tcm_dept_id is null )
+			AND (:tcm_max_time is null or :tcm_max_time = '' or tcm_max_time = :tcm_max_time)
+		</where>
+		<order id="0">
+			ORDER BY tcm_begin_time DESC
+		</order>
+    </item>
+	<item id="insert_timing_call_roll_data" desc="新增点名配置数据">
+		<seq>cds_timing_call_roll_master@tcm_id</seq>
+		<sql>
+			INSERT INTO cds_timing_call_roll_master
+				(tcm_cus_number,
+				tcm_id,
+				tcm_begin_time,
+				tcm_max_time,
+				tcm_dept_id,
+				tcm_area_id,
+				tcm_crte_time,
+				tcm_crte_user_id,
+				tcm_updt_time,
+				tcm_updt_user_id)
+			values
+				(:tcm_cus_number,
+				:tcm_id,
+				:tcm_begin_time,
+				:tcm_max_time,
+				:tcm_dept_id,
+				:tcm_area_id,
+				 SYSDATE,
+				:tcm_crte_user_id,
+				 SYSDATE,
+				:tcm_updt_user_id)
+		</sql>
+    </item>
+    <item id="delete_timing_call_roll_data" desc="删除点名配置数据">
+		<sql>
+			DELETE FROM cds_timing_call_roll_master
+		</sql>
+		<where id="0">
+			WHERE tcm_cus_number = :tcm_cus_number
+			AND tcm_id = :tcm_id
+		</where>
+    </item>
+
+	<item id="select_timing_call_roll_prisoner" desc="根据部门查询已绑定预计点名人数">
+		<sql>
+			SELECT pbd_cus_number,pbd_prsn_area_id,pbd_prsnr_id,pbd_prsnr_name,pbd_other_id FROM psr_prisoner_base_dtls p
+			INNER JOIN dvc_rfid_label_people_bind b
+			ON p.pbd_prsnr_id = b.rpb_people_id
+		</sql>
+		<where id="0">
+			WHERE (:tcm_dept_id is null or :tcm_dept_id = '' or pbd_prsn_area_id = :tcm_dept_id)
+			AND pbd_cus_number = :tcm_cus_number
+		</where>
+	</item>
+</sqlItem>

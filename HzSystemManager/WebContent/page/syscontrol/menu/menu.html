@@ -1,0 +1,140 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox">
+				<div class="input icon" >
+				  	<input id="input" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+				</div>
+		</div>
+		<div class="hz-col-9 right-con">
+				<form class="form-horizontal">
+			    <div class="form-group ">
+			        <label  class="col-sm-3 control-label">父级菜单</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" disabled=true v-model="menu['pname']" placeholder="请输入父级菜单">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label  class="col-sm-3 control-label">功能名称</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control"  v-model="menu['fmd_name']" placeholder="请输入功能名称">
+			        </div>
+			    </div>
+			     <div class="form-group">
+			        <label  class="col-sm-3 control-label">功能图标</label>
+			        <div class="col-sm-8">
+			         <div class="input-group" id="iconlib">
+			            <input type="text" class="form-control menuicon" disabled='true'  style="cursor:pointer;" placeholder="请选择图标">
+			            <div class="input-group-btn">
+							<button type="button" style="z-index:0"   class="btn btn-default" >图标库
+							<span class="caret"></span>
+							</button>
+						</div>
+					</div>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">功能路径</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="menu['fmd_path']" placeholder="请输入功能路径">
+			        </div>
+			    </div>
+			    <div class="form-group">
+			        <label  class="col-sm-3 control-label">功能类型</label>
+			        <div class="col-sm-3 ">
+			        	<div class="checkbox">
+			        		<input type="radio" value="1"  v-model="menu['fmd_type']" name="type" checked>菜单
+			        	</div>
+			        </div>
+			        <div class="col-sm-2 ">
+			        	<div class="checkbox">
+			        		<input type="radio" value="2" v-model="menu['fmd_type']" name="type">按钮
+			        	</div>
+			        </div>
+			    </div>
+			   
+			    <div class="form-group">
+			        <label class="col-sm-3 control-label">窗口高度</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="menu['fmd_height']" placeholder="请输入窗口高度">
+			        </div>
+			    </div>
+			     <div class="form-group">
+			        <label  class="col-sm-3 control-label">窗口宽度</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="menu['fmd_width']" placeholder="请输入窗口宽度">
+			        </div>
+			    </div>
+			    <div class="form-group">
+			        <label  class="col-sm-3 control-label">权限标识</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="menu['fmd_flag']" placeholder="请输入权限标识">
+			        </div>
+			    </div>
+			    
+			     <div class="form-group">
+			        <label class="col-sm-3 control-label">打开方式</label>
+			        <div class="col-sm-3 ">
+			        	<div class="checkbox">
+			        		<input type="radio" value="0"  v-model="menu['fmd_open_type']" name="open" checked>DIV
+			        	</div>
+			        </div>
+			         <div class="col-sm-2 ">
+			        	<div class="checkbox">
+			        		<input type="radio" value="1"  v-model="menu['fmd_open_type']" name="open">DIV
+			        	</div>
+			        </div>
+			        <div class="col-sm-2">
+			        	<div class="checkbox">
+			        		<input type="radio" value="2"  v-model="menu['fmd_open_type']" name="open">IFRAME
+			        	</div>
+			        </div>
+			    </div>
+			    <div class="form-group">
+			        <label  class="col-sm-3 control-label">快捷键</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="menu['fmd_shortcut_key']" placeholder="请输入快捷键">
+			        </div>
+			    </div>
+			    <div class="form-group">
+			        <label class="col-sm-3 control-label">是否启用</label>
+			        <div class="col-sm-3 ">
+			        	<div class="checkbox">
+			        		<input type="radio" value="1"  v-model="menu['fmd_use']" name="use" checked>启用
+			        	</div>
+			        </div>
+			        <div class="col-sm-3 ">
+			        	<div class="checkbox">
+			        		<input type="radio" value="0"  v-model="menu['fmd_use']" name="use">禁用
+			        	</div>
+			        </div>
+			    </div>
+			</form>	
+		</div>
+	</div>
+	<div class="bottom" >
+		<div class="buttons">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>		  
+				<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+				<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div> 
+	
+	<!-- 图标库容器 -->
+	<div  class="combox_panel" id="iconcontainer" style="display:none;">
+		<ul class="menulist">
+			<li v-for="item in list" @click="select(item)"><span class="icons" style="background-image:url(data:image/png;base64,{{item}})"></span></li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js" ></script>
+<script type="text/javascript" src="../../../js/config.js"  ></script>
+<script>
+require(["hz/sys/menu/menu"]);
+</script>

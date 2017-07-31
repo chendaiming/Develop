@@ -1,0 +1,162 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/webuploader/webuploader.css" >
+<link rel="stylesheet" href="../../../css/police/policeInfoQuery.css" >
+<style>
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class=" left-con vbox">
+			<div class="input icon">
+				<input id="input" placeholder="输入关键字搜索"> <span class="find"></span>
+			</div>
+			<div class="hz-col-1" style="overflow: auto;">
+				<ul id="tree" class="ztree"></ul>
+			</div>
+		</div>
+
+		<div class="hz-col-9 right-con">
+			<!-- 基本信息 -->
+			<form class="form-horizontal" id="baseinfo">
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-1">警号</td>
+						<td class="col-xs-2" v-text="police.policeid"></td>
+						<td class="col-xs-1">姓名</td>
+						<td class="col-xs-2" v-text="police.name"></td>
+						<td class="col-xs-1">出生日期</td>
+						<td class="col-xs-3" v-text="police.pbd_birth_date"></td>
+						<td class="col-xs-2" rowspan="4">
+							<div id="imageview">
+								<img v-if="police.pbd_img" :src='police.pbd_img' >
+							</div>
+							<!-- 成就 -->
+							<div id="achievement"></div>
+						</td>								
+					</tr>
+					<tr>
+						<td class="col-xs-1">部门</td>
+						<td class="col-xs-2" v-text="police.odd_name"></td>
+						<td class="col-xs-1">职务</td>
+						<td class="col-xs-2" v-text="police.pbd_pstn_name"></td>
+						<td class="col-xs-2">警员类型</td>
+						<td class="col-xs-2" v-text="police.pbd_police_type_indc"></td>
+					</tr>				
+					<tr>
+						<td class="col-xs-1">年龄</td>
+						<td class="col-xs-2" v-text="police.pbd_age"></td>
+						<td class="col-xs-1">性别</td>
+						<td class="col-xs-2" v-text="police.pbd_sex"></td>	
+						<td class="col-xs-2">政治面貌</td>
+						<td class="col-xs-2" v-text="police.pbd_political_status"></td>
+					</tr>
+					<tr>
+						<td class="col-xs-1">衔称</td>
+						<td class="col-xs-2" v-text="police.pbd_official_title"></td>
+						<td class="col-xs-1">学历</td>
+						<td class="col-xs-2" v-text="police.pbd_degree_indc"></td>
+						<td class="col-xs-2">工作日期</td>
+						<td class="col-xs-2" v-text="police.pbd_job_date"></td>						
+					</tr>					
+				</table>
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-1">对讲</td>
+						<td class="col-xs-3" v-text="police.pbd_talk_num"></td>
+						<td class="col-xs-1">手机</td>
+						<td class="col-xs-3" v-text="police.pbd_phone"></td>
+						<td class="col-xs-2">警务通</td>
+						<td class="col-xs-2" v-text="police.pbd_police_cmmnct"></td>
+					</tr>
+					<tr>
+						<td class="col-xs-1">短号</td>
+						<td class="col-xs-3" v-text="police.pbd_short_phone"></td>
+						<td class="col-xs-1">固话</td>
+						<td class="col-xs-3" v-text="police.pbd_fixed_phone"></td>
+						<td class="col-xs-2">亲属号码</td>
+						<td class="col-xs-2" v-text="police.pbd_family_phone"></td>
+					</tr>
+					<tr>
+						<td class="col-xs-1">传真</td>
+						<td class="col-xs-3" v-text="police.pbd_fax"></td>
+						<td class="col-xs-1">邮箱</td>
+						<td class="col-xs-3" v-text="police.pbd_email"></td>
+						<td class="col-xs-2">OA系统</td>
+						<td class="col-xs-2" v-text="police.pbd_oa_system"></td>
+					</tr>
+				</table>
+			</form>
+
+			<div class="panel-group" id="accordion">
+				<!-- 进出记录 -->
+				<div class="panel panel-info">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<a data-toggle="collapse" data-parent="#accordion"
+								href="#collapseInout"> 进出记录 </a>
+<!-- 							<a href="#" style="float: right" @click="openCamera()"> 摄像机 </a> -->
+						</h4>
+					</div>
+					<div id="collapseInout" class="panel-collapse collapse">
+						<div class="panel-body" style="padding: 0;">
+							<div id="inoutDiv">
+								<div class="caption_title">进出监记录</div>
+								<div id="inoutinfo"></div>
+							</div>
+							<div
+								style="float: left; height: 268px; width: 1px; border-left: 1px #e4d4d5 dashed;"></div>
+							<div id="doorCardDiv">
+								<div class="caption_title">刷卡记录</div>
+								<ul class="dateline">
+									<li v-for="record in records">
+										<div
+											v-bind:class="{'in':record.scr_inout_flag == '进','out':record.scr_inout_flag=='出'}">
+											<p class="item">
+												<span>{{record.dbd_name}}</span>(<span>{{record.scr_inout_flag}}</span>)
+											</p>
+										</div> <span style=""></span> <a>{{record.scr_bsns_time}}</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="bottom">
+		<a class="hbtn btn_primary btn_large export"><i
+			class="btn_icon icon_download"></i><span>导出</span></a>
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large" @click="openCamera()"><i
+				class="btn_icon icon_del"></i><span>监控</span></a> <a
+				class="hbtn btn_primary btn_large"><i
+				class="btn_icon icon_reset"></i><span>地图</span></a>
+		</div>
+	</div>
+
+	<div class="vbox hz-col-1" id="export_dialog" style="display: none;">
+		<!-- 导出 -->
+		<form class="form-horizontal">
+			<div class="form-group " style="height: 40px; margin-top: 16px;">
+				<label class="col-sm-3 control-label">导出到</label>
+				<div class="col-sm-8">
+					<input type="file" class="form-control" style="border: 0px;" />
+				</div>
+			</div>
+			<div class="bottom">
+				<a class="hbtn btn_primary btn_mini pull-right" id="cancel"><i
+					class="btn_icon icon_reset"></i><span>取消</span></a> <a
+					class="hbtn btn_primary btn_mini pull-right" id="save"><i
+					class="btn_icon icon_save"></i><span>导出</span></a>
+			</div>
+		</form>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/police/policeInfoQuery"]);
+</script>

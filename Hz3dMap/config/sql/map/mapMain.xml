@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_device_bind_model_name" desc="查询设备绑定的模型名称">
+		<sql>
+			SELECT dmb_model_name AS model_name
+			  FROM map_device_model_bind
+		</sql>
+		<where id="0">
+			 WHERE dmb_dvc_type = ?
+			   AND dmb_dvc_id = ?
+		</where>
+	</item>
+	<item id="query_model_bind_map_view" desc="查询模型绑定的地图视角">
+		<sql>
+			SELECT mvb_pos_x,
+			       mvb_pos_y,
+			       mvb_pos_z,
+			       mvb_rot_x,
+			       mvb_rot_y,
+			       mvb_rot_z,
+			       mvb_tar_x,
+			       mvb_tar_y,
+			       mvb_tar_z
+			  FROM map_model_view_bind
+			 WHERE mvb_cus_number = ?
+			   AND mvb_model_id = ?
+		</sql>
+	</item>
+</sqlItem>

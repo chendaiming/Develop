@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>模型视角绑定新增</title>
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css">
+<style type="text/css">
+	.right-menus {
+	position: absolute;
+    padding: 5px 0px;
+    left: 100px;
+    top: 130px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px #1a1a1a;
+    background: rgba(245, 245, 245, 0.95);
+    color: #282828;
+    z-index: 999;
+}
+.right-menus >ul {}
+.right-menus >ul >li {
+	padding: 3px 25px;
+	cursor: default;
+}
+.right-menus >ul >li:hover {
+    text-shadow: 1px 1px 1px #333;
+	background: #789abd;
+}
+.require-sign {
+	color: red;
+    font-size: 20px;
+    text-align: center;
+    position: absolute;
+    right: 3%;
+}
+</style>
+
+</head>
+<body>
+<div class="vbox box-con" id="modelViewAdd">
+	<div class="hbox hz-col-1">
+		<form class="form-horizontal" style="margin-top: 20px;">	   
+			<div class="col-xs-12">	
+				<div class="form-group ">
+					 <label class="col-xs-3 control-label">模型编号</label>
+					 <div class="col-xs-8">
+						 <input class="form-control" placeholder="请在地图上点击模型" v-model="main.mvb_model_id" readonly="readonly" />
+					 </div>
+				</div>
+			</div>			
+			<div class="col-xs-12">		
+				<div class="form-group ">
+					 <label class="col-xs-3 control-label">模型名称</label>
+					 <div class="col-xs-8">
+						 <input class="form-control" placeholder="请输入模型名称" v-model="main.mvb_model_name" />
+					 </div>
+				</div>
+			</div>		
+		</form>
+	</div>
+	<div class="bottom" >
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large" @click="saveModel"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a class="hbtn btn_primary btn_large" @click="cancelModel"><i class="btn_icon icon_reset"></i><span>取消</span></a> 
+		</div>
+	</div> 
+
+	
+
+</div>
+	 
+ 	
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/map/modelViewBind/modelViewBindAdd"]);
+</script>
+</html>

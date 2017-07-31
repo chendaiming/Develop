@@ -1,0 +1,138 @@
+
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+		padding:5px 0;
+	  	overflow: auto;
+	  	z-index: 99;
+	  	position:absolute;
+	  	top:36px;
+	  	left:15px;
+  	    width: 95%;
+  	    max-height:240px;
+	}
+</style>
+<body>
+<div class="vbox box-con">
+<div class="hbox hz-col-1">
+	<div class="left-con vbox">
+		<div class="input icon" >
+		  	<input v-model="searchTree" placeholder="输入关键字搜索">
+		  	<span class="find"></span>
+	    </div>
+	    <div class="hz-col-1" style="overflow:auto">
+			<ul id="areaTree" class="ztree"></ul>
+	    </div>
+	</div>
+	<div class="hz-col-1 right-con" >
+		<form id="areaForm" class="form-horizontal" role="form">
+			
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">上级区域</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="area.pname" type="text" readonly placeholder="上级区域">
+					       	<input type="hidden" v-model="area.pid">
+					    </div>
+					  </div>
+			   	  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >区域编号</label>
+					    <div class="col-xs-10">
+					      	<input class="form-control" v-model="area.id" type="tel"  placeholder="区域编号">
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">区域名称</label>
+					    <div class="col-xs-10">
+					       <input class="form-control" v-model="area.name" type="text"  placeholder="区域名称">
+					    </div>
+					  </div>
+				  </div>
+			  	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >所属部门</label>
+					    <div class="col-xs-10">
+					    	<div class="input icon">
+					    		<input type="text" v-model="area.dept_names" readonly @click="showDept" placeholder="所属部门">
+					    		<span class="drop" @click="showDept" ></span>
+					    	</div>
+					  		<div class="treeContent" style="display:none" id="deptCon">
+					  			<ul id="deptTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+					  		</div>
+					    </div>
+					  </div>
+				  </div>
+			  	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label" >区域类型</label>
+					    <div class="col-xs-10">
+					  		<hz-select 
+					  			tip="区域类型" 
+					  			code="AREA_TYPE"
+					  			:id.sync="area.abd_area_type"
+					  		/>
+					    </div>
+					  </div>
+				  </div>
+				  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">区域层级</label>
+					    <div class="col-xs-10">
+					  		<hz-select 
+					  			tip="区域层级"
+					  			code="AREA_LEVEL" 
+					  			:id.sync="area.abd_area_level"
+					  		/>
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <!-- <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">序号</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="area.abd_seq" type="number" min="1" max="100" placeholder="排序">
+					    </div>
+					  </div>
+			   	  </div> -->
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">二维图层</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="area.abd_2dmap_id" type="text"  placeholder="二维图层">
+					    </div>
+					  </div>
+			   	  </div>
+			   	  <div class="col-xs-12">
+					  <div class="form-group">
+					    <label class="col-xs-2 control-label">三维模型</label>
+					    <div class="col-xs-10">
+					       	<input class="form-control" v-model="area.abd_3dmap_id" type="text"  placeholder="三维模型">
+					    </div>
+					  </div>
+			   	  </div>
+			
+		</form>
+	</div>
+	</div>
+<div class="bottom">
+	<div class="buttons" >
+		<a @click="saveArea()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+		<a @click="delArea()" class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		<a @click="reset()" class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_reset"></i><span>重置</span></a>
+	</div>
+</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['sys/area/areaMng'])
+</script>

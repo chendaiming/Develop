@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title></title>
+<style>
+	.treeContent{
+		background: rgba(21, 67, 82, 0.9);
+		 max-height: 200px;
+		  min-height: 150px;
+		  overflow: auto;
+		  z-index: 99;
+	}
+	.c_nav{width:16px;height:16px;margin-left:8px;display:inline-block;vertical-align: middle;margin-bottom:3px;}
+	.c_nav:hover{width:18px;height:18px;}
+</style>
+</head>
+<body>
+<div class="vbox box-con">
+	<div class="hbox hz-col-1" style="overflow: auto">
+		<div class="left-con vbox" style="width:50%;padding-top: 22px">
+			<form class="form-horizontal" role="form" >
+				<div class="row">
+				  <div class="col-xs-11">
+					  <div class="form-group">
+						<label class="col-xs-3 control-label">标题</label>
+						<div class="col-xs-9">
+						  <input class="form-control" v-model="videoCut.vcd_title" type="text" placeholder="请输入标题">
+						</div>
+					  </div>
+				  </div>
+				</div>
+				<div class="row">
+				  <div class="col-xs-11">
+					  <div class="form-group">
+						<label class="col-xs-3 control-label">记录时间</label>
+						<div class="col-xs-9">
+						  <input class="form-control" v-model="videoCut.vcd_time" type="text" placeholder="记录时间" readonly="readonly">
+						</div>
+					  </div>
+				  </div>
+				</div>
+				<div class="row">
+				  <div class="col-xs-11">
+					  <div class="form-group">
+						<label class="col-xs-3 control-label" >记录地点</label>
+						<div class="col-xs-9">
+						  <input class="form-control" v-model="videoCut.vcd_place" type="text" placeholder="记录地点" readonly="readonly">
+						</div>
+					  </div>
+				  </div>
+				</div>
+				<div class="row">
+				  <div class="col-xs-11">
+					  <div class="form-group">
+						<label class="col-xs-3 control-label">记录人员</label>
+						<div class="col-xs-9">
+						  <input class="form-control" v-model="videoCut.vcd_record_user_name" type="text" placeholder="记录人员" readonly="readonly">
+						</div>
+					  </div>
+				  </div>
+				</div>
+				<div class="row">
+				  <div class="col-xs-11">
+					  <div class="form-group">
+						<label class="col-xs-3 control-label">详细描述</label>
+						<div class="col-xs-9">
+							<textarea class="form-control" placeholder="请输入详细描述" rows="7" v-model="videoCut.vcd_detail"></textarea>
+						</div>
+					  </div>
+				  </div>
+				</div>
+			</form>
+		</div>
+		<div class="hz-col-1 right-con" style="width: 50%;padding-top: 22px;text-align: center">
+			<img alt="视频截图" :src="videoCut.vcd_cut_url" style="height: 77vh;width: 43vw;">
+		</div>
+		<!-- 所属部门树形区 -->
+		<div id="deptCon" class="treeContent" style="display:none; position: absolute;">
+			<ul id="deptTree" class="ztree" style="margin-top:0; width:160px;"></ul>
+		</div>
+	</div>
+	<div class="bottom">
+		<div class="buttons" >
+			<a @click="startVideoCut()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>截图</span></a>
+			<a @click="saveVideoCut()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>提交</span></a>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/video/videoCut'])
+</script>
+</html>

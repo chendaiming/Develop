@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_talkback_for_message_handle" desc="查询对讲设备信息">
+		<sql>
+			SELECT tbd_id        AS id,
+			       tbd_name      AS name,
+			       tbd_dept_id   AS dept_id,
+			       odd_name      AS dept_name,
+			       tbd_area_id   AS area_id,
+			       abd_area_name AS area_name
+			  FROM tbk_talkback_base_dtls
+			  LEFT JOIN sys_org_dept_dtls
+			    ON odd_id = tbd_dept_id
+			  LEFT JOIN com_area_base_dtls
+			    ON abd_cus_number = tbd_cus_number
+			   AND abd_area_id = tbd_area_id
+		</sql>
+		<where id="0">
+			 WHERE tbd_cus_number = ?
+			   AND tbd_id = ?
+			    OR tbd_id = ?
+		</where>		
+	</item>
+
+	<item id="insert_fighttalk_record_for_message_handle">
+		<seq>tbk_fighttalk_record_dtls@frd_fighttalk_id</seq>
+		<sql>
+			INSERT INTO tbk_fighttalk_record_dtls
+			  (frd_cus_number,
+			   frd_fighttalk_id,
+			   frd_call_talk_id,
+			   frd_call_talk_name,
+			   frd_call_dept_id,
+			   frd_call_dept_name,
+			   frd_call_area_id,
+			   frd_call_area_name,
+			   frd_start_time,
+			   frd_connect_time,
+			   frd_receive_talk_id,
+			   frd_receive_talk_name,
+			   frd_receive_dept_id,
+			   frd_receive_dept_name,
+			   frd_receive_area_id,
+			   frd_receive_area_name,
+			   frd_crte_time,
+			   frd_crte_user_id,
+			   frd_updt_time,
+			   frd_updt_user_id)
+			VALUES
+			  (:frd_cus_number,
+			   :frd_fighttalk_id,
+			   :frd_call_talk_id,
+			   :frd_call_talk_name,
+			   :frd_call_dept_id,
+			   :frd_call_dept_name,
+			   :frd_call_area_id,
+			   :frd_call_area_name,
+			   TO_DATE(:frd_start_time, 'YYYY-MM-DD HH24:MI:SS'),
+			   TO_DATE(:frd_connect_time, 'YYYY-MM-DD HH24:MI:SS'),
+			   :frd_receive_talk_id,
+			   :frd_receive_talk_name,
+			   :frd_receive_dept_id,
+			   :frd_receive_dept_name,
+			   :frd_receive_area_id,
+			   :frd_receive_area_name,
+			   SYSDATE,
+			   :frd_crte_user_id,
+			   SYSDATE,
+			   :frd_updt_user_id)
+		</sql>
+	</item>
+
+	<item id="select_fighttalk_record_id_for_update" desc="查询当前时间近2小时内的最新受虐对讲记录编号">
+		<sql>
+			SELECT frd_fighttalk_id, frd_end_time
+			  FROM (SELECT frd_fighttalk_id, frd_end_time
+			          FROM tbk_fighttalk_record_dtls
+			         WHERE frd_cus_number = ?
+			           AND frd_call_talk_id = ?
+			           AND frd_receive_talk_id = ?
+			           AND frd_start_time > (sysdate - 1 / 24 * 2)
+			         ORDER BY frd_start_time DESC)
+			 WHERE ROWNUM = 1
+		</sql>
+	</item>
+
+	<item id="update_fighttalk_record_for_message_handle">
+		<sql>
+			UPDATE tbk_fighttalk_record_dtls
+			   SET frd_end_time  = TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS'),
+			       frd_updt_time = SYSDATE
+			 WHERE frd_fighttalk_id = ?
+		</sql>
+	</item>
+
+	<item id="select_talkback_link_dvc_for_message_handle">
+		<sql>
+			SELECT dld_link_id  AS link_id,
+			       dld_dvc_type AS dvc_type,
+			       dld_dvc_id   AS dvc_id,
+			       dld_dvc_name AS dvc_name,
+			       dld_link_act AS link_act
+			  FROM com_dvc_link_mian
+			 INNER JOIN com_dvc_link_dtls
+			    ON dld_cus_number = dlm_cus_number
+			   AND dld_link_id = dlm_link_id
+			 WHERE dlm_cus_number = ?
+			   AND dlm_dvc_type = 3
+			   AND dlm_dvc_id = ?
+		</sql>
+	</item>
+
+	<item id="select_talkback_point_view_for_message_handle">
+		<sql>
+			SELECT mpi_view_id,
+			       mpi_view_pos_x,
+			       mpi_view_pos_y,
+			       mpi_view_pos_z,
+			       mpi_view_rot_x,
+			       mpi_view_rot_y,
+			       mpi_view_rot_z,
+			       mpi_view_tar_x,
+			       mpi_view_tar_y,
+			       mpi_view_tar_z
+			  FROM map_model_point_info
+		</sql>
+		<where id="0">
+			 WHERE mpi_cus_number = ?
+			   AND mpi_link_type = 3
+			   AND mpi_link_id = ?
+		</where>
+	</item>
+</sqlItem>

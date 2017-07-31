@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<constants>
+	<constant id="EWI_STATUS" name="预警信息状态" desc="">
+		<item key="0" value="新建"/>
+		<item key="1" value="已发布"/>
+		<item key="2" value="已撤销"/>
+	</constant>
+</constants>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+	<item id="delete_model_component">
+		<sql>
+			DELETE FROM map_model_component_load WHERE mcl_load_id=:id
+		</sql>
+	</item>
+	<item id="insert_model_component_load">
+		<seq>map_model_component_load@mcl_load_id@mcl_load_id</seq>
+		<sql>
+			INSERT INTO map_model_component_load (
+				mcl_cus_number,
+				mcl_load_id,
+				mcl_mci_id,
+				mcl_load_name,
+				mcl_load_mode,
+				mcl_view_id,
+				mcl_pos_x,
+				mcl_pos_y,
+				mcl_pos_z,
+				mcl_rot_x,
+				mcl_rot_y,
+				mcl_rot_z,
+				mcl_order,
+				mcl_create_uid,
+				mcl_update_uid,
+				mcl_create_datetime,
+				mcl_update_datetime
+			) VALUES (
+				:mcl_cus_number,
+				:mcl_load_id,
+				:mcl_mci_id,
+				:mcl_load_name,
+				:mcl_load_mode,
+				:mcl_view_id,
+				:mcl_pos_x,
+				:mcl_pos_y,
+				:mcl_pos_z,
+				:mcl_rot_x,
+				:mcl_rot_y,
+				:mcl_rot_z,
+				:mcl_order,
+				:mcl_create_uid,
+				:mcl_update_uid,
+				SYSDATE,
+				SYSDATE
+			)
+		</sql>
+	</item>
+	
+	<item id="update_model_component_load">
+		<sql>
+			UPDATE map_model_component_load SET 
+				mcl_mci_id=:mcl_mci_id,
+				mcl_load_name=:mcl_load_name,
+				mcl_load_mode=:mcl_load_mode,
+				mcl_view_id=:mcl_view_id,
+				mcl_pos_x=:mcl_pos_x,
+				mcl_pos_y=:mcl_pos_y,
+				mcl_pos_z=:mcl_pos_z,
+				mcl_rot_x=:mcl_rot_x,
+				mcl_rot_y=:mcl_rot_y,
+				mcl_rot_z=:mcl_rot_z,
+				mcl_update_uid=:mcl_update_uid,
+				mcl_update_datetime=SYSDATE
+			WHERE mcl_load_id=:mcl_load_id AND mcl_cus_number=:mcl_cus_number
+		</sql>	
+	</item>
+	
+    <item id="select_model_component_list" desc="">
+		<sql>
+			SELECT mci_id         AS id,
+			       mci_name       AS name,
+			       mci_path       AS path,
+			       mci_file_name1 AS file_name1,
+			       mci_file_name2 AS file_name2,
+			       mci_class      AS class_flag,
+			       mci_type       AS type_flag,
+			       mci_type_def   AS type_def
+			  FROM map_model_component_info
+		</sql>
+		<where id="0">
+			 WHERE mci_cus_number = ?
+		</where>
+		<order id="0">
+			 ORDER BY mci_order
+		</order>
+    </item>
+    
+    <item id="select_model_component_manager" desc="模型组件管理页面ztree">
+		<const key="icon">point_type_icon</const>
+		<sql>
+		  	SELECT TO_CHAR(mcl_load_id)       AS id,
+			       mcl_load_name       AS name,
+			       'all_map'       AS pid,
+			       89 AS icon,
+		           'false' AS nocheck,
+		           'false' AS isParent
+		  	FROM map_model_component_load
+		  	WHERE mcl_load_mode = 1 AND mcl_cus_number =:cusNumber
+			  
+		  	UNION
+			  
+		  	SELECT 
+		        DISTINCT CONCAT('v_',vmi_id) AS id,
+		        vmi_name AS name,
+		        CONCAT('v_',vmi_pid) AS pid,
+		        0 AS icon,
+		        'true' AS nocheck,
+		        'true' AS isParent
+	      	FROM map_view_menu_info
+	      	START WITH vmi_cus_number =:cusNumber AND vmi_id IN (
+		          SELECT mcl_view_id FROM map_model_component_load 
+		          WHERE mcl_cus_number =:cusNumber AND mcl_load_mode =2
+		          GROUP BY mcl_view_id
+	      	)
+	      	CONNECT BY PRIOR vmi_pid = vmi_id
+	      	
+	      	UNION 
+	      	
+	      	SELECT TO_CHAR(mcl_load_id)       AS id,
+			       mcl_load_name       AS name,
+			       CONCAT('v_',mcl_view_id)   AS pid,
+			       89 AS icon,
+		           'false' AS nocheck,
+		           'false' AS isParent
+		  	FROM map_model_component_load
+		  	WHERE mcl_load_mode = 2 AND mcl_cus_number =:cusNumber
+		</sql>
+    </item>
+    
+</sqlItem>

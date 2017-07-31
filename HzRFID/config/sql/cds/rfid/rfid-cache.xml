@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_rfid_base_info_for_cache" desc="查询并缓存RFID基础信息">
+		<sql>
+			SELECT rbd_cus_number AS cus_number,
+			       rbd_id         AS rfid_id,
+			       rbd_other_id   AS rfid_oid,
+			       rbd_name       AS rfid_name,
+			       rbd_dept_id    AS dept_id,
+			       odd_name       AS dept_name,
+			       rbd_area_id    AS area_id,
+			       abd_area_name  AS area_name,
+			       rbd_stts       AS rfid_stts,
+			       rbd_room_id    AS room_id,
+			       rbd_dvc_addrs  AS dvc_addrs
+			  FROM dvc_rfid_base_dtls r
+			 INNER JOIN com_area_base_dtls a
+			    ON a.abd_area_id = r.rbd_area_id
+			 INNER JOIN sys_org_dept_dtls d
+			    ON r.rbd_dept_id = d.odd_id
+		</sql>
+	</item>
+
+
+	<item id="select_rfid_bind_people_info_for_cache" desc="查询所有绑定RFID标签的人员信息存入缓存">
+ 		<sql>
+			SELECT rpb_cus_number  AS cus_number,
+			       rpb_label_id    AS label_id,
+			       rpb_label_type  AS label_type,
+			       rpb_people_type AS people_type,
+			       pbd_prsnr_id    AS people_id,
+			       pbd_other_id    AS other_id,
+			       pbd_prsnr_name  AS people_name,
+			       odd_id          AS dept_id,
+			       odd_name        AS dept_name
+			  FROM dvc_rfid_label_people_bind
+			 INNER JOIN psr_prisoner_base_dtls
+			    ON pbd_cus_number = rpb_cus_number
+			   AND pbd_prsnr_id = rpb_people_id
+			 INNER JOIN sys_org_dept_dtls
+			    ON pbd_prsn_area_id = odd_id
+			 WHERE rpb_people_type = 2
+			UNION
+			SELECT rpb_cus_number  AS cus_number,
+			       rpb_label_id    AS label_id,
+			       rpb_label_type  AS label_type,
+			       rpb_people_type AS people_type,
+			       pbd_user_id     AS people_id,
+			       pbd_police_id   AS other_id,
+			       pbd_police_name AS people_name,
+			       odd_id          AS dept_id,
+			       odd_name        AS dept_name
+			  FROM dvc_rfid_label_people_bind
+			 INNER JOIN plc_police_base_dtls
+			    ON pbd_cus_number = rpb_cus_number
+			   AND pbd_user_id = rpb_people_id
+			 INNER JOIN sys_org_dept_dtls
+			    ON pbd_drptmnt_id = odd_id
+			 WHERE rpb_people_type = 1
+		</sql>
+	</item>
+</sqlItem>

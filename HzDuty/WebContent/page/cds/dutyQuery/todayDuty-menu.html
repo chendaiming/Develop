@@ -1,0 +1,149 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css">
+<style>
+.table-bordered tbody tr td{
+    border: 1px solid #1f699e;
+    text-align: center;
+    font-size:14px;
+}
+#todayDtymManage{
+	padding: 10px;
+}
+.top{
+	height: 50px;
+}
+.mid{
+	width: 100%;
+	height: 99%;
+	overflow: auto;
+}
+.mid table{
+	width: 100%;
+}
+.mid table tr{
+	height: 45px;
+}
+.mid table .td_1{
+	font-weight: bold;
+}
+.mid table .title{
+	background-color: #21609a;
+	height: 30px;
+}
+.mid table .title td{
+	font-size: 18px;
+}
+.mid table .name{
+	width: 80px;
+	margin: 5px auto;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.mid table .name:hover{
+	cursor: pointer;
+	background-color: rgba(255,255,255,0.3);
+}
+.mid table .one{
+	border: 1px solid rgba(245,213,86,0.8);
+}
+.mid table .two{
+	border: 1px solid rgba(57,219,76,0.8);
+}
+.mid table .three{
+	border: 1px solid rgba(120,120,120,0.8);
+}
+#info_panel{
+	display:none;
+	position: absolute;
+	background-color: rgba(1, 26, 53, 0.901961);
+	width: 370px;
+	height: 175px;
+}
+#info_panel table{
+	margin: 0px;
+}
+#info_panel table td{
+	padding: 6px;
+}
+#info_panel table .txt{
+	font-weight: bold;
+}
+</style>
+<div class="vbox box-con" id="todayDtymManage">
+	<div class="top">
+		<div style="float: left;width: 200px;"><hz-date tip="值班日期" :val.sync="dtyDate"/></div>
+		<div style="float: left;padding-top: 3px;"><a class="hbtn btn_primary btn_large save" @click="load()"><i class="btn_icon icon_search"></i><span>查询</span></a></div>
+	</div>
+	<div class="vbox hz-col-1">
+		<div class="mid">
+			<div v-cloak v-if="deptList.length==0" class="empty" style="margin-top: 10%;">无值班信息</div>
+			<table class="table-bordered" v-cloak v-if="deptList.length>0" v-for="dept in deptList">
+				<tr class="title">
+					<td class="td_1" colspan="{{dept.orderList.length+1}}">{{dept.name}}</td>
+				</tr>
+				<tr>
+					<td class="td_1" width="15%;">班次/岗位</td>
+					<td class="td_1" v-cloak v-if="dept.orderList.length>0" v-for="order in dept.orderList" width="{{order.width}}%;">
+						{{order.name}}<br>
+						<span style="font-weight: bold;">({{order.startTime}} ~ {{order.endTime}})</span>
+					</td>
+				</tr>
+				<tr v-cloak v-if="dept.jobList.length>0" v-for="job in dept.jobList">
+					<td class="td_1">{{job.name}}</td>
+					<td v-cloak v-if="job.list.length>0" v-for="list in job.list">
+						<div class="name {{people.className}}" name="{{people.name}}" value="{{people.id}}" v-cloak v-if="list.peopleList.length>0" v-for="people in list.peopleList">
+							{{people.name}}
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+<!-- 		<div class="bottom" style="border: none;"> -->
+<!-- 			<div class="buttons"> -->
+<!-- 				<a class="hbtn btn_primary btn_large export"><i class="btn_icon icon_download"></i><span>导出</span></a>	 -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+	</div>
+	<div class="vbox hz-col-1" id="info_panel"><!-- 值班人员信息 -->
+		<div class="hz-col-8">
+			<form class="form-horizontal">
+				<table class="table table-bordered">
+					<tr>
+						<td class="col-xs-4" rowspan="6" style="padding: 1px;">
+							<div id="imageview" style="width: 100%;height: 170px;">
+								<img src="" style="width: 100%;height: 100%;">
+							</div>
+						</td>								
+					</tr>
+					<tr>
+						<td class="col-xs-3 txt">警号</td>
+						<td class="col-xs-5" v-text="police.pbd_police_id"></td>								
+					</tr>
+					<tr>
+						<td class="col-xs-3 txt">姓名</td>
+						<td class="col-xs-5" v-text="police.name"></td>							
+					</tr>
+					<tr>
+						<td class="col-xs-3 txt">职务</td>
+						<td class="col-xs-5" v-text="police.pbd_pstn_name"></td>								
+					</tr>
+					<tr>
+						<td class="col-xs-3 txt">所属部门</td>
+						<td class="col-xs-5" v-text="police.pbd_drptmnt"></td>								
+					</tr>
+					<tr>
+						<td class="col-xs-3 txt">对讲呼号</td>
+						<td class="col-xs-5" v-text="police.pbd_talk_num"></td>								
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyQuery/todayDuty-menu"]);
+</script>

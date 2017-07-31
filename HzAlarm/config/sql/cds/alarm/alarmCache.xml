@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="select_network_base_dtls">
+    	<sql>
+		   SELECT nbd_cus_number,
+		          nbd_id,
+		          nbd_other_id,
+		          nbd_name,
+		          nbd_brand,
+		          nbd_ip,
+		          nbd_port,
+		          nbd_dept_id,
+		          nbd_area_id,
+		          nbd_dvc_addrs,
+		          nbd_stts,
+		          nbd_seq,
+		          nbd_crte_time,
+		          nbd_crte_user_id,
+		          nbd_updt_time,
+		          nbd_updt_user_id
+		     FROM alt_network_base_dtls
+    	</sql>
+    	<where id="1">
+    	    WHERE nbd_cus_number=?
+    	      AND nbd_id=?
+    	</where>
+    	<where id="2">
+    	    WHERE nbd_cus_number=?
+    	</where>    	
+    </item>
+    <item id="select_alarm_base_info_dtls">
+    	<sql>
+    	SELECT cus_number,
+    	       id,
+    	       name,
+    	       dept_id,
+    	       addrs,
+    	       type
+    	  FROM(     
+			SELECT nbd_cus_number AS cus_number,
+			       nbd_id         AS id,
+			       nbd_name       AS name,
+			       nbd_dept_id    AS dept_id,
+			       nbd_dvc_addrs  AS addrs,
+			       6              AS type
+			  FROM alt_network_base_dtls
+			UNION ALL
+			SELECT cbd_cus_number AS cus_number,
+			       cbd_id         AS id,
+			       cbd_name       AS name,
+			       cbd_dept_id    AS dept_id,
+			       cbd_dvc_addrs  AS addrs,
+			       1              AS type
+			  FROM cmr_camera_base_dtls
+			UNION ALL
+			SELECT dbd_cus_number AS cus_number,
+			       dbd_id         AS id,
+			       dbd_name       AS name,
+			       dbd_dept_id    AS dept_id,
+			       dbd_dvc_addrs  AS addrs,
+			       2              AS type
+			  FROM dor_door_base_dtls
+			UNION ALL
+			SELECT tbd_cus_number AS cus_number,
+			       tbd_id         AS id,
+			       tbd_name       AS name,
+			       tbd_dept_id    AS dept_id,
+			       tbd_dvc_addrs  AS addrs,
+			       3              AS type
+			  FROM tbk_talkback_base_dtls
+			UNION ALL
+			SELECT pnb_cus_number AS cus_number,
+				   pnb_id         AS id,
+	               pnb_name       AS name,
+	               pnb_dprtmnt    AS dept_id,
+	               pnb_addrs      AS addrs,
+	               7              AS type
+	          FROM pnw_power_network_base_dtls
+			 ) 
+    	</sql>
+    	<where id="1">
+    	    WHERE cus_number=?
+    	</where>	
+    </item>
+</sqlItem>

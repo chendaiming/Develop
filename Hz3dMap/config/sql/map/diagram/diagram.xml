@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_count_prisoner_by_rfid_area" desc="">
+		<sql>
+			SELECT abd_area_id AS area,
+			       abd_area_name,
+			       DECODE(rmr_count, NULL, 0, rmr_count) AS tl,
+			       DECODE(oar_count, NULL, 0, oar_count) AS prisoners
+			  FROM com_area_base_dtls
+			  LEFT JOIN (SELECT rmr_cus_number, rmr_area_id, COUNT(1) AS rmr_count
+			               FROM (SELECT rmr_cus_number,
+			                            rmr_area_id,
+			                            ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			                       FROM dvc_rfid_monitor_record
+			                      WHERE rmr_monitor_flag = 1
+			                        AND rmr_cus_number = :cusNumber
+			                        AND rmr_people_type = 2)
+			 WHERE fn = 1
+			 GROUP BY rmr_cus_number, rmr_area_id)
+			    ON rmr_cus_number = abd_cus_number
+			   AND rmr_area_id = abd_area_id
+			
+			  LEFT JOIN (SELECT oar_cus_number, oar_area_id, COUNT(0) AS oar_count
+			               FROM com_org_area_rltn
+			              INNER JOIN psr_prisoner_base_dtls
+			                 ON oar_cus_number = pbd_cus_number
+			                AND oar_dept_id = pbd_prsn_area_id
+			              WHERE oar_cus_number = :cusNumber
+			              GROUP BY oar_cus_number, oar_area_id)
+			    ON oar_cus_number = abd_cus_number
+			   AND oar_area_id = abd_area_id
+		</sql>
+		<where id="0">
+			 WHERE abd_cus_number = :cusNumber
+			   AND abd_parent_id = :parentId
+		</where>
+		<order id="0">
+			 ORDER BY abd_area_id DESC
+		</order>
+	</item>
+
+	<item id="select_today_count_prisoner_by_rfid_area" desc="">
+		<sql>
+			SELECT abd_area_id AS area,
+			       abd_area_name,
+			       DECODE(rmr_count, NULL, 0, rmr_count) AS tl,
+			       DECODE(oar_count, NULL, 0, oar_count) AS prisoners
+			  FROM com_area_base_dtls
+			  LEFT JOIN (SELECT rmr_cus_number, rmr_area_id, COUNT(1) AS rmr_count
+			               FROM (SELECT rmr_cus_number,
+			                            rmr_area_id,
+			                            ROW_NUMBER() OVER(PARTITION BY rmr_people_id ORDER BY rmr_monitor_time DESC) fn
+			                       FROM dvc_rfid_monitor_record
+			                      WHERE rmr_monitor_flag = 1
+			                        AND rmr_cus_number = :cusNumber
+			                        AND rmr_people_type = 2
+			                        AND rmr_monitor_time BETWEEN TO_DATE(CONCAT(TO_CHAR(TRUNC(SYSDATE), 'YYYY-MM-DD'), ' 00:00:00'), 'YYYY-MM-DD HH24:MI:SS') AND SYSDATE)
+			 WHERE fn = 1
+			 GROUP BY rmr_cus_number, rmr_area_id)
+			    ON rmr_cus_number = abd_cus_number
+			   AND rmr_area_id = abd_area_id
+			
+			  LEFT JOIN (SELECT oar_cus_number, oar_area_id, COUNT(0) AS oar_count
+			               FROM com_org_area_rltn
+			              INNER JOIN psr_prisoner_base_dtls
+			                 ON oar_cus_number = pbd_cus_number
+			                AND oar_dept_id = pbd_prsn_area_id
+			              WHERE oar_cus_number = :cusNumber
+			              GROUP BY oar_cus_number, oar_area_id)
+			    ON oar_cus_number = abd_cus_number
+			   AND oar_area_id = abd_area_id
+		</sql>
+		<where id="0">
+			 WHERE abd_cus_number = :cusNumber
+			   AND abd_parent_id = :parentId
+		</where>
+		<order id="0">
+			 ORDER BY abd_area_id DESC
+		</order>
+	</item>
+
+	<item id="select_areaid_by_pid" >
+		<sql>
+			SELECT wm_concat(DISTINCT((SELECT abd_area_name
+			                            FROM com_area_base_dtls
+			                           WHERE abd_area_id = :pid))) || '_' || :pid name,
+			       wm_concat(abd_area_id) child
+			  FROM com_area_base_dtls
+			 WHERE abd_area_name IS NOT NULL
+			 START WITH ABD_PARENT_ID = :pid
+			CONNECT BY NOCYCLE PRIOR abd_area_id = abd_parent_id
+		</sql>
+	</item>
+
+	<item id="select_floor_by_cusnumber" desc="获取每栋楼id">
+		<sql>
+			SELECT abd_area_name name, abd_area_id
+			  FROM com_area_base_dtls
+			 WHERE abd_cus_number = :cus
+			   AND abd_area_level = 2
+		</sql>
+	</item>
+	<item id="select_pris_by_areaid">
+		<sql>
+			SELECT bbd_area_id pid, bbd_prsnr_id id
+			  FROM psr_bed_base_dtls
+			 WHERE bbd_prsnr_id is not null
+			   AND bbd_cus_number = :cus
+		</sql>
+	</item>
+</sqlItem>

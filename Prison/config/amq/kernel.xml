@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-jmx="http://www.springframework.org/schema/integration/jmx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/util 
+			http://www.springframework.org/schema/util/spring-util.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/integration
+            http://www.springframework.org/schema/integration/spring-integration.xsd
+            http://www.springframework.org/schema/integration/jms
+            http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.1.xsd
+            http://www.springframework.org/schema/integration/jmx
+            http://www.springframework.org/schema/integration/jmx/spring-integration-jmx-2.1.xsd"
+	default-init-method="init" default-destroy-method="destroy">
+
+	<context:annotation-config />
+
+	<!-- import the amq's properties from classpath. -->
+	<!-- ${amq.home.dir}/conf should be in classpath -->
+	<context:property-placeholder order="1" system-properties-mode="OVERRIDE" ignore-unresolvable="true" location="classpath:amq/amq.properties" ignore-resource-not-found="true"/>
+	<context:property-placeholder order="2" system-properties-mode="OVERRIDE" ignore-unresolvable="true" location="classpath:amq/amq-default.properties" />
+
+	<!-- import the jms destination' name -->
+	<!--  <context:property-placeholder location="classpath:amq/jms-destination-name.properties" />-->
+
+
+	<!-- import the dependency -->
+
+	<import resource="classpath:amq/jmx.xml" />
+	<import resource="classpath:amq/jms.xml" />
+	<import resource="classpath:amq/kernel-*.xml" />
+    <import resource="classpath:amq/kernel-service.xml" />
+<!-- 	<import resource="classpath:amq/kernel-alarm.xml" />
+ 	<import resource="classpath:amq/kernel-door.xml" />
+ 	<import resource="classpath:amq/kernel-police.xml" />
+ 	<import resource="classpath:amq/kernel-powerNetwork.xml" />
+ 	<import resource="classpath:amq/kernel-rfid.xml" />
+ 	<import resource="classpath:amq/kernel-person.xml" />
+ 	<import resource="classpath:amq/kernel-patrol.xml" />
+ 	<import resource="classpath:amq/kernel-talkback.xml" />-->
+</beans>

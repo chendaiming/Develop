@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>报警处置</title>
+<link rel="stylesheet" href="css/cds/alarm/alarmHandle.css">
+</head>
+<body>
+<div class="alarm-handle" style="display: none;">
+	<div class="ah-alert-box">
+		<a class="ah-close"></a>
+		<div class="ah-tab">
+			<div class="ah-tab-cell"><span class="ah-alert-text"></span></div>
+		</div>
+		<div class="ah-handle-btns">
+			<a class="ah-handle-btn" title="启动联动预案" v-show="!hasLinkHandle" @click="linkHandle">联动</a>
+			<a class="ah-handle-btn" @click="alarmHandle">接警</a>
+			<a class="ah-handle-btn" @click="cancelHandle">误报</a>
+			<a class="ah-handle-btn" @click='startupPlan' title="启动应急预案">应急</a>
+			<a class="ah-handle-btn" @click="sendToHigher">上报</a>
+		</div>
+	</div>
+
+	<!-- 只能分析报警图片显示 -->
+	<div class="camera-alarm">
+		<img id="cameraAlarmImg" class="camera-img" src="">
+		<a class="camera-close"/>
+	</div>
+
+	<div class="ah-handle-box" style="display: none;"><!-- 报警处置面板 -->
+		<div class="ah-handle-step1" style="display: none;"><!-- 处置流程 -->
+			<div>
+				<hz-select tip="请选择报警处置流程..." sqlid="select_handle_flow_master_for_map_handle" :params="params" :id.sync="selectedFlowId" :name.sync="selectedFlowName"/>
+			</div>
+			<div class="ah-flow-dtls">
+				<ul class="ah-flow-steps" v-show="flowSteps.length > 0">
+					<li class="step" v-for="T in flowSteps"><span class="step-icon"><a></a></span><span v-text="($index + 1) + '.' +  T.step_name"></span></li>
+				</ul>
+			</div>
+			<div class="ah-flow-btns">
+				<div class="buttons">
+					<a class="hbtn btn_primary btn_large" @click="nextStep"><i class="btn_icon"></i><span>下一步</span></a>
+<!-- 				<a class="hbtn btn_primary btn_large"><i class="btn_icon"></i><span>取  消</span></a> -->
+				</div>
+			</div>
+		</div>
+		<div class="ah-handle-step2" style="display: none;"><!-- 处置记录 -->
+			<div>
+				<span>现场情况</span>
+				<textarea id="ard_local_case" class="ah-handle-textarea"></textarea>
+				<span>处理情况</span>
+				<textarea id="ard_oprtn_desc" class="ah-handle-textarea"></textarea>
+			</div>
+			<div class="ah-flow-btns">
+				<div class="buttons">
+					<a class="hbtn btn_primary btn_large" @click="prevStep"><i class="btn_icon"></i><span>上一步</span></a>
+					<a class="hbtn btn_primary btn_large" @click="submit(4)"><i class="btn_icon"></i><span>提  交</span></a>
+					<a class="hbtn btn_primary btn_large" @click="close"><i class="btn_icon"></i><span>关  闭</span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="ah-info-box ah-police-box"><!-- 值班民警信息 -->
+		<a class="ah-close"></a>
+		<span class="ah-title">值班民警</span>
+		<a class="ah-page-btn ah-prve-page" v-show="polices.length > 2" @click="policePage(-1)"></a>
+		<a class="ah-page-btn ah-next-page" v-show="polices.length > 2" @click="policePage(1)"></a>
+		<div :class="'ah-info-body ' + ($index % 2 == 1 ? 'btm' : '')" v-for="p in polices" v-show="policeTop == $index || policeBtm == $index">
+			<div class="ah-info-line ah-info-1"><span v-text="'编号：' + p.pbd_police_id"></span></div>
+			<div class="ah-info-line ah-info-2"><span v-text="'姓名：' + p.pbd_police_name"></span></div>
+			<div class="ah-info-line ah-info-3"><span v-text="'短号：' + p.pbd_short_phone"></span></div>
+			<div class="ah-info-img">
+				<img alt="" :src="p.pbd_img" :class="p.pbd_img == '' ? 'ah-empty-img' : ''">
+			</div>
+		</div>
+	</div>
+
+	<div class="ah-info-box ah-prisoner-box"><!-- 重点罪犯信息 -->
+		<a class="ah-close"></a>
+		<span class="ah-title">重点罪犯</span>
+		<a class="ah-page-btn ah-prve-page" v-show="prisoner.length > 2" @click="prisonerPage(-1)"></a>
+		<a class="ah-page-btn ah-next-page" v-show="prisoner.length > 2" @click="prisonerPage(1)"></a>
+		<div :class="'ah-info-body ' + ($index % 2 == 1 ? 'btm' : '')" v-for="p in prisoner" v-show="prisonerTop == $index || prisonerBtm == $index">
+			<div class="ah-info-line ah-info-1"><span v-text="'编号：' + p.prisonerid"></span></div>
+			<div class="ah-info-line ah-info-2"><span v-text="'姓名：' + p.name"></span></div>
+			<div class="ah-info-line ah-info-3"><span v-text="'罪行：' + p.pbd_accstn"></span></div>
+			<div class="ah-info-img">
+				<img alt="" :src="p.pbd_img" :class="p.pbd_img == '' ? 'ah-empty-img' : ''">
+			</div>
+		</div>
+	</div>
+
+	<div class="ah-info-box ah-record-box"><!-- 报警信息 -->
+		<a class="ah-close"></a>
+		<span class="ah-title">报警信息</span>
+		<ul class="ah-record-info">
+			<li><span v-text="'报警类型：' + alarmRecord.alarmDeviceTypeCn">报警类型：</span></li>
+			<li><span v-text="'报警设备：' + alarmRecord.alarmName">报警设备：</span></li>
+			<li><span v-text="'报警时间：' + alarmRecord.alarmTime">报警时间：</span></li>
+			<li><span v-text="'报警原因：' + alarmRecord.alarmTypeCn">报警原因：</span></li>
+			<li><span v-text="'报警级别：' + alarmRecord.levelCn">报警级别：</span></li>
+			<li><span v-text="'报警地点：' + alarmRecord.alarmAddrs">报警地点：</span></li>
+		</ul>
+	</div>
+
+	<div class="ah-info-box ah-link-box"><!-- 联动设备信息 -->
+		<a class="ah-close"></a>
+		<span class="ah-title">联动设备</span>
+		<div class="ah-link-top">
+			<div class="ah-lt-line">
+				<div class="ah-ltl-selected"></div>
+				<div class="ah-ltl-hoving"></div>
+				<div class="ah-ltl-content">
+					<span style="padding-top: 6px;">
+						<ul id="ulLinkDvcType" class="ah-ltl-ul">
+							<li v-for="T in linkTypes" @click="selectType($index, T)"><span v-text="T.name"></span></li>
+						</ul>
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="ah-link-ctr">
+			<div class="ah-link-camera" v-show="selectedType == 1">
+				<div :id="'camera_' + T.cbd_id" class="ah-lc-box" v-for="T in cameras">
+					<span class="ah-lcb-tl"></span>
+					<span class="ah-lcb-tr"></span>
+					<span class="ah-lcb-bl"></span>
+					<span class="ah-lcb-br"></span>
+					<div class="ah-lcb-camera" @click="selectCamera('camera_' + T.cbd_id, T.cbd_id)">
+						<a class="ah-lcb-a">
+							<span class="ah-lcb-text" v-text="T.cbd_name"></span>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="ah-link-door" v-show="selectedType == 2">
+				<div v-for="T in doors" :id="'door_' + T.dbd_id" :class="$index == 0 ? 'ah-dvc-box selected' : 'ah-dvc-box'">
+					<div class="ah-db-btns">
+						<a class="ah-db-btn left-top" @click="openDoor(T)" title="开门">开</a>
+						<a class="ah-db-btn right-top" @click="closeDoor(T)" title="关门">关</a>
+						<a class="ah-db-btn bottom-center" @click="lockDoor(T)" title="锁定">锁</a>
+					</div>
+					<a class="ah-db-circle"></a>
+					<span class="ah-db-span">
+						<div class="ah-db-box">
+							<a class="ah-db-a" @click="selectDoor('door_' + T.dbd_id)">
+								<span class="ah-db-text" v-text="T.dbd_name"></span>
+							</a>
+						</div>
+					</span>
+				</div>
+			</div>
+			<div class="ah-link-talk" v-show="selectedType == 3">
+
+			</div>
+			<div class="ah-link-broadcast" v-show="selectedType == 4">
+				<ul class="ah-broadcast-list">
+					<li :class="selectedFileName == T ? 'node selected' : 'node'" v-for="T in audios">
+						<span class="node-icon"><a></a></span>
+						<span class="node-text" v-text="T" @click="selectFile($index, T)"></span>
+					</li>
+				</ul>
+			</div>
+			<div class="ah-link-screen" v-show="selectedType == 5">
+			</div>
+		</div>
+		<div class="ah-link-btm">
+			<div class="ah-lt-line" v-show="selectedType == 1">
+				<div class="ah-ltl-hoving"></div>
+				<div class="ah-ltl-content">
+					<span style="margin-top: -1px;">
+						<ul class="ah-ltl-ul">
+							<li vm-click="playbackCamera"><span title="">回放视频</span></li>
+							<li vm-click="playCamera"><span title="">播放视频</span></li>
+							<li vm-click="setLayout"><span title="">画面布局</span></li>
+						</ul>
+					</span>
+				</div>
+				<div class="ah-ltl-layout">
+					<a class="ah-layout-close"></a>
+					<a @click="selectLayout($index)" :class="selectedLayout == $index ? 'ah-layout-nth selected' : 'ah-layout-nth'" v-for="T in layouts">
+						<img alt="" v-bind:src="'.../../css/cds/alarm/images/layout-' + ($index + 1) + '.png'">
+						<span v-text="T + '画面'"></span>
+					</a>
+				</div>
+			</div>
+
+			<div class="ah-lt-line" v-show="selectedType == 2">
+				<div class="ah-ltl-hoving"></div>
+				<div class="ah-ltl-content">
+					<span style="margin-top: -1px;">
+						<ul class="ah-ltl-ul">
+							<li vm-click="openDoors"><span title="一键打开所有关联的门禁">一键开门</span></li>
+							<li vm-click="closeDoors"><span title="一键关闭所有关联的门禁">一键关门</span></li>
+							<li vm-click="lockDoors"><span title="一键锁定所有关联的门禁">一键锁死</span></li>
+						</ul>
+					</span>
+				</div>
+			</div>
+			
+			<div class="ah-lt-line ah-broadcast-line" v-show="selectedType == 4">
+				<ul class="list-inline text-center ah-broadcast-btns">
+					<li class="mode-popover">
+						<span v-show="selectedMode == 1" class="hbtn btn_primary btn_large glyphicon glyphicon-share-alt" title="单次播放"></span>
+						<span v-show="selectedMode == 2" class="hbtn btn_primary btn_large glyphicon glyphicon-refresh" title="循环播放"></span>
+						<span v-show="selectedMode == 3" class="hbtn btn_primary btn_large glyphicon glyphicon-volume-up" title="实时喊话"></span>
+					</li>
+					<li>
+						<span @click="prevMusic" class="hbtn btn_primary btn_large glyphicon glyphicon-step-backward choose_music_css" title="上一首"></span>
+						<a @click="playMusic" class="hbtn btn_primary btn_large play_music_css" id="play" title="播放">
+							<i class="glyphicon glyphicon-play" v-bind:class="{'glyphicon-play':isPlay == 1,'glyphicon-pause':isPlay == 2}"></i>
+						</a>
+						<span @click="nextMusic" class="hbtn btn_primary btn_large glyphicon glyphicon-step-forward choose_music_css" title="下一首"></span>
+					</li>
+<!-- 					<li class="sound-popover"> -->
+<!-- 						<button  type="button" class="btn btn_primary btn_large sound-popover"> -->
+<!-- 						  <span class="glyphicon glyphicon-volume-up" title="音量调节"></span> 音量调节 -->
+<!-- 						</button> -->
+<!-- <!-- 						<span class="hbtn btn_primary btn_large glyphicon glyphicon-volume-up" title="音量调节"></span> -->
+<!-- 					</li> -->
+				</ul>
+
+				<!-- 音量调节按钮 -->
+<!-- 				<div id="sound-div" style="display: none"> -->
+<!-- 			 		<input id="sound" class="sound" type="range" min="0"  max="56" title="5" value="5" /> -->
+<!-- 				</div> -->
+
+				<!-- 模式调节按钮 -->
+				<div id="mode-div" style="display: none">
+					<ul class="mode-list">
+						<li play-mode="1"><span class="glyphicon glyphicon-share-alt"></span>&nbsp;单次播放</li>
+						<li play-mode="2"><span class="glyphicon glyphicon-refresh"></span>&nbsp;循环播放</li>
+						<li play-mode="3"><span class="glyphicon glyphicon-volume-up"></span>&nbsp;实时喊话</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+requirejs(['hz/cds/alarm/alarmHandle']);
+</script>
+</body>
+</html>

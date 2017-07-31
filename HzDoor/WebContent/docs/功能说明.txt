@@ -1,0 +1,7 @@
+添加时间：2017-06-28
+添加用户：xsj
+功能列表：
+    阻车器设备维护 - page/cds/door/carStop/carStopEquip.html;
+系统常量：
+    CAI_WORK_STTS - 设备状态：0.正常、1.故障
+    CAI_USE_STTS -设备使用状态：2.已打开、3.已关闭

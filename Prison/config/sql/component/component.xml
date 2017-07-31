@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_component_info" desc="组件信息查询">
+    	<const key="mci_create_us" module="user"></const>
+    	<const key="mci_update_us" module="user"></const>
+    	<const key="mci_class">mci_class</const>
+    	<const key="mci_type">mci_type</const>
+		<sql>
+			SELECT 
+					mci_cus_number,
+					mci_id,
+			    	mci_name,
+			    	mci_path,
+			    	mci_file_name1,
+			    	mci_file_name2,
+			    	mci_class,
+			    	mci_class class,
+			    	mci_type,
+			    	mci_type type,
+			    	mci_type_def,
+			    	mci_order,
+			    	mci_create_uid,
+			    	mci_create_uid mci_create_us,
+			    	TO_CHAR(mci_create_datetime,'yyyy-mm-dd hh24:mi:ss') create_datetime,
+			    	mci_update_uid,
+			    	mci_update_uid mci_update_us,
+			    	TO_CHAR(mci_update_datetime,'yyyy-mm-dd hh24:mi:ss') update_datetime,
+				    odd_name
+			FROM 	
+					map_model_component_info
+			INNER JOIN sys_org_dept_dtls ON mci_cus_number = odd_id
+		</sql>
+		<where id="0">
+			WHERE 
+				mci_id=:mci_id
+		</where>
+		<where id="1">
+			WHERE 
+				mci_name LIKE CONCAT('%',CONCAT(:mci_name,'%'))
+		</where>
+		<order id="0">
+			ORDER BY  
+				mci_order DESC
+		</order>
+    </item>
+	<item id="insert_component_info" desc="组件信息添加">
+		<seq>map_model_component_info@mci_id</seq>
+		<sql>
+			INSERT INTO
+				map_model_component_info
+				(	
+					mci_cus_number,
+					mci_id,
+					mci_name,
+			    	mci_path,
+			    	mci_file_name1,
+			    	mci_file_name2,
+			    	mci_class,
+			    	mci_type,
+			    	mci_type_def,
+			    	mci_order,
+			    	mci_create_uid,
+			    	mci_create_datetime,
+			    	mci_update_uid,
+			    	mci_update_datetime
+				)
+			VALUES(
+					:mci_cus_number,
+					:mci_id,
+					:mci_name,
+					:mci_path,
+					:mci_file_name1,
+					:mci_file_name2,
+           			:mci_class,
+           			:mci_type,
+           			1,
+				    0,
+				    :mci_create_uid,
+				    SYSDATE,
+					:mci_update_uid,
+					SYSDATE
+				)
+		</sql>
+	</item>
+	<item id="update_component_info" desc="组件信息更新">
+		<sql>
+			UPDATE
+				map_model_component_info
+			SET
+					mci_name=:mci_name,
+					mci_path=:mci_path,
+					mci_file_name1=:mci_file_name1,
+					mci_file_name2=:mci_file_name2,
+					mci_class=:mci_class,
+					mci_type=:mci_type,
+					mci_type_def=:mci_type_def,
+					mci_order=:mci_order,
+				    mci_update_uid=:mci_update_uid,
+				    mci_update_datetime=SYSDATE
+			WHERE
+				mci_id=:mci_id
+		</sql>
+	</item>
+	<item id="delete_component_info" desc="组件信息删除">
+		<sql>
+			DELETE FROM 
+				map_model_component_info
+		<where id="0">
+			WHERE	
+				mci_id=:mci_id
+		</where>
+		</sql>
+	</item>
+</sqlItem>

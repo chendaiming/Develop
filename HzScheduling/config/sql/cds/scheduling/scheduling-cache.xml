@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_scheduling_telephone_cache"  desc="通讯录信息查询">
+		<sql> 
+			 SELECT cusNumber,
+			        id,
+			        name,
+			        tel,
+			        deptName
+			  FROM  
+				 (SELECT pbd_cus_number  AS cusNumber,
+				        pbd_police_id   AS id,
+				        pbd_police_name AS name,
+				        pbd_phone       AS tel,
+				        odd_name        AS deptName
+				   FROM plc_police_base_dtls
+				   LEFT JOIN sys_org_dept_dtls
+				     ON (pbd_drptmnt_id = odd_id)
+				  WHERE pbd_phone IS NOT NULL
+				  UNION ALL
+				 SELECT sab_cus_number AS cusNumber,
+				        sab_other_id   AS id,
+				        sab_name       AS name,
+				        sab_phone      AS tel,
+				        sab_dept_name  AS deptName
+				   FROM shd_address_book
+				  ) 
+		</sql>
+		<where id="0">
+		      WHERE cusNumber = ?
+		</where>
+		<where id="1">
+		      WHERE cusNumber = ?
+		        AND tel = ?
+		</where>		
+	</item>  
+</sqlItem>

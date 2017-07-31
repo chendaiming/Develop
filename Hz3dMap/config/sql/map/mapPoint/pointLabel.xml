@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="select_point_label_list" desc="查询点位标注列表">
+    	<const key="lpi_link_type">LPI_LINK_TYPE</const>
+    	<const key="lpi_point_type">LPI_POINT_TYPE</const>
+		<sql>
+			SELECT lpi_cus_number,
+		       lpi_point_id,
+		       lpi_link_type,
+		       lpi_link_id,
+		       abd_area_name AS lpi_link_name,
+		       lpi_show_text,
+		       lpi_show_icon,
+		       lpi_line_height,
+		       lpi_dis_min,
+		       lpi_dis_max,
+		       lpi_pos_x,
+		       lpi_pos_y,
+		       lpi_pos_z,
+		       lpi_point_type,
+		       lpi_view_id,
+		       lpi_bind_model,
+		       lpi_view_pos_x,
+		       lpi_view_pos_y,
+		       lpi_view_pos_z,
+		       lpi_view_rot_x,
+		       lpi_view_rot_y,
+		       lpi_view_rot_z,
+		       lpi_view_tar_x,
+		       lpi_view_tar_y,
+		       lpi_view_tar_z,
+		       lpi_create_uid,
+		       lpi_create_datetime,
+		       lpi_update_uid,
+		       lpi_update_datetime
+		  FROM map_label_point_info p
+		  LEFT JOIN COM_AREA_BASE_DTLS d
+		  ON p.lpi_link_id = d.abd_area_id
+		</sql>
+		<where id="0">
+		  	WHERE lpi_cus_number = :lpi_cus_number
+		</where>
+		<where id="1">
+		  	WHERE lpi_cus_number = :lpi_cus_number
+		  	AND lpi_show_text LIKE CONCAT('%',CONCAT(:lpi_show_text,'%'))
+		</where>
+    </item>
+    
+    <item id="insert_point_label_info" desc="添加点位标注信息">
+    	<seq>map_label_point_info@lpi_point_id</seq>
+    	<sql>
+	    	INSERT INTO map_label_point_info
+			  (lpi_cus_number,
+			   lpi_point_id,
+			   lpi_link_type,
+			   lpi_link_id,
+			   lpi_show_text,
+			   lpi_show_icon,
+			   lpi_line_height,
+			   lpi_dis_min,
+			   lpi_dis_max,
+			   lpi_pos_x,
+			   lpi_pos_y,
+			   lpi_pos_z,
+			   lpi_point_type,
+			   lpi_view_id,
+			   lpi_bind_model,
+			   lpi_view_pos_x,
+			   lpi_view_pos_y,
+			   lpi_view_pos_z,
+			   lpi_view_rot_x,
+			   lpi_view_rot_y,
+			   lpi_view_rot_z,
+			   lpi_view_tar_x,
+			   lpi_view_tar_y,
+			   lpi_view_tar_z,
+			   lpi_create_uid,
+			   lpi_create_datetime,
+			   lpi_update_uid,
+			   lpi_update_datetime)
+			VALUES
+			  (:lpi_cus_number,
+			   :lpi_point_id,
+			   :lpi_link_type,
+			   :lpi_link_id,
+			   :lpi_show_text,
+			   :lpi_show_icon,
+			   :lpi_line_height,
+			   :lpi_dis_min,
+			   :lpi_dis_max,
+			   :lpi_pos_x,
+			   :lpi_pos_y,
+			   :lpi_pos_z,
+			   :lpi_point_type,
+			   :lpi_view_id,
+			   :lpi_bind_model,
+			   :lpi_view_pos_x,
+			   :lpi_view_pos_y,
+			   :lpi_view_pos_z,
+			   :lpi_view_rot_x,
+			   :lpi_view_rot_y,
+			   :lpi_view_rot_z,
+			   :lpi_view_tar_x,
+			   :lpi_view_tar_y,
+			   :lpi_view_tar_z,
+			   :lpi_create_uid,
+			   SYSDATE,
+			   :lpi_update_uid,
+			   SYSDATE)
+		   </sql>
+    </item>
+
+ 	<item id="delete_point_label_info" desc="删除点位标注信息">
+ 		 <sql>
+    		DELETE FROM map_label_point_info WHERE lpi_point_id = :lpi_point_id
+    	 </sql>
+    </item>
+</sqlItem>

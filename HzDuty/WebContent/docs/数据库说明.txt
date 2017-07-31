@@ -1,0 +1,3 @@
+涉及数据库表：
+	1. DTY_CTRL_LOG_MAIN - 值班日志主表
+	2. DTY_CTRL_LOG_DETAIL - 值班日志从表

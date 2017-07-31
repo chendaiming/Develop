@@ -1,0 +1,68 @@
+@charset "UTF-8";
+#right-nav {
+	position: fixed;
+	top:0;
+	right:0;
+	height: 100%;
+	z-index: 99999;
+	display: block !important;
+}
+#right-nav ul.right-nav-list {
+	position: absolute;
+    top: 45px;
+    right: 0;
+	list-style: none;
+}
+
+#right-nav ul.right-nav-list li {
+    position: relative;
+    height: 35px;
+    margin-bottom: 6px;
+}
+#right-nav ul.right-nav-list li >a {
+    position: absolute;
+    left: -38px;
+    padding-left: 40px;
+    width: 110px;
+    height: 35px;
+    line-height: 33px;
+    border: 1px solid #F2F2F2;
+    border-radius: 5px 0 0 5px;
+	background-color: rgba(42, 61, 82, .9);
+    text-align: left;
+    font-size: 1em;
+    color: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.5s;
+}
+#right-nav ul.right-nav-list li:hover a {
+    left: -100px;
+    color: #0ff;
+    box-shadow: 0 0 5px #e74c3c;
+    border: 1px solid #e74c3c;
+}
+
+#right-nav ul.right-nav-list li >span.msg-num {
+	position: absolute;
+    top: -9px;
+    left: -48px;
+    padding: 0 5px;
+    min-width: 18px;
+    min-height: 18px;
+    line-height: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 8px;
+    text-align: center;
+    border-radius: 20px;
+    background: #0063ff;
+    box-shadow: 1px 1px 3px #222;
+    z-index: 2;
+    transition: all 0.5s;
+    display: none;
+}
+#right-nav ul.right-nav-list li:hover >span.msg-num {
+	left: -110px;
+	background: rgb(42, 61, 82);
+	box-shadow: 0 0 5px #0FF;
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_mvb_map_table" desc="新增模型视角绑定数据">
+		<sql>
+			INSERT INTO map_model_view_bind
+					  (mvb_cus_number,
+					   mvb_model_id,
+					   mvb_model_name,
+					   mvb_pos_x,
+					   mvb_pos_y,
+					   mvb_pos_z,
+					   mvb_rot_x,
+					   mvb_rot_y,
+					   mvb_rot_z,
+					   mvb_tar_x,
+					   mvb_tar_y,
+					   mvb_tar_z)
+					VALUES
+					  (:mvb_cus_number,
+					   :mvb_model_id,
+					   :mvb_model_name,
+					   :mvb_pos_x,
+					   :mvb_pos_y,
+					   :mvb_pos_z,
+					   :mvb_rot_x,
+					   :mvb_rot_y,
+					   :mvb_rot_z,
+					   :mvb_tar_x,
+					   :mvb_tar_y,
+					   :mvb_tar_z)
+		</sql>
+	</item>
+	<item id="query_mvb_map_list" desc="查询模型视角绑定数据">
+		<sql>
+			SELECT mvb_cus_number,
+			       mvb_model_id,
+			       mvb_model_name,
+			       mvb_pos_x,
+			       mvb_pos_y,
+			       mvb_pos_z,
+			       mvb_rot_x,
+			       mvb_rot_y,
+			       mvb_rot_z,
+			       mvb_tar_x,
+			       mvb_tar_y,
+			       mvb_tar_z
+			  FROM map_model_view_bind
+			 WHERE mvb_cus_number = :mvb_cus_number
+		</sql>
+		<where id='0'>
+			AND (TRIM(:mvb_model_id) IS NULL OR mvb_model_id LIKE CONCAT('%',CONCAT(:mvb_model_id,'%'))) 
+			AND (TRIM(:mvb_model_name) IS NULL OR mvb_model_name LIKE CONCAT('%',CONCAT(:mvb_model_name,'%')))
+		</where>
+		<where id='1'>
+			AND mvb_model_id=:mvb_model_id
+		</where>
+	</item>
+	<item id="update_mvb_map_table" desc="更新模型视角绑定数据">
+		<sql>
+			UPDATE MAP_MODEL_VIEW_BIND
+				SET mvb_model_name = :mvb_model_name,
+			       	mvb_pos_x = :mvb_pos_x,
+			       	mvb_pos_y = :mvb_pos_y,
+			       	mvb_pos_z = :mvb_pos_z,
+			       	mvb_rot_x = :mvb_rot_x,
+			       	mvb_rot_y = :mvb_rot_y,
+			       	mvb_rot_z = :mvb_rot_z,
+			       	mvb_tar_x = :mvb_tar_x,
+			       	mvb_tar_y = :mvb_tar_y,
+			       	mvb_tar_z = :mvb_tar_z
+			 WHERE  mvb_model_id = :mvb_model_id
+		</sql>
+	</item>
+	
+	<item id="delete_mvb_map_list" desc="删除模型视角绑定信息">
+		<sql>
+			DELETE FROM map_model_view_bind WHERE mvb_model_id = :mvb_model_id
+		</sql>
+	</item>
+</sqlItem>

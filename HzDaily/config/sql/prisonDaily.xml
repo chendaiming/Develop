@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_prison_area_dtls_count" desc="查询监区日报汇总信息">
+		<sql>
+			SELECT SUM(pad_regtr_prsner) AS pad_regtr_prsner,
+			       SUM(pad_custody_prsner) AS pad_custody_prsner,
+			       SUM(pad_large_prsner) AS pad_large_prsner,
+			       SUM(pad_back_rtal_prsner) AS pad_back_rtal_prsner,
+			       SUM(pad_probation_prsner) AS pad_probation_prsner,
+			       SUM(pad_new_custody_prsner) AS pad_new_custody_prsner,
+			       SUM(pad_released_prsner) AS pad_released_prsner,
+			       SUM(pad_death_prsner) AS pad_death_prsner
+			  FROM (SELECT pad_prsn_area_idnty,
+			      		   MAX(pad_regtr_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_regtr_prsner,
+			      		   MAX(pad_custody_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_custody_prsner,
+			       		   MAX(pad_large_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_large_prsner,
+			       		   MAX(pad_back_rtal_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_back_rtal_prsner,
+			        	   MAX(pad_probation_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_probation_prsner,
+			          	   MAX(pad_new_custody_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_new_custody_prsner,
+			          	   MAX(pad_released_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_released_prsner,
+			         	   MAX(pad_death_prsner) KEEP(dense_rank FIRST ORDER BY pad_report_time DESC) AS pad_death_prsner
+			          FROM idy_prison_area_dtls
+			          WHERE pad_cus_number = ? AND
+			          	    (TRUNC(pad_report_time) = TO_DATE(?,'YYYY-MM-DD') OR TRIM(?) IS NULL)
+			          GROUP BY pad_prsn_area_idnty)
+		</sql>
+	</item>
+</sqlItem>

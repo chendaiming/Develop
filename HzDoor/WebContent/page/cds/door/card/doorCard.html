@@ -1,0 +1,99 @@
+
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+<link rel="stylesheet" href="../../../../css/common.css" charset="utf-8">
+<style>
+#personKey{
+ 	display:none;
+    position: absolute;
+    color: rgb(255, 255, 0);
+    transition: height .5s;
+    background: rgb(21, 67, 82);
+    text-align: left;
+    max-height: 200px;
+    overflow: auto;
+ }
+ #personKey li{
+	 padding-top: 5px;
+	 padding-bottom: 5px;
+	 padding-left: 10px;
+	cursor:pointer;
+ }
+#personKey li:hover{
+	background-color: cadetblue;
+}
+</style>
+<div class="vbox box-con" id="constlist">
+	<div class="hbox hz-col-1">
+		<div class="hz-col-9 right-con">
+	       	<table id="table" ></table>
+		</div>
+	</div>
+	
+	<div class="bottom" >
+		<div class="buttons" id="oprbutton">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_add"></i><span>添加</span></a>		  
+				<a class="hbtn btn_primary btn_large" id="del"><i class="btn_icon icon_del"></i><span>删除</span></a>
+		</div>
+	</div> 
+	
+	<div class="vbox hz-col-1" id="constd" style="display:none;">
+		<div class="hz-col-9">
+			<form class="form-horizontal" style="margin-top:20px;">
+		
+		    	<div class="form-group ">
+			        <label class="col-sm-3 control-label">序号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="constgroup['dcd_surface_id']" placeholder="请输入序号">
+			        </div>
+			    </div>
+				<div class="form-group ">
+			        <label class="col-sm-3 control-label">芯片编号</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" v-model="constgroup['dcd_chip_id']" placeholder="请输入芯片编号">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">人员类型</label>
+			        <div class="col-sm-8">
+			            <hz-select 
+					  			tip="请选择人员类型" 
+					  			code="person_doorCard_type"
+					  			:id.sync="constgroup['dcd_people_type']"
+					  			/>
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">人员姓名</label>
+			        <div class="col-sm-8">
+				        <input id="person_id" type="text" autocomplete="off" class="form-control" v-model="constgroup['person_name']" placeholder="可输入人员姓名进行搜索">
+			        </div>
+			    </div>
+			    <div class="form-group ">
+			        <label class="col-sm-3 control-label">是否启用</label>
+			        <div class="col-sm-8">
+			             <hz-select 
+					  			tip="是否启用" 
+					  			code="VMI_IS_DEFAULT"
+					  			:id.sync="constgroup['dcd_use']"
+					  			/>
+			        </div>
+			    </div>
+			</form>
+		</div>
+		 <div class="hz-col-1">
+					  <a class="hbtn btn_primary btn_mini pull-right" id="save" style="margin-right:15px;margin-bottom:10px"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			 </div>	
+	</div>
+	<div id="personKey" class="combox_panel">
+		<ul>
+			<li v-for="item in person | filterBy constgroup.person_name in 'person_name'" @click.self="selectKey(item)">{{item.person_name}}</li>
+		</ul>
+	</div>
+</div>
+
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/door/card/doorCard"]);
+</script>

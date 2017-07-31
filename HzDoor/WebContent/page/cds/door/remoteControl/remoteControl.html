@@ -1,0 +1,164 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style>
+	.item{
+		position:relative;
+		width:25%;
+		float:left;
+	}
+	.item>div{
+		margin:10px;
+		height:86px;
+		margin-top:15px;
+		border:1px solid #4077ae;
+		border-radius:6px;
+		text-align:center;
+		padding-top:38px;
+		padding-bottom:8px;
+		font-size:12px;
+		color:#eee;
+		cursor:pointer;
+		
+		background-size:25px;
+		background-position:center 6px;
+		background-repeat:no-repeat;
+	}
+	.item>div:hover{
+		background-color:#4077ae;
+	}
+	.item .status{
+		color:#11cd6e;
+		font-size:10px;
+	}
+	.select>div{
+		color:#fff;
+		background-color:#4077ae;
+	}
+	.select>div::before{
+		content:'';
+   		position: absolute;
+    	right: 20px;
+        top: 20px;
+	    width:30px;
+	    height:30px;
+	    background:url('../../../../css/images/icons/select.png')no-repeat;
+	}
+	.item>div{
+		background-image:url('../../../../css/images/icons/door.png');
+	}
+	.c_nav{width:16px;height:16px;margin-left:8px;display:inline-block;vertical-align: middle;margin-bottom:3px;}
+	.c_nav:hover{width:18px;height:18px;}
+</style>
+<div class="vbox box-con" id="form" >
+	<div class="vbox hz-col-1">
+		<div class="hbox hz-col-1" @click="passwordhide($event)">
+			<div class="left-con vbox hz-col-3">
+				<div class="input icon" >
+				  	<input placeholder="输入关键字搜索" id="input">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto;">
+					<ul id="tree" class="ztree"></ul>
+			    </div>
+			</div>
+			<div class="hz-col-6 vbox right-con">
+				<div class="hz-col-1 vbox">
+					<div class="hbox">
+						<div class="radio hz-col-1" @click="radioCheck">
+						    <label>
+						      <span>当前区域：</span><span v-text="remote.currentarea"></span>
+						    </label>
+					  	</div>
+					  	<div class="input icon"  style="float:right">
+						  	<input id="tab" v-model="search" placeholder="输入关键字搜索">
+						  	<span class="find"></span>
+					    </div>
+					</div>
+					
+					<div class="hz-col-9" id="form" style="overflow:auto;" >
+						  <div v-if="remote.doors.length==0" class="empty">暂无设备</div>
+						  <div class="col-sm-12" v-cloak id="listcontainer">
+						  	<div class="item"  v-for="c in remote.doors | filterBy search in 'name'" data-id="{{c.id}}">
+						  		<div>
+									<span>{{c.name}}</span>
+									<span class="status">（ {{c.status}} ）</span>
+								</div>
+							</div>
+						  </div>
+					</div>
+					
+					
+				</div>
+			</div>
+		</div>
+		<div class="bottom hbox">
+			<div class="hbox hz-col-1" >
+				<div class="hz-col-1" style="text-align:right">
+					<a @click="opr('personset',1)" class="hbtn btn_primary btn_large"><span>个人设置</span></a>
+					<a @click="opr('lock')" class="hbtn btn_primary btn_large"><span>锁定</span></a>
+		  			<a @click="opr('open')" class="hbtn btn_primary btn_large"><span>开门</span></a>
+		  			<a @click="opr('close')" class="hbtn btn_primary btn_large"><span>关门</span></a>
+				</div>
+			</div>
+		</div>		
+	</div>
+	<!-- 密码弹窗 -->
+	<form id="password" class="passwordd" autocomplete="false">
+            <input  type="password"  v-model="remote.password[0]">
+           	<input  type="password"  v-model="remote.password[1]">
+           	<input  type="password"  v-model="remote.password[2]">
+           	<input  type="password"  v-model="remote.password[3]">
+           	<input  type="password"  v-model="remote.password[4]">
+           	<input  type="password"  v-model="remote.password[5]">
+	</form>
+	<!-- 个人设置弹窗 -->
+	<div class="vbox box-con" id="person" style="display:none">
+		<div class="vbox hz-col-1">
+			<div  class="hbox hz-col-7" >
+				<div class="hz-col-2"  style="text-align: center;">
+				<label  class="control-label">接受提示的门禁:</label>
+				</div>
+				
+				<div  class="hz-col-7" style="overflow:auto;" >
+					<ul class="ztree" id="pztree"></ul>
+				</div>
+			</div>
+			<div class="hz-col-3" style="border-top:1px solid rgb(30, 85, 175);">
+				<form class="form-horizontal" style="margin-top:10px;">
+				    <div class="form-group ">
+				        <label  class="col-sm-2 control-label">密码</label>
+				        <div class="col-sm-5">
+				            <input type="password" class="form-control" v-model="remote['pwd']" style="font-size: 20px;">
+				        </div>
+				    </div>
+				    <div class="form-group">
+				        <label  class="col-sm-2 control-label">免密</label>
+				        <div class="col-sm-4">
+				            <div class="checkbox">
+			        			<input type="radio" value="1"  v-model="remote['avoid']" name="avoid" checked>是
+			        		</div>
+				        </div>
+				        <div class="col-sm-4">
+				            <div class="checkbox">
+			        			<input type="radio" value="0"  v-model="remote['avoid']" name="avoid" >否
+			        		</div>
+				        </div>
+				    </div>
+			    </form>
+			</div>
+		</div>
+		<div class="bottom hbox">
+			<div class="hbox hz-col-1" >
+				<div class="hz-col-1" style="text-align:right">
+					<a @click="save" class="hbtn btn_primary btn_large"><span>保存</span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script type="text/javascript">
+requirejs(['hz/cds/door/remoteControl/remoteControl'])
+</script>

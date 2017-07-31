@@ -1,0 +1,76 @@
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap-table.css" charset="utf-8">
+
+<div class="row con" id="constlist">
+	<div class="col-sm-3 " >
+	<input type="text" class="form-control top-10" placeholder="请输入组名称">
+		<div class="panel top-10"  style="height:calc(100% - 120px);overflow-y:scroll;margin-bottom:0px;cursor:pointer">
+			<ul class="list-group" id="groupconst">
+			  <li class="list-group-item"  v-for="item in list" @click="refresh(item)" >{{item['CCD_NAME']}}</li>
+			</ul>
+		</div>
+		<div class="col-sm-12">
+			<button  type="button" class="btn btn-default navbar-btn btn-sm" data-perssion="sysopr:save">删除</button>
+			<button  type="button" class="btn btn-default  navbar-btn btn-sm" data-perssion="sysopr:save">新增</button>
+			<button  type="button" class="btn btn-default  navbar-btn btn-sm" data-perssion="sysopr:save">编辑</button>
+		</div>
+	</div>
+	<div class="col-sm-9">
+       	<table id="table"></table>
+	</div>
+	<div class="col-sm-11" id="constgroup" style="display:none;"><!-- 常量组添加 -->
+		<form class="form-horizontal"  style="margin-top:20px">
+			<div class="form-group ">
+		        <label class="col-sm-3 control-label">常量组名称</label>
+		        <div class="col-sm-8">
+		            <input type="text" class="form-control" v-model="constgroup['CCD_NAME']" placeholder="请输入常量组名称">
+		        </div>
+		    </div>
+		    <div class="form-group ">
+		        <label class="col-sm-3 control-label">常量组编码</label>
+		        <div class="col-sm-8">
+		            <input type="text" class="form-control" v-model="constgroup['CCD_CODE']" placeholder="请输入常量组编码">
+		        </div>
+		    </div>
+		    <div class="col-sm-1 pull-right">
+				<button  type="button" class="btn btn-default btn-sm" data-perssion="sysopr:save">保存</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-sm-11" id="constd" style="display:none;"><!-- 常量添加 -->
+		<form class="form-horizontal" style="margin-top:20px">
+			<div class="form-group ">
+		        <label class="col-sm-3 control-label">常量组</label>
+		        <div class="col-sm-8">
+		            <input type="text" class="form-control" v-model="constgroup['CCD_NAME']" >
+		        </div>
+		    </div>
+			<div class="form-group ">
+		        <label class="col-sm-3 control-label">常量键</label>
+		        <div class="col-sm-8">
+		            <input type="text" class="form-control" v-model="constgroup['CCD_KEY']" placeholder="请输入常量组名称">
+		        </div>
+		    </div>
+		    <div class="form-group ">
+		        <label class="col-sm-3 control-label">常量值</label>
+		        <div class="col-sm-8">
+		            <input type="text" class="form-control" v-model="constgroup['CCD_VALUE']" placeholder="请输入常量组名称">
+		        </div>
+		    </div>
+		    <div class="col-sm-11 pull-right">
+				<button  type="button" class="btn btn-default btn-sm" data-perssion="sysopr:save">保存</button>
+			</div>
+		</form>
+	</div>
+</div>
+<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+		<div class="col-sm-12 pull-right" id="oprbutton">
+				<button  type="button" class="btn btn-default navbar-btn btn-sm" data-perssion="sysopr:save">删除</button>
+				<button  type="button" class="btn btn-default  navbar-btn btn-sm" data-perssion="sysopr:save">新增</button>
+		</div>
+</nav> 
+<script type="text/javascript" src="../../../js/require.js"  data-main="../../../js/config" ></script>
+<script>
+require(["../page/syscontrol/const/const"]);
+</script>

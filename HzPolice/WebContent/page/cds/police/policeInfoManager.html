@@ -1,0 +1,390 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/webuploader/webuploader.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<style>
+#imageview img{
+ 	display:none; 
+	width:110;
+	height:110;
+	cursor: pointer; 
+}
+.reupload{
+    position: absolute;
+    background: rgba( 0, 0, 0, 0.5 );
+    width: 110px;
+    height:30px;
+    top: 45;
+    left: 15;
+    overflow: hidden;
+    z-index: 300;
+    text-align: center;
+    font-size: 14px;
+    color: white;
+    display:none;
+}
+#imageupload{
+	margin-top: 7;
+    margin-left: 0;
+    cursor: pointer; 
+/*     display:none; */
+}
+</style>
+<div class="vbox box-con" id="form">
+	<div class="hbox hz-col-1">
+		<div class=" left-con vbox">
+			<div class="input icon">
+				<input id="input" placeholder="输入关键字搜索"> <span class="find"></span>
+			</div>
+			<div class="hz-col-1" style="overflow: auto;">
+				<ul id="tree" class="ztree"></ul>
+			</div>
+		</div>
+
+		<div class="hz-col-9 right-con">
+			<form class="form-horizontal">
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">警员编号<span class="required" v-if="police.policeid.length==0">*</span></label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['policeid']" id="input_policeid" placeholder="请输入警员编号" />
+							</div>
+
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">警员姓名<span class="required" v-if="police.name.length==0">*</span></label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control" v-model="police['name']"
+									placeholder="请输入警员姓名" />
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">所属部门<span class="required" v-if="police.pbd_drptmnt.length==0">*</span></label>
+							<div class="col-xs-8">
+								<div class="input-group">
+									<input type="text" class="form-control" id="dep"
+										v-model="police['pbd_drptmnt']" placeholder="请选择所属部门"
+										required="required" disabled=true/>
+									<div class="input-group-btn">
+										<button type="button" class="btn btn-default">
+											所属部门<span class="caret"></span>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">职务</label>
+							<div class="col-xs-8">
+								<hz-select tip=职务 code="pbd_pstn_name"
+									:id.sync="police.pbd_pstn_name" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">年龄</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_age']" id="input_age" placeholder="请填写年龄(仅限输入正整数)"
+									required="required" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">性别</label>
+							<div class="col-xs-8">
+								<hz-select tip="性别" code="pbd_sex" :id.sync="police.pbd_sex" />
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">警员类型</label>
+							<div class="col-xs-8">
+								<hz-select tip="警员类型" code="pbd_police_type_indc"
+									:id.sync="police.pbd_police_type_indc" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">学历</label>
+							<div class="col-xs-8">
+								<hz-select tip="学历" code="pbd_degree_indc"
+									:id.sync="police.pbd_degree_indc" />
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">政治面貌</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_political_status']" placeholder="请填写政治面貌" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">衔称</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_official_title']" placeholder="请填写衔称" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">出生日期</label>
+							<div class="col-xs-8">
+								<hz-date tip="选择出生日期" :val.sync="police.pbd_birth_date" maxdate="today" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">参加工作日期</label>
+							<div class="col-xs-8">
+								<hz-date tip="选择工作日期" :val.sync="police.pbd_job_date" maxdate="today"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">固定电话</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_fixed_phone']" placeholder="请填写固定电话" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">IP电话</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_ip_phone']" placeholder="请填写IP电话" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">手机</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_phone']" placeholder="请填写手机" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">对讲呼号</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_talk_num']" placeholder="请填写对讲呼号" />
+							</div>
+						</div>
+					</div>					
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">传真</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_fax']" placeholder="请填写传真" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">短号</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_short_phone']" placeholder="请填写短号" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">邮箱</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_email']" placeholder="请填写邮箱地址" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">OA系统</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_oa_system']" placeholder="请填写OA系统账号" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">警务通</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_police_cmmnct']" placeholder="请填写警务通" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">亲属号码</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_family_phone']" placeholder="请填写亲属号码" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">专业</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_profession']" placeholder="请填写专业" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">备注</label>
+							<div class="col-xs-8">
+								<input type="text" class="form-control"
+									v-model="police['pbd_remark']" placeholder="请填写备注" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group ">
+							<label class="col-xs-3 control-label">照片</label>
+							<div class="col-xs-8">
+								<div id="imageview">
+									<img src=""> <a class="reupload">重新上传</a>
+								</div>
+								<a id="imageupload">点击上传照片</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6"></div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="bottom">
+		<a class="hbtn btn_primary btn_large import"><i
+			class="btn_icon icon_upload"></i><span>导入</span></a> <a
+			class="hbtn btn_primary btn_large export"><i
+			class="btn_icon icon_download"></i><span>导出</span></a>
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large"><i
+				class="btn_icon icon_save"></i><span>保存</span></a> <a
+				class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>删除</span></a>
+			<a class="hbtn btn_primary btn_large"><i
+				class="btn_icon icon_reset"></i><span>重置</span></a>
+		</div>
+	</div>
+
+
+	<div class="vbox hz-col-1" id="upload_dialog" style="display: none;">
+		<!-- 上传 -->
+		<div id="uploader" class="wu-example">
+			<div class="queueList">
+				<div id="dndArea" class="placeholder">
+					<div id="filePicker"></div>
+					<p>将文件拖到这里</p>
+				</div>
+			</div>
+			<div class="statusBar" style="display: none;">
+				<div class="progress">
+					<span class="text">0%</span> <span class="percentage"></span>
+				</div>
+				<div class="info"></div>
+				<div class="btns">
+					<div class="uploadBtn">开始上传</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="vbox hz-col-1" id="export_dialog" style="display: none;">
+		<!-- 导出 -->
+		<form class="form-horizontal">
+			<div class="form-group " style="height: 40px; margin-top: 16px;">
+				<label class="col-xs-3 control-label">文件名</label>
+				<div class="col-xs-8">
+					<input type="file" class="form-control" style="border: 0px;" />
+				</div>
+			</div>
+			<div class="bottom">
+				<a class="hbtn btn_primary btn_mini pull-right" id="cancel"><i
+					class="btn_icon icon_reset"></i><span>取消</span></a> <a
+					class="hbtn btn_primary btn_mini pull-right" id="save"><i
+					class="btn_icon icon_save"></i><span>导入</span></a>
+			</div>
+		</form>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+var updateIMG;
+var model;
+var uploader;
+var setState;
+var upload_type;
+require(["hz/cds/police/policeInfoManager"]);
+require(["hz/cds/police/imageUpload"]);
+</script>

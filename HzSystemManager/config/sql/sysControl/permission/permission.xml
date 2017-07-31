@@ -1,0 +1,566 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_permission_area_tree" desc="当前用户控制的区域树s">
+		<sql>
+			SELECT abd_area_id id,
+			       abd_parent_id pid,
+			       abd_area_name name,
+			       'area.png' icon,
+			       1 type,
+			       null status
+			  FROM com_area_base_dtls
+			 INNER JOIN 
+			 <where id="0">
+			 (SELECT DISTINCT (oar_area_id)
+			               FROM (SELECT odd_id
+			                       FROM sys_org_dept_dtls
+			                      START WITH odd_id = :cus
+			                     CONNECT BY PRIOR odd_id = odd_parent_id)
+			              INNER JOIN com_org_area_rltn
+			                 ON odd_id = oar_dept_id)
+			    ON abd_area_id = oar_area_id
+			 	UNION ALL
+		       	SELECT
+			        odd_id id,
+			        odd_parent_id pid,
+			        odd_name name,
+			        'org.png' icon,
+			        0 type,
+			        null status
+		        FROM sys_org_dept_dtls
+		         WHERE LEVEL &lt; :level
+		        START WITH odd_id =:cus
+		       CONNECT BY PRIOR odd_id = odd_parent_id
+			 </where>
+		</sql>
+	</item>	
+	<item id="query_area_tree_byorg">
+	<sql>
+		 SELECT abd_area_id id,
+		       abd_parent_id pid,
+		       abd_area_name name,
+		       'area.png' icon,
+		       1 type,
+		       NULL status,
+		       abd_cus_number cus
+		  FROM com_area_base_dtls
+		 INNER JOIN
+		
+		 (SELECT DISTINCT (oar_area_id)
+		    FROM (SELECT odd_id
+		            FROM sys_org_dept_dtls
+		           START WITH odd_id = :cus
+		          CONNECT BY PRIOR odd_id = odd_parent_id)
+		   INNER JOIN com_org_area_rltn
+		      ON odd_id = oar_dept_id)
+		    ON abd_area_id = oar_area_id
+
+	</sql>
+	
+	</item>
+	<item id="query_permission_user_treebyid" desc="用户树">
+		<sql>
+			WITH t AS
+			 (SELECT odd_id, odd_name, odd_parent_id,odd_data_auth auth
+			    FROM sys_org_dept_dtls
+			   START WITH odd_id = :cus
+			  CONNECT BY PRIOR odd_id = odd_parent_id)
+			
+			SELECT DISTINCT '1-' || (odd_id) id,
+			       odd_name name,
+			       '1-' ||odd_parent_id pid,
+			       'org.png' icon,
+			       auth,
+			       0 type
+			  FROM t
+			 START WITH odd_id IN
+			            (SELECT DISTINCT (ubd_dept_id) FROM sys_user_base_dtls)
+			CONNECT BY odd_id =PRIOR odd_parent_id
+			UNION ALL
+			SELECT 
+					id,
+			        name,
+			        pid,
+			        icon,
+			        -1,
+			        1 type
+			  FROM (SELECT '' || ubd_id id,
+			               ubd_name name,
+			               '1-' || ubd_dept_id pid,
+			               'user.png' icon
+			          FROM sys_user_base_dtls z
+			         INNER JOIN t
+			            ON odd_id = ubd_dept_id
+			       	 WHERE
+			       	 	ubd_id!=:user AND ubd_admin!=1
+			       )
+		</sql>
+	</item>
+	<item id="query_permission_data" desc="根据用户部门查询当前拥有权限的设备数据">
+		<const key="status">dbd_stts_indc</const>
+		<sql>
+			SELECT
+			   s.id,
+			   s.name,
+			   s.status ,
+			   s.area
+		    FROM
+		</sql>
+		<where id="0" desc="根据机构号查询出所有区域">
+			(
+		   SELECT 
+					abd_area_id id,
+					abd_cus_number cus
+	       FROM 
+			    	com_area_base_dtls
+		   INNER JOIN 
+				(
+		             SELECT 
+				              DISTINCT(oar_area_id)
+		             FROM 
+		             	(
+		             		SELECT 
+	             			   odd_id
+		                    FROM 
+	                    	   sys_org_dept_dtls
+	                        START WITH 
+	                           odd_id = :cus
+	                        CONNECT BY PRIOR 
+	                            odd_id = odd_parent_id
+                        )
+                     INNER JOIN 
+		                    com_org_area_rltn
+                     ON 
+		                    odd_id = oar_dept_id
+	            )
+			 ON 
+		       abd_area_id = oar_area_id
+	         )t
+		</where>
+		<where id="1" desc="根据区域好查询出所有下级区域">
+			(
+       		  SELECT 
+    			   abd_area_id id,
+    			   abd_cus_number cus
+              FROM 
+             	   com_area_base_dtls
+             WHERE 
+             		abd_cus_number=:cus
+              START WITH 
+                 abd_area_id = :area
+              CONNECT BY PRIOR 
+                 abd_area_id = abd_parent_id
+             )t
+		</where>
+		<order id="2a" desc="门禁类别值为2 系统管理员">
+			INNER JOIN (
+			   SELECT 
+			   		 dbd_id   id,
+				   	 dbd_name name,
+				     dbd_stts_indc status,
+				     dbd_area_id   area,
+				     dbd_cus_number
+		       FROM
+					 dor_door_base_dtls t
+		       ORDER BY 
+					 dbd_seq
+			)s
+			ON
+				t.id=s.area 
+			AND	
+				t.cus=s.dbd_cus_number
+		</order>
+		<order id="2" desc="门禁类别值为2">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 dbd_id   id,
+					   	 dbd_name name,
+					     dbd_stts_indc status,
+					     dbd_area_id   area
+			       FROM
+						 dor_door_base_dtls t
+			       
+			       INNER JOIN
+			             com_dvc_auth_set
+			       ON
+			             t.dbd_id=das_dvc_id
+			       WHERE 
+			             das_user_id=:user 
+			       AND    
+			       		 das_dvc_type=2
+			       ORDER BY 
+						 dbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="1a" desc="摄像机类别值为1 系统管理员">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 cbd_id         id,
+				   		 cbd_name       name,
+				   		 cbd_stts_indc  status,
+				   		 cbd_area_id	area
+			       FROM
+						 cmr_camera_base_dtls t
+		           ORDER BY 
+						cbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="1" desc="摄像机类别值为1">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 cbd_id         id,
+				   		 cbd_name       name,
+				   		 cbd_stts_indc  status,
+				   		 cbd_area_id	area
+			       FROM
+						 cmr_camera_base_dtls t
+			       LEFT JOIN
+                   		com_dvc_auth_set s
+		           ON
+		                das_dvc_id=cbd_id
+		           AND
+                        das_user_id=:user
+                   AND
+		              	das_dvc_type=1
+				   WHERE
+		              	s.das_dvc_id is null
+		           ORDER BY 
+						cbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="3a" desc="对讲类别值为3 系统管理员">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 tbd_id         id,
+				   		 tbd_name       name,
+				   		 tbd_dvc_stts  status,
+				   		 tbd_area_id	area
+			       FROM
+						 tbk_talkback_base_dtls t
+		           ORDER BY 
+						tbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="3" desc="对讲类别值为3">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 tbd_id         id,
+				   		 tbd_name       name,
+				   		 tbd_dvc_stts  status,
+				   		 tbd_area_id	area
+			       FROM
+						 tbk_talkback_base_dtls t
+			       LEFT JOIN
+                   		com_dvc_auth_set s
+		           ON
+		                das_dvc_id=tbd_id
+		           AND
+                        das_user_id=:user
+                   AND
+		              	das_dvc_type=3
+				   WHERE
+		              	s.das_dvc_id is null
+		           ORDER BY 
+						tbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="4a" desc="广播类别值为4 系统管理员">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 bbd_id         id,
+				   		 bbd_name       name,
+				   		 bbd_dvc_stts  status,
+				   		 bbd_area_id	area
+			       FROM
+						 bct_broadcast_base_dtls t
+		           ORDER BY 
+						bbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="4" desc="广播类别值为4">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 bbd_id         id,
+				   		 bbd_name       name,
+				   		 bbd_dvc_stts  status,
+				   		 bbd_area_id	area
+			       FROM
+						 bct_broadcast_base_dtls t
+			       LEFT JOIN
+                   		com_dvc_auth_set s
+		           ON
+		                das_dvc_id=bbd_id
+		           AND
+                        das_user_id=:user
+                   AND
+		              	das_dvc_type=4
+				   WHERE
+		              	s.das_dvc_id is null
+		           ORDER BY 
+						bbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="6a" desc="网路报警类别值为6 系统管理员">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 nbd_id         id,
+				   		 nbd_name       name,
+				   		 nbd_stts  status,
+				   		 nbd_area_id	area
+			       FROM
+						 alt_network_base_dtls t
+		           ORDER BY 
+						nbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+		<order id="6" desc="网路报警类别值为6">
+			INNER JOIN
+				(
+				   SELECT 
+				   		 nbd_id         id,
+				   		 nbd_name       name,
+				   		 nbd_stts  status,
+				   		 nbd_area_id	area
+			       FROM
+						 alt_network_base_dtls t
+			       LEFT JOIN
+                   		com_dvc_auth_set s
+		           ON
+		                das_dvc_id=nbd_id
+		           AND
+                        das_user_id=:user
+                   AND
+		              	das_dvc_type=6
+				   WHERE
+		              	s.das_dvc_id is null
+		           ORDER BY 
+						nbd_seq
+				)s
+			ON
+				t.id=s.area
+		</order>
+	</item>
+	<item id="query_permission_area_user" desc="根据用户id，区域id查询出用户有权限查看的数据">
+		<sql>
+		  SELECT
+      			WM_CONCAT(	id ) id
+	      FROM
+	      <where id="0" desc="按区域查询">
+	      (	
+			  SELECT  
+			  		abd_area_id area
+			  FROM
+			  		com_area_base_dtls
+			   WHERE 
+             		abd_cus_number=:cus
+			  START WITH 
+			       abd_area_id = :area	
+			  CONNECT BY PRIOR 
+			       abd_area_id = abd_parent_id
+		  )
+	      INNER JOIN
+	      </where>
+	      <where id="1" desc="按机构查询">
+	      (
+            SELECT 
+	              DISTINCT(oar_area_id) area
+            FROM 
+            	(
+           		SELECT 
+          			   odd_id
+                FROM 
+                 	   sys_org_dept_dtls
+                     START WITH 
+                        odd_id = :cus
+                     CONNECT BY PRIOR 
+                         odd_id = odd_parent_id
+                 )
+                 INNER JOIN 
+                  com_org_area_rltn
+                 ON 
+                  odd_id = oar_dept_id
+          )
+	      INNER JOIN
+	      </where>
+	      <order id='2' desc="门禁类别为2">
+		  (
+		      SELECT
+		     	 	t.dbd_id id,
+		     	 	dbd_area_id
+		      FROM
+		        	dor_door_base_dtls t
+	          INNER JOIN
+		       		com_dvc_auth_set
+		      ON
+		            dbd_id=das_dvc_id
+		      WHERE 
+		       		das_user_id=:user
+		      AND 
+              		das_dvc_type=2
+	      )
+		  ON
+	          dbd_area_id=area
+	      </order>
+	      <!--  <order id='4' desc="门禁类别为2，系统管理员">
+		  (
+		      SELECT
+		     	 	t.dbd_id id,
+		     	 	dbd_area_id
+		      FROM
+		        	dor_door_base_dtls t
+	      )
+		  ON
+	          dbd_area_id=area
+	      </order>
+	      <order id='3' desc="摄像机类别为1 系统管理员"> 
+	   	  (
+		      SELECT
+		     	 	t.CBD_ID id,
+		     	 	cbd_area_id
+		      FROM
+		        	cmr_camera_base_dtls t
+	      )
+		  ON 
+		      cbd_area_id = area
+	      </order> -->
+	      <order id='1' desc="摄像机类别为1">
+	   	  (
+		      SELECT
+		     	 	t.CBD_ID id,
+		     	 	cbd_area_id
+		      FROM
+		        	cmr_camera_base_dtls t
+	          INNER JOIN
+		       		com_dvc_auth_set
+		      ON
+		            cbd_id=das_dvc_id
+		      WHERE 
+		       		das_user_id=:user
+		      AND 
+              		das_dvc_type=1
+	      )
+		  ON 
+		      cbd_area_id = area
+	      </order>
+	      <order id='3' desc="对讲类别为3">
+	   	  (
+		      SELECT
+		     	 	t.TBD_ID id,
+		     	 	tbd_area_id
+		      FROM
+		        	tbk_talkback_base_dtls t
+	          INNER JOIN
+		       		com_dvc_auth_set
+		      ON
+		            tbd_id=das_dvc_id
+		      WHERE 
+		       		das_user_id=:user
+		      AND 
+              		das_dvc_type=3
+	      )
+		  ON 
+		      tbd_area_id = area
+	      </order>
+	      <order id='4' desc="广播类别为4">
+	   	  (
+		      SELECT
+		     	 	t.BBD_ID id,
+		     	 	bbd_area_id
+		      FROM
+		        	bct_broadcast_base_dtls t
+	          INNER JOIN
+		       		com_dvc_auth_set
+		      ON
+		            bbd_id=das_dvc_id
+		      WHERE 
+		       		das_user_id=:user
+		      AND 
+              		das_dvc_type=4
+	      )
+		  ON 
+		      bbd_area_id = area
+	      </order>
+	      <order id='6' desc="网络报警类别为6">
+	   	  (
+		      SELECT
+		     	 	t.NBD_ID id,
+		     	 	nbd_area_id
+		      FROM
+		        	alt_network_base_dtls t
+	          INNER JOIN
+		       		com_dvc_auth_set
+		      ON
+		            nbd_id=das_dvc_id
+		      WHERE 
+		       		das_user_id=:user
+		      AND 
+              		das_dvc_type=6
+	      )
+		  ON 
+		      nbd_area_id = area
+	      </order>
+		</sql>
+	</item>
+	
+	<item id="delete_permission_data" desc="删除用户管理的权限数据">
+		<sql>
+			DELETE FROM
+				com_dvc_auth_set
+			WHERE
+				das_user_id=:user
+			AND
+				das_cus_number=:cus
+			AND
+				das_dvc_type=:type
+		</sql>
+	</item>
+	<item id="insert_permission_data" desc="用户授权">
+		<sql>
+			INSERT INTO
+				com_dvc_auth_set
+				(
+					das_cus_number,
+					das_user_id,
+					das_dvc_type,
+					das_dvc_id,
+					das_crte_time,
+					das_crte_user_id
+				)
+			VALUES
+				(
+					:cus,
+					:user,
+					:type,
+					:id,
+					sysdate,
+					:current
+				)
+		</sql>
+	</item>
+	
+</sqlItem>
+ 

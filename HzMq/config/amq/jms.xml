@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xmlns:int-jmx="http://www.springframework.org/schema/integration/jmx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/aop
+			http://www.springframework.org/schema/aop/spring-aop.xsd
+			http://www.springframework.org/schema/tx
+			http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/integration
+            http://www.springframework.org/schema/integration/spring-integration.xsd
+            http://www.springframework.org/schema/integration/jms
+            http://www.springframework.org/schema/integration/jms/spring-integration-jms-2.1.xsd
+            http://www.springframework.org/schema/integration/jmx
+            http://www.springframework.org/schema/integration/jmx/spring-integration-jmx-2.1.xsd">
+
+	<!-- import the jms properties from classpath. -->
+	<!-- ${amq.home.dir}/conf should be in classpath -->
+	<context:property-placeholder order="1" system-properties-mode="OVERRIDE" ignore-unresolvable="true" location="classpath:jms.properties" ignore-resource-not-found="true"/>
+	<context:property-placeholder order="2" system-properties-mode="OVERRIDE" ignore-unresolvable="true" location="classpath:amq/jms-default.properties" />
+
+	<!-- #################################################################### -->
+	<!-- ActiveMQ: block begin -->
+	<!-- load the in-vm activemq -->
+	<import resource="classpath:amq/internal-broker/activemq.xml" />
+
+	<!-- internal MQ -->
+	<bean id="connectionFactory"
+		class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory">
+			<bean class="org.apache.activemq.ActiveMQConnectionFactory">
+				<property name="brokerURL" value="${amq.internal.amq.brokerURL}" />
+			</bean>
+		</property>
+		<property name="sessionCacheSize" value="10" />
+		<property name="cacheProducers" value="false" />
+		<property name="clientId" value="${amq.internal.amq.clientID}" />
+	</bean>
+	<!-- ActiveMQ: block end -->
+</beans>

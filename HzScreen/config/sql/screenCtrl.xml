@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	 <item id="select_screen_base_name" desc="大屏基础信息名称查询">
+    	<sql>
+			SELECT sbi_screen_id || '_' || sbi_other_idnty AS id,
+				   sbi_screen_name AS name
+			  FROM screen_base_info
+		</sql>
+		<where id="0">
+			WHERE sbi_cus_number = ? AND 
+				  sbi_dept_id = ?
+		</where>
+		<order id="0">
+			ORDER BY sbi_screen_id
+		</order>
+	</item>
+	
+    <item id="select_screen_win_dtls" desc="拼接屏基础信息查询">
+    	<sql>
+			SELECT dcr_cus_number,
+				   dcr_screen_id,
+				   dcr_screen_win_id,
+				   dcr_out_type,
+				   dcr_signal_id,
+				   dcr_decoder_id,
+				   dcr_decoder_chl,
+				   dcr_cut_seq,
+				   dcr_width,
+				   dcr_height,
+				   dcr_screen_top,
+				   dcr_screen_left,
+				   dcr_crte_time,
+				   dcr_crte_user_id,
+				   dcr_updt_time,
+				   dcr_updt_user_id
+			  FROM screen_win_dtls
+		</sql>
+		<where id="0">
+			WHERE dcr_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE dcr_cus_number = ? AND
+				  dcr_screen_id = ?
+		</where>
+		<order id="0">
+			ORDER BY dcr_screen_id,dcr_screen_top,dcr_screen_left
+		</order>
+	</item>
+	
+	<item id="insert_screen_scene" desc="大屏布局新增">
+		<seq>ssn_scene_id@sceneId</seq>
+		<sql>
+			INSERT  INTO
+				screen_scene
+				(	
+					ssn_cus_number,
+					ssn_screen_id,	
+					ssn_dept_id,
+					ssn_scene_id,
+					ssn_scene_name,
+					ssn_status,
+					ssn_remark,
+					ssn_seq,
+					ssn_crte_time,
+					ssn_crte_user_id,
+					ssn_updt_time,
+					ssn_updt_user_id
+				)
+			values(
+					:ssn_cus_number,
+					:ssn_screen_id,
+					:ssn_dept_id,
+					:sceneId,
+					:ssn_scene_name,
+					:ssn_status,
+					:ssn_remark,
+					:sceneId,
+	        		SYSDATE,
+	        		:ssn_crte_user_id,
+	        		SYSDATE,
+	        		:ssn_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="insert_screen_scene_layout" desc="大屏布局基础屏新增">
+		<sql>
+			INSERT  INTO
+				screen_scene_layout
+				(	
+					ssl_cus_number,
+					ssl_screen_id,
+					ssl_dept_id,
+					ssl_scene_id,
+					ssl_screen_idnty,
+					ssl_camera_idnty,
+					ssl_camera_name,
+					ssl_width,
+					ssl_height,
+					ssl_screen_top,
+					ssl_screen_left,
+					ssl_scene_old_id,
+					ssl_crte_time,
+					ssl_crte_user_id,
+					ssl_updt_time,
+					ssl_updt_user_id
+				)
+			    SELECT :ssl_cus_number,
+			    	   dcr_screen_id,
+			    	   :ssl_dept_id,
+			    	   :ssl_scene_id,
+			    	   dcr_screen_win_id,
+			    	   :ssl_camera_idnty,
+			    	   :ssl_camera_name,
+			    	   dcr_width,
+			    	   dcr_height,
+			    	   dcr_screen_top,
+			    	   dcr_screen_left,
+			    	   dcr_screen_id,
+			    	   SYSDATE,
+			    	   :ssl_crte_user_id,
+			    	   SYSDATE,
+			    	   :ssl_updt_user_id
+                  FROM screen_win_dtls 
+                 WHERE dcr_cus_number = :dcr_cus_number AND
+                 	   dcr_screen_id = :dcr_screen_id
+		</sql>
+    </item>
+    
+      <item id="insert_screen_scene_layout_2" desc="大屏布局拼接屏新增">
+		<sql>
+			INSERT  INTO
+				screen_scene_layout
+				(	
+					ssl_cus_number,
+					ssl_screen_id,
+					ssl_dept_id,
+					ssl_scene_id,
+					ssl_screen_idnty,
+					ssl_camera_idnty,
+					ssl_camera_name,
+					ssl_width,
+					ssl_height,
+					ssl_screen_top,
+					ssl_screen_left,
+					ssl_scene_old_id,
+					ssl_crte_time,
+					ssl_crte_user_id,
+					ssl_updt_time,
+					ssl_updt_user_id
+				)
+			values( 
+					:ssl_cus_number,
+			    	:ssl_screen_id,
+			    	:ssl_dept_id,
+			    	:ssl_scene_id,
+		    	    :ssl_screen_idnty,
+		    	    :ssl_camera_idnty,
+		    	    :ssl_camera_name,
+		    	    :ssl_width,
+		    	    :ssl_height,
+		    	    :ssl_screen_top,
+		    	    :ssl_screen_left,
+		    	    :ssl_scene_old_id,
+		    	    SYSDATE,
+		    	    :ssl_crte_user_id,
+		    	    SYSDATE,
+		    	    :ssl_updt_user_id
+		      )
+		</sql>
+    </item>
+    
+    <item id="insert_screen_current_layout" desc="大屏当前布局新增">
+		<sql>
+			INSERT  INTO
+				screen_current_layout
+				(	
+					scl_cus_number,
+					scl_screen_id,
+					scl_dept_id,
+					scl_scene_id,
+					scl_updt_time,
+					scl_updt_user_id
+				)
+			values(
+					:scl_cus_number,
+					:scl_screen_id,
+					:scl_dept_id,
+					:scl_scene_id,
+	        		SYSDATE,
+	        		:scl_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="select_screen_current_layout" desc="大屏当前布局信息查询">
+    	<sql>
+			SELECT scl_cus_number,
+				   scl_screen_id,
+				   scl_dept_id,
+				   scl_scene_id,
+				   scl_updt_time,
+				   scl_updt_user_id
+			  FROM screen_current_layout
+		</sql>
+		<where id="0">
+			WHERE scl_cus_number = ? AND
+				  scl_dept_id = ?
+		</where>
+	</item>
+    
+    <item id="select_screen_scene" desc="大屏布局信息查询">
+    	<sql>
+			SELECT ssn_cus_number,
+				   ssn_screen_id,
+				   sbi_other_idnty,
+				   ssn_dept_id,
+				   ssn_scene_id,
+				   ssn_scene_name,
+				   ssn_status,
+				   ssn_remark,
+				   ssn_seq,
+				   ssn_crte_time,
+				   ssn_crte_user_id,
+				   ssn_updt_time,
+				   ssn_updt_user_id
+			  FROM screen_scene
+			  LEFT JOIN screen_base_info
+			  ON (ssn_cus_number = sbi_cus_number AND
+			  	  ssn_screen_id = sbi_screen_id)
+		</sql>
+		<where id="0">
+			WHERE ssn_cus_number = ? AND 
+				  ssn_dept_id = ?
+		</where>
+		<order id="0">
+			ORDER BY ssn_seq
+		</order>
+	</item>
+	
+	<item id="select_screen_scene_layout" desc="大屏布局基础屏查询">
+    	<sql>
+			SELECT ssl_cus_number,
+				   ssl_screen_id,
+				   sbi_other_idnty,
+				   ssl_dept_id,
+				   ssl_scene_id,
+				   ssl_screen_idnty,
+				   ssl_camera_idnty,
+				   ssl_camera_name,
+				   ssl_width,
+				   ssl_height,
+				   ssl_screen_top,
+				   ssl_screen_left,
+				   ssl_scene_old_id,
+				   ssl_crte_time,
+				   ssl_crte_user_id,
+				   ssl_updt_time,
+				   ssl_updt_user_id
+			  FROM screen_scene_layout
+			  LEFT JOIN screen_base_info
+			  ON (ssl_cus_number = sbi_cus_number AND
+			  	  ssl_screen_id = sbi_screen_id)
+		</sql>
+		<where id="0">
+			WHERE ssl_cus_number = ? AND
+				  ssl_dept_id = ?
+		</where>
+		<order id="0">
+			ORDER BY ssl_screen_id,ssl_screen_top,ssl_screen_left
+		</order>
+	</item>
+	
+	<item id="select_screen_scene_layout_maxScreenIdnty" desc="大屏布局基础屏最大屏号查询">
+    	<sql>
+			SELECT MAX(TO_NUMBER(ssl_screen_idnty)) AS maxScreenIdnty FROM screen_scene_layout
+		</sql>
+		<where id="0">
+			WHERE ssl_cus_number = ? AND
+				  ssl_screen_id = ? AND
+				  ssl_scene_id = ?
+		</where>
+	</item>
+	
+	<item id="update_screen_scene" desc="大屏布局信息修改">
+    	<sql>
+			UPDATE screen_scene SET
+				   ssn_remark = :ssn_remark,
+				   ssn_scene_name = :ssn_scene_name
+			 WHERE ssn_cus_number = :ssn_cus_number AND
+			 	   ssn_screen_id = :ssn_screen_id AND
+			 	   ssn_scene_id = :ssn_scene_id
+		</sql>
+	</item>
+	
+	<item id="update_screen_scene_layout" desc="大屏布局基础屏修改">
+    	<sql>
+			UPDATE screen_scene_layout SET
+				   ssl_camera_idnty = :ssl_camera_idnty,
+				   ssl_camera_name = :ssl_camera_name
+			 WHERE ssl_cus_number = :ssl_cus_number AND
+			 	   ssl_screen_id = :ssl_screen_id AND
+			 	   ssl_scene_id = :ssl_scene_id AND
+			 	   ssl_screen_idnty = :ssl_screen_idnty
+		</sql>
+	</item>
+	
+	<item id="delete_screen_scene" desc="大屏布局信息删除">
+    	<sql>
+			DELETE screen_scene
+			 WHERE ssn_cus_number = :ssn_cus_number AND
+			 	   ssn_screen_id = :ssn_screen_id AND
+			 	   ssn_scene_id = :ssn_scene_id
+		</sql>
+	</item>
+	
+	<item id="delete_screen_current_layout" desc="大屏当前布局信息删除">
+    	<sql>
+			DELETE screen_current_layout
+			 WHERE scl_cus_number = :scl_cus_number AND
+			 	   scl_dept_id = :scl_dept_id
+		</sql>
+	</item>
+	
+	<item id="delete_screen_scene_layout" desc="大屏布局基础屏删除">
+    	<sql>
+			DELETE screen_scene_layout
+			 WHERE ssl_cus_number = :ssl_cus_number AND
+			 	   ssl_screen_id = :ssl_screen_id AND
+			 	   ssl_scene_id = :ssl_scene_id
+		</sql>
+	</item>
+	
+	<item id="delete_screen_scene_layout_2" desc="大屏布局基础屏删除">
+    	<sql>
+			DELETE screen_scene_layout
+			 WHERE ssl_cus_number = :ssl_cus_number AND
+			 	   ssl_screen_id = :ssl_screen_id AND
+			 	   ssl_scene_id = :ssl_scene_id AND
+			 	   ssl_screen_idnty = :ssl_screen_idnty 
+		</sql>
+	</item>
+	
+	
+</sqlItem>

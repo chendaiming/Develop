@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_cmr_video_storage_dtls" desc="查询可视对讲设备">
+		<sql>
+			SELECT vel_cus_number,
+			       vel_id,
+			       vel_event_id,
+			       vel_event_name,
+			       vel_storage_addr,
+			       vel_before_time,
+			       vel_after_time,
+			       vel_crte_user,
+			       vel_crte_time,
+			       vel_updt_user,
+			       vel_updt_time
+			  FROM cmr_video_storage_dtls
+		</sql>
+		<where id="0">
+			 WHERE vel_cus_number = :vel_cus_number
+		</where>
+		<where id="1">
+			 WHERE vel_cus_number = :cus_number
+			   AND vel_event_name LIKE :event_name
+			   AND vel_storage_addr LIKE :storage_addr
+		</where>
+	</item>
+
+	<item id="insert_cmr_video_storage_dtls">
+		<seq>cmr_video_storage_dtls@vel_id</seq>
+		<sql>
+			INSERT INTO cmr_video_storage_dtls
+			  (vel_cus_number,
+			   vel_id,
+			   vel_event_id,
+			   vel_event_name,
+			   vel_storage_addr,
+			   vel_before_time,
+			   vel_after_time,
+			   vel_crte_user,
+			   vel_crte_time,
+			   vel_updt_user,
+			   vel_updt_time)
+			VALUES
+			  (:vel_cus_number,
+			   :vel_id,
+			   :vel_event_id,
+			   :vel_event_name,
+			   :vel_storage_addr,
+			   :vel_before_time,
+			   :vel_after_time,
+			   :vel_crte_user,
+			   SYSDATE,
+			   :vel_updt_user,
+			   SYSDATE)
+		</sql>
+	</item>
+
+	<item id="update_cmr_video_storage_dtls">
+		<sql>
+			UPDATE cmr_video_storage_dtls
+			   SET vel_event_id     = :vel_event_id,
+			       vel_event_name   = :vel_event_name,
+			       vel_before_time   = :vel_before_time,
+			       vel_after_time   = :vel_after_time,
+			       vel_storage_addr = :vel_storage_addr,
+			       vel_updt_user    = :vel_updt_user,
+			       vel_updt_time    = SYSDATE
+		</sql>
+		<where id="0">
+			 WHERE vel_cus_number = :vel_cus_number
+			   AND vel_id = :vel_id
+		</where>
+	</item>
+
+	<item id="delete_cmr_video_storage_dtls">
+		<sql>
+			DELETE FROM cmr_video_storage_dtls
+		</sql>
+		<where id="0">
+			 WHERE vel_cus_number = ?
+			   AND vel_id IN (SELECT column_value FROM table(CDS_PKG_COMMON_FUNC.CDS_F_SPLIT_DATA(?, ',')))
+		</where>
+	</item>
+</sqlItem>

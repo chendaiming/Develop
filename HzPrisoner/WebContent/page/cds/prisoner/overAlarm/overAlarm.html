@@ -1,0 +1,90 @@
+<style type="text/css">
+section.overAlarm{
+	position:absolute;
+	width:300px;
+	top:15%;
+	left:194px;
+	transition:left 0.5s linear 0.5s;
+}
+section.overAlarm>div{
+	
+}
+section.h{
+	left:-300px;
+}
+section.h ul{
+	height:0px !important;
+}
+section.overAlarm::before{
+    content: '';
+    position: absolute;
+    border: 2px solid #062c57;
+    left: -194px;
+    top: -10px;
+    width: 344px;
+}
+section.overAlarm::after{
+	content:'';
+	position:absolute;
+	top:-10px;
+	height:15px;
+	border:2px solid #062c57;
+	left:50%;
+	margin-left:-1px;
+}
+section.overAlarm p {
+	margin-top:5px;
+	width: 100%;
+}
+section.overAlarm p>span{
+	width:30%;
+	text-align:center;
+    display: inline-flex;
+    padding-left:15px;
+}
+section.overAlarm p>label{
+	width:100%;
+	text-align:right;
+	cursor:pointer;
+	color:#55d5f6;
+	padding:5px 20px 0 0;
+    border-top: 1px solid #a0a6b9;
+    margin-top:5px;
+}
+section.overAlarm p>label:hover{
+	color:#4c9db2;
+}
+section.overAlarm p>span:last-child{
+	text-align:left;
+	width:70%;
+	padding:0px;
+}
+section.overAlarm li{
+	margin:5px;
+	background:#0f253f;
+	padding:10px 0;
+}
+section.overAlarm a{
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    left: 50%;
+    cursor: pointer;
+    bottom: -7px;
+    background-image: url(css/images/slidup.png);
+}
+</style>
+<div style="overflow:hidden;">
+	<ul  style="overflow:auto;margin-right:-4px;max-height:257px;transition:height 0.5s;"><!-- 提示列表 -->
+		<li v-for="t in alarms">
+			<div>
+				<p><span>罪犯名称:</span><span>{{t.peopleName}}</span></p>
+				<p><span>越界地点:</span><span>{{t.rfidName}}</span></p>
+				<p><span>越界时间:</span><span>{{t.time}}</span></p>
+				<p @click="locate(t)"><label>定位</label></p>
+			</div>
+		</li>
+	</ul>
+	<a @click.slef="slidup($event)"></a>
+</div>
+

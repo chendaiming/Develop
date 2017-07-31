@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+ 	 <item id="select_prisoner_behavior_ctrl_byid"  desc="查询罪犯行为轨迹">
+		 <sql>
+			SELECT TO_CHAR(pbc_start_time,'HH24:MI') AS start_time,
+				   TO_CHAR(pbc_end_time,'HH24:MI') AS end_time,
+				   pbc_ctrl_id	  AS id,
+			       pbc_area_id    AS area_id,
+			       abd_area_name  AS area_name,
+			       pbc_remark     AS remark,
+			       ROWNUM-1       AS area_seq
+			  FROM psr_prisoner_behavior_ctrl 
+		 LEFT JOIN  com_area_base_dtls 
+		       ON	(pbc_area_id = abd_area_id)  
+		 </sql>
+		 <where id="0">
+		 	WHERE pbc_cus_number = ?
+		 	AND pbc_dept_id = ?
+		 </where>
+		 <order id="0">
+		 	ORDER BY pbc_ctrl_id  
+		 </order>		 
+     </item>
+ 
+  	 <item id="delete_prisoner_behavior_ctrl_byid"  desc="删除罪犯行为轨迹">
+		 <sql>
+			DELETE FROM psr_prisoner_behavior_ctrl
+		 </sql>	
+		 <where id="0">
+	         WHERE 	pbc_cus_number = :cusNumber
+			   AND 	pbc_dept_id = :id
+		 </where>		 	 
+     </item>
+         
+    <item id="insert_prisoner_behavior_ctrl" desc="犯人行为轨迹新增">
+    	 <seq>psr_prisoner_behavior_ctrl@id@pbc_ctrl_id</seq>
+	     <sql>
+	     	INSERT INTO psr_prisoner_behavior_ctrl
+	     	(
+			   pbc_cus_number,
+			   pbc_ctrl_id,   
+			   pbc_dept_id,           
+			   pbc_start_time,     
+			   pbc_end_time,        
+			   pbc_area_id,         
+			   pbc_remark,          
+			   pbc_crte_time,  
+			   pbc_crte_user_id,    
+			   pbc_updt_time,        
+			   pbc_updt_user_id    
+	     	)VALUES
+	     	(
+	     	   :cusNumber,
+	     	   :id,
+	     	   :deptId,
+	     	   TO_TIMESTAMP(:start_time,'HH24:MI'),
+	     	   TO_TIMESTAMP(:end_time,'HH24:MI'),
+	     	   :area_id,
+	     	   :remark,
+	     	    SYSDATE,
+	     	   :user_id,
+	     	    SYSDATE,
+	     	   :user_id	
+	     	)
+		 </sql>  
+	</item>               
+
+ 	 <item id="select_area_base_dtls"  desc="区域查询">
+		 <sql>
+			SELECT abd_area_id AS id,
+			       abd_area_name AS name,
+			       abd_parent_id AS pid 
+			  FROM com_area_base_dtls 
+		 </sql>
+		 <where id="0">
+		 	WHERE abd_cus_number = ?
+		 </where>
+		 <order id="0">
+		 ORDER BY abd_area_id  
+		 </order>		 
+     </item>	
+</sqlItem>

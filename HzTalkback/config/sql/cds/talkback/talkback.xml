@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+ 	<item id="select_user_host_setting" desc="查询用户关联对讲主机信息">
+		<sql>
+			SELECT sus_record_id,
+				   sus_value,
+				   tbd_name,
+			       tbd_relation_service
+			  FROM sys_user_system_setting
+		 LEFT JOIN tbk_talkback_base_dtls
+			    ON (sus_value = tbd_other_id)   
+		</sql>
+		<where id="0" >
+			WHERE sus_cus_number = :cusNumber
+ 			  AND sus_user_id = :userId
+		</where>
+    </item> 
+
+	<item id="select_talkback_org" desc="查询对讲设备">
+		<sql>
+			WITH cor AS
+			 (SELECT DISTINCT (oar_area_id)
+			    FROM (SELECT odd_id
+			            FROM sys_org_dept_dtls
+			           START WITH odd_id = :org
+			          CONNECT BY PRIOR odd_id = odd_parent_id)
+			  
+			   INNER JOIN com_org_area_rltn
+			      ON odd_id = oar_dept_id)
+			
+			SELECT '2-' || odd_id id,
+					'' other_id,
+			       '2-' || odd_parent_id pid,
+			       odd_name name,
+			       NULL 	tname,
+			       'org.png' icon,
+			       NULL status,
+			       NULL link_device_id,
+			       2 type,
+			       odd_seq seq
+			  FROM sys_org_dept_dtls
+			 WHERE LEVEL # :level
+			 START WITH odd_id = :cus
+			CONNECT BY prior odd_id = odd_parent_id
+			
+			UNION ALL
+			
+			SELECT '1-' || abd_area_id id,
+					'' other_id,
+			       decode(abd_parent_id,
+			              abd_cus_number,
+			              '2-' || abd_parent_id,
+			              '1-' || abd_parent_id) pid,
+			       abd_area_name name,
+			       NULL 	tname,
+			       'area.png' icon,
+			       NULL status,
+			       NULL link_device_id,
+			       2 type,
+			       abd_seq seq
+			  FROM com_area_base_dtls
+			 INNER JOIN cor
+			    ON abd_area_id = oar_area_id
+			UNION ALL
+			SELECT '' || tbd_id id,
+				   tbd_other_id other_id,	
+			       '1-' || tbd_area_id pid,
+			       tbd_name ||  DECODE(tbd_dvc_stts,1,' (离线)',2,'(通话中)','') name ,
+			       tbd_name tname,
+			       DECODE(tbd_dvc_stts,2,'talking.png','talk.png') icon,
+			       tbd_dvc_stts status,
+	               (SELECT wm_concat(dld_dvc_id) 
+                      FROM com_dvc_link_mian
+                 LEFT JOIN com_dvc_link_dtls               
+                        ON dld_cus_number = dlm_cus_number
+                       AND dld_link_id = dlm_link_id      
+	                 WHERE tbd_id = dlm_dvc_id ) AS link_device_id,
+			       1 type,
+			       tbd_seq seq
+			  FROM tbk_talkback_base_dtls  	                			  
+		INNER JOIN cor
+			    ON tbd_area_id = oar_area_id
+		</sql>
+		<order id="0">
+			 ORDER BY other_id,seq
+		</order>
+	</item>     
+
+  	<item id="select_talkback_id_otherid_mapping" desc="查询对讲id与第三方编号映射">
+		<sql>
+			SELECT tbd_id,
+				   tbd_other_id
+			  FROM tbk_talkback_base_dtls
+		</sql>
+		<where id="0" >
+			WHERE tbd_cus_number = :cusNumber
+		</where>
+    </item>
+    
+   	<item id="select_talkback_link_deviceList" desc="查询对讲关联设备列表">
+		<sql>
+			  SELECT wm_concat(dld_dvc_id)  AS link_device
+			    FROM tbk_talkback_base_dtls   
+		   LEFT JOIN com_dvc_link_mian
+		          ON (tbd_id = dlm_dvc_id)
+		   LEFT JOIN com_dvc_link_dtls               
+			      ON dld_cus_number = dlm_cus_number
+			     AND dld_link_id = dlm_link_id      
+		</sql>
+		<where id="0" >
+			WHERE tbd_cus_number = :cusNumber
+			  AND tbd_other_id = :other_id
+		</where>
+    </item>        
+</sqlItem> 

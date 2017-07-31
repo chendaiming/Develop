@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.hz</groupId>
+    <artifactId>Develop</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>Hz3dMap</module>
+        <module>HzAlarm</module>
+        <module>HzAlarmExtend</module>
+        <module>HzBaseData</module>
+        <module>HzBroadcast</module>
+        <module>HzCallRoll</module>
+        <module>HzCommon</module>
+        <module>HzDaily</module>
+        <module>HzDb</module>
+        <module>HzDoor</module>
+        <module>HzDuty</module>
+        <module>HzForeign</module>
+        <module>HzFrameService</module>
+        <module>HzFrameWeb</module>
+        <module>HzInfopublish</module>
+        <module>HzLED</module>
+        <module>HzLog</module>
+        <module>HzMq</module>
+        <module>HzPolice</module>
+        <module>HzPowerNetwork</module>
+        <module>HzPrisoner</module>
+        <module>HzRFID</module>
+        <module>HzScheduling</module>
+        <module>HzScreen</module>
+        <module>HzSocket</module>
+        <module>HzSystemManager</module>
+        <module>HzTalkback</module>
+        <module>HzVideo</module>
+        <module>HzWirelessAlarm</module>
+        <module>HzOperatedLog</module>
+        <module>Prison</module>
+    </modules>
+</project>

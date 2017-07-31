@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="select_wireless_alarm_master_info" desc="">
+		<sql>
+			SELECT wam_cus_number AS cus_number,
+			       wam_id         AS id,
+			       wam_name       AS name,
+			       wam_dept_id    AS dept_id,
+			       wam_dvc_addrs  AS addrs
+			  FROM dvc_wireless_alarm_master
+		</sql>
+		<where id="0">
+			 WHERE wam_cus_number = ?
+		</where>
+    </item>
+
+	<item id="query_wireless_alarm_area_tree"  desc="区域门禁">
+		<sql>
+			SELECT id,
+			       pid,
+			       name,
+			       icon,
+			       org,
+			       wam_other_id,
+			       wam_brand,
+			       wam_ip,
+			       wam_port,
+			       wam_dept_id,
+			       wam_room_id,
+			       wam_dvc_addrs,
+			       wam_stts,
+			       wam_seq,
+			       wam_crte_time,
+			       wam_crte_user_id,
+			       wam_updt_time,
+			       wam_updt_user_id,
+			       type
+			  FROM (SELECT wam_cus_number org,
+			               wam_id as id,
+			               wam_area_id as pid,
+			               'alarm.png' icon,
+			               wam_name as name,
+			               wam_other_id,
+			               wam_brand,
+			               wam_ip,
+			               wam_port,
+			               wam_dept_id,
+			               wam_room_id,
+			               wam_dvc_addrs,
+			               wam_stts,
+			               wam_seq,
+			               wam_crte_time,
+			               wam_crte_user_id,
+			               wam_updt_time,
+			               wam_updt_user_id,
+			               '0' type
+			          FROM dvc_wireless_alarm_master
+			        UNION ALL
+			        SELECT abd_cus_number org,
+			               abd_area_id id,
+			               abd_parent_id pid,
+			               'area.png' icon,
+			               abd_area_name name,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               null,
+			               '1' type
+			          FROM com_area_base_dtls) t
+			UNION ALL
+			SELECT odd_id id,
+			       odd_parent_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			       odd_id org,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null,
+			       null
+			  FROM sys_org_dept_dtls
+			 where odd_id = :org
+		</sql>
+	</item>
+	
+	<item id="insert_wireless_alarm_info" desc="添加无线报警器信息">
+		<seq>dvc_wireless_alarm_master@wam_id</seq>
+    	<sql>
+    		INSERT INTO dvc_wireless_alarm_master
+			  (wam_cus_number,
+			   wam_id,
+			   wam_other_id,
+			   wam_name,
+			   wam_brand,
+			   wam_ip,
+			   wam_port,
+			   wam_dept_id,
+			   wam_area_id,
+			   wam_room_id,
+			   wam_dvc_addrs,
+			   wam_stts,
+			   wam_seq,
+			   wam_crte_time,
+			   wam_crte_user_id,
+			   wam_updt_time,
+			   wam_updt_user_id)
+			VALUES
+			  (:wam_cus_number,
+			   :wam_id,
+			   :wam_other_id,
+			   :wam_name,
+			   :wam_brand,
+			   :wam_ip,
+			   :wam_port,
+			   :wam_dept_id,
+			   :wam_area_id,
+			   :wam_room_id,
+			   :wam_dvc_addrs,
+			   :wam_stts,
+			   :wam_seq,
+			    SYSDATE,
+			   :wam_crte_user_id,
+			    SYSDATE,
+			   :wam_updt_user_id)
+		</sql>
+	</item>
+	<item id="update_wireless_alarm_info" desc="修改无线报警器信息">
+    	<sql>
+    		UPDATE dvc_wireless_alarm_master
+			   SET wam_cus_number   = :wam_cus_number,
+			       wam_id           = :wam_id,
+			       wam_other_id     = :wam_other_id,
+			       wam_name         = :wam_name,
+			       wam_brand        = :wam_brand,
+			       wam_ip           = :wam_ip,
+			       wam_port         = :wam_port,
+			       wam_dept_id      = :wam_dept_id,
+			       wam_area_id      = :wam_area_id,
+			       wam_room_id      = :wam_room_id,
+			       wam_dvc_addrs    = :wam_dvc_addrs,
+			       wam_stts         = :wam_stts,
+			       wam_seq          = :wam_seq,
+			       wam_updt_time    = SYSDATE,
+			       wam_updt_user_id = :wam_updt_user_id
+		</sql>
+		<where id="0">
+			WHERE wam_cus_number = :wam_cus_number
+			  AND wam_id = :wam_id
+		</where>
+	</item>
+	<item id="select_wireless_alarm_info_by_id" desc="查询无线报警器信息">
+    	<sql>
+    		SELECT wam_cus_number,
+			       wam_id,
+			       wam_other_id,
+			       wam_name,
+			       wam_brand,
+			       wam_ip,
+			       wam_port,
+			       wam_dept_id,
+			       wam_area_id,
+			       wam_room_id,
+			       wam_dvc_addrs,
+			       wam_stts,
+			       wam_seq,
+			       wam_crte_time,
+			       wam_crte_user_id,
+			       wam_updt_time,
+			       wam_updt_user_id
+			  FROM dvc_wireless_alarm_master
+		</sql>
+		<where id="0">
+			WHERE wam_cus_number = :wam_cus_number
+			  AND wam_id = :wam_id
+		</where>
+	</item>
+	<item id="delete_wireless_alarm_info" desc="删除无线报警器信息">
+    	<sql>
+    		DELETE FROM dvc_wireless_alarm_master WHERE wam_id = :wam_id
+		</sql>
+	</item>
+</sqlItem>

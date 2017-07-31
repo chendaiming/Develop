@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	  <item id="select_drptmnt_police_tree2"  desc="查询部门民警树形数据">
+		<sql>
+			SELECT 'd_' || odd_id AS id,
+				   odd_name AS name,
+				   'd_' || odd_parent_id  AS pid,
+				   '../../../libs/ztree/css/zTreeStyle/img/org.png' AS icon,
+				   'dept' AS type
+			  FROM (SELECT * FROM sys_org_dept_dtls	
+			  	    LEFT JOIN (SELECT pbd_cus_number,
+			  	    	  			  pbd_drptmnt_id 
+			  	    	  		 FROM plc_police_base_dtls 
+			  	    	  	 GROUP BY pbd_cus_number,pbd_drptmnt_id)
+			  	    ON (odd_parent_id = pbd_cus_number AND 
+			  	    	odd_id = pbd_drptmnt_id)		  
+                    START WITH odd_id = ? and odd_use = 1 
+			        CONNECT BY PRIOR odd_id = odd_parent_id AND pbd_drptmnt_id is not null
+			        ORDER BY odd_seq)
+		UNION ALL
+			SELECT 'p_' || pbd_user_id AS id,
+				   pbd_police_name AS name, 
+				   'd_' || pbd_drptmnt_id AS pid,
+				   '../../../libs/ztree/css/zTreeStyle/img/user.png' AS icon,
+				   'police' AS type
+			  FROM (SELECT * FROM plc_police_base_dtls
+			        WHERE pbd_cus_number = ?
+			        ORDER BY pbd_police_id)
+		</sql>
+	</item>
+	
+	<item id="select_dtyRecord_people" desc="查询值班人员信息">
+		<sql>
+			SELECT ped_cus_number,
+				   ped_relation_id,
+				   TO_CHAR(ped_date,'YYYY-MM-DD') AS ped_date,
+				   ped_mode_idnty,
+				   scd_shift_name,
+			  	   scd_job_name,
+				   ped_id,
+				   ped_name,
+				   scd_shift_start_time,
+				   scd_shift_end_time
+			  FROM dty_people_dtls
+			  LEFT JOIN dty_schedule_dtls
+			  ON (ped_cus_number = scd_cus_number AND
+			  	  ped_relation_id = scd_relation_id)
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ped_cus_number = sbd_cus_number AND
+			  	  ped_shift_id = sbd_id)
+			  LEFT JOIN dty_job_base_dtls
+			  ON (ped_cus_number = jbd_cus_number AND
+			  	  ped_job_id = jbd_id)
+		</sql>
+		<where id="0">
+			WHERE ped_cus_number = ? AND
+				  ped_id = ? AND
+				  TRUNC(ped_date) >= TO_DATE(?,'YYYY-MM-DD') AND
+				  TRUNC(ped_date) #= TO_DATE(?,'YYYY-MM-DD')
+		</where>
+		<order id="0">
+			ORDER BY ped_date DESC,sbd_seq DESC,jbd_seq,ped_seq
+		</order>
+	</item>
+	
+	<item id="select_dtyRecord_shift_count" desc="统计各班次值班次数">
+		<sql>
+			SELECT scd_shift_id,
+				   scd_shift_name,
+				   MAX(sbd_seq) AS sbd_seq,
+				   COUNT(ped_id) AS dtyCount
+			  FROM dty_people_dtls
+			  LEFT JOIN dty_schedule_dtls
+			  ON (ped_cus_number = scd_cus_number AND
+			  	  ped_relation_id = scd_relation_id)
+			  LEFT JOIN dty_shift_base_dtls
+			  ON (ped_cus_number = sbd_cus_number AND
+			  	  ped_shift_id = sbd_id)
+			WHERE ped_cus_number = ? AND
+				  ped_id = ? AND
+				  TRUNC(ped_date) >= TO_DATE(?,'YYYY-MM-DD') AND
+				  TRUNC(ped_date) #= TO_DATE(?,'YYYY-MM-DD')
+		    GROUP BY scd_shift_id,scd_shift_name
+		    ORDER BY sbd_seq
+		</sql>
+	</item>
+</sqlItem>

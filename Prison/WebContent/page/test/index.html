@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>系统模拟测试主页</title>
+<link rel="stylesheet" href="../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../css/common.css" charset="utf-8">
+<style type="text/css">
+	html, body {margin: 0 auto; padding: 0; width: 100%; height: 100%; border: 0 none; overflow: hidden;}
+
+	div.left {float: left; width: 15%; height: 100%; background-color: #CCC;}
+	div.left ul {list-style: none;}
+	div.left ul li {margin-bottom: 1px; padding: 10px; position: relative; text-align: left; background-color: #999;cursor: pointer; transition: all 0.3s; overflow: hidden;}
+	div.left ul li:hover {background-color: #666;}
+	div.left ul li.selected {background-color: #555;}
+	div.left ul li span {position: relative; z-index: 1;}
+	div.click-animation {position: absolute; border-radius: 500px; border: 1px solid rgba(0,0,0,.5); z-index: 0; transition: all 1s;}
+
+	div.right {float: right; width: 85%; height: 100%; background-color: #F2F2F2;}
+
+	#mainFrame {width: 100%; height: 100%; border: 0 none;}
+</style>
+</head>
+<body>
+<div class="left">
+	<div class="click-animation"></div>
+	<ul id="pageList">
+		<li url="page/cds/rfid/test/rfidTest.html"><span>模拟RFID消息</span></li>
+		<li url="page/cds/callroll/test/test.html"><span>模拟点名消息</span></li>
+		<li url="page/cds/alarm/test/alarmTest.html"><span>模拟报警消息</span></li>
+		<li url="page/test/refreshCache.html"><span>刷新数据缓存</span></li>
+		<li url="page/test/dvcStatusTest.html"><span>模拟设备状态消息</span></li>
+	</ul>
+</div>
+<div class="right">
+	<iframe id="mainFrame" frameborder="0" scrolling="no"></iframe>
+</div>
+</body>
+<script type="text/javascript" src="../../libs/jquery/jquery.js"></script>
+<script type="text/javascript">
+
+$(function () {
+	var jqObj = $('.click-animation');
+
+	$('#pageList >li').each(function () {
+		$(this).on('click', function () {
+			$('.selected').removeClass('selected');
+			$(this).addClass('selected');
+			mainFrame.src = '../../' + $(this).attr('url');
+
+			var top = window.event.clientY - $(this).position().top;
+			var left = window.event.clientX - $(this).position().left;
+
+			jqObj.css({'top': top, 'left': left, 'border-width': 0}).appendTo($(this));
+
+			setTimeout(function () {
+				jqObj.css({'top': top - 300, 'left': left - 300, 'border-width': 300});
+			}, 50);
+		});
+	});
+});
+</script>
+</html>

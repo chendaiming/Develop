@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+    <item id="insert_tbk_talkback_service_dtls_info" desc="插入对讲服务信息">
+    	<seq>tbk_talkback_service_dtls@tsd_id</seq>
+    	<sql>
+			INSERT INTO tbk_talkback_service_dtls
+						(tsd_cus_number, 
+						 tsd_id,
+						 tsd_name,
+						 tsd_type,
+						 tsd_ip,
+						 tsd_port,
+						 tsd_login_name,
+						 tsd_login_pwd,
+						 tsd_http_url,
+						 tsd_crte_time,
+						 tsd_crte_user_id,
+						 tsd_updt_time,
+						 tsd_updt_user_id)
+						 VALUES
+						 (
+						 :tsd_cus_number,
+						 :tsd_id,
+						 :tsd_name,
+						 :tsd_type,
+						 :tsd_ip,
+						 :tsd_port,
+						 :tsd_login_name,
+						 :tsd_login_pwd,
+						 :tsd_http_url,
+						 SYSDATE,
+						 :user_id,
+						 SYSDATE,
+						 :user_id
+						 )
+    	</sql>
+    </item> 
+
+  	<item id="update_tbk_talkback_service_dtls_info" desc="更新对讲服务信息">
+		<sql>
+			UPDATE tbk_talkback_service_dtls 
+			   SET
+			       tsd_name             = :tsd_name,
+			       tsd_type       		= :tsd_type,
+			       tsd_ip         		= :tsd_ip,
+			       tsd_port         	= :tsd_port,
+			       tsd_login_name       = :tsd_login_name,
+			       tsd_login_pwd     	= :tsd_login_pwd,
+			       tsd_http_url       	= :tsd_http_url,
+			       tsd_updt_time        = SYSDATE,
+				   tsd_updt_user_id     = :user_id
+			 WHERE tsd_cus_number       = :tsd_cus_number
+			   AND tsd_id         	    = :tsd_id
+		</sql>
+    </item>
+ 
+    <item id="select_tbk_talkback_service_tree" desc="查询对讲服务信息">
+		<sql>
+		       SELECT tsd_id   AS  id,
+		              tsd_cus_number  AS  pid,
+		              tsd_name AS  name,
+		              ''       AS  icon,
+		              1        AS  type
+		         FROM tbk_talkback_service_dtls
+				WHERE tsd_cus_number = :cusNumber
+		        UNION ALL
+		       SELECT odd_id          AS   id,
+		              odd_parent_id   AS   pid,
+		              odd_name        AS   name,
+		              'prison.png'    AS   icon,
+		              2               AS   type
+		         FROM sys_org_dept_dtls
+				WHERE odd_id = :cusNumber  
+		</sql>
+    </item>
+ 
+   	<item id="select_tbk_talkback_service_info" desc="查询对讲服务信息">
+		<sql>
+			SELECT 	tsd_cus_number,
+					tsd_id,
+					tsd_name,
+					tsd_type,
+					tsd_ip,
+					tsd_port,
+					tsd_login_name,
+					tsd_login_pwd,
+					tsd_http_url
+			   FROM tbk_talkback_service_dtls     
+		</sql>
+		<where id="0" >
+			WHERE   tsd_cus_number = :cusNumber
+		</where>
+		<where id="1" >
+			WHERE   tsd_cus_number = :cusNumber
+			  AND   tsd_id = :tsd_id
+		</where>
+		<order id="0">
+			ORDER BY  tsd_id 
+		</order>
+    </item>
+    
+     <item id="delete_tbk_talkback_service_byid" desc="删除对讲服务信息">
+		<sql>
+			DELETE FROM tbk_talkback_service_dtls
+		</sql>
+		<where id="0">
+			WHERE tsd_cus_number = :cusNumber
+			  AND tsd_id         = :tsd_id
+		</where>
+    </item>
+ 
+ 	<item id="select_talkback_service_select" desc="查询对讲服务信息">
+		<sql>
+			SELECT 	tsd_id AS id,
+					tsd_name AS name
+			   FROM tbk_talkback_service_dtls     
+		</sql>
+		<where id="0" >
+			WHERE   tsd_cus_number = :cusNumber
+		</where>
+		<order id="0">
+			ORDER BY  tsd_id 
+		</order>
+    </item>   	          
+</sqlItem> 

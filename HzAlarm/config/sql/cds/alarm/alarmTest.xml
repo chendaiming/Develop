@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="test_query_org_dept_dtls">
+		<sql>
+			select * from sys_org_dept_dtls
+		</sql>
+	</item>
+
+	<item id="test_query_alarm_area_tree" desc="">
+		<sql>
+			SELECT '0-' || abd_parent_id AS pid,
+			       '0-' || abd_area_id AS id,
+			       abd_area_name AS name,
+			       '' AS oid,
+			       '0' AS type
+			  FROM com_area_base_dtls
+			 WHERE abd_cus_number = ?
+			UNION
+			SELECT '0-' || nbd_area_id AS pid,
+			       '' || nbd_id AS id,
+			       nbd_name AS name,
+			       nbd_other_id AS oid,
+			       '1' AS type
+			  FROM alt_network_base_dtls
+			 WHERE nbd_cus_number = ?
+		</sql>
+	</item>
+</sqlItem>

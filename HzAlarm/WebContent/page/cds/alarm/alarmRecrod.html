@@ -1,0 +1,272 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style>
+.item{
+	margin-top:10px;
+	display: inline-block;
+    width: 100%;
+}
+.item>label{
+	width: 70px; text-align: right;
+}
+.item>span{
+	margin-left: 10px;
+	display:inline;
+	color:#ffffff;
+    display: inline-flex;
+    width: calc(100% - 80px);
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:32%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 15px;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+
+.condition>input:focus {outline: none;} 
+ul.cardlist{
+    position: absolute;
+    width: 100%;
+    overflow:auto;
+    top: 54px;
+    bottom: 0px;
+}
+.conditionslid{
+	max-height:180px ;
+}
+.hz-col-5.line::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 100%;
+    border-style: dotted;
+    border: 1px dashed #699ead;
+    margin-left: -3px;
+    margin-top:44px;
+}
+div.line>.dateline::before{
+	border-style: none;
+}
+div.condition >div{
+	border:none;
+}
+div.condition input:read-only{
+	background:none;
+	cursor:pointer !important;
+}
+.dateline>li> span{
+	background:url('../../../css/image/alarm.png') !important;
+	margin-left: -22px;
+}
+.item >button {
+    background: rgb(19, 66, 47);
+    float: right;
+    right: 10px;
+    height: 25px;
+    border-radius: 10px;
+    padding: 5px;
+    color: rgb(69, 255, 77);
+}
+ul.dateline >li>div{
+	cursor:pointer;
+}
+div.detail{
+	position:absolute;
+	height:0px;
+	transition:height 1s;
+    background: rgba(105, 130, 161, 0.95);
+    bottom:45px;
+    font-family: cursive;
+    color:#eaeac2;
+    overflow-y:scroll;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px #9dbcbc;
+}
+p.col-2{
+	width:50%;
+	float:left;
+}
+div.show{
+	height:60%;
+	padding:0 0 10px 0;
+}
+.divide{
+    border-top: 1px solid #89a7ce;
+    padding-top: 10px;
+}
+div.divide>ul{
+    background: #44566c;
+    margin:10px 5px 0 75px;
+    text-align: center;
+    padding:1px 0 10px 0;
+    border-radius:5px;
+}
+div.divide>ul>li{
+	text-align: center;
+    margin-top: 24px;
+    width: 50%;
+    margin-left: 25%;
+    background: #758291;
+    border-radius: 10px;
+    padding: 8px;
+    position:relative;
+}
+div.divide>ul>li >label{
+    float: left;
+    background: red;
+    border-radius: 100%;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    font-size:smaller;
+}
+div.divide>ul>li:not(:last-child)::after{ 	 	
+    content: '';
+    width: 20px;
+    height: 20px;
+    bottom: -22px;
+    position: absolute;
+    left: 50%;
+    margin-left: -10px;
+    background-size: 20px 20px !important;
+    background: url(../../../css/image/next.png);
+}
+p>img{
+	height:150px;
+	width:150px;
+	margin-left:20px;
+    background: url(../../../css/image/alarm.png);
+    background-size: 100%;
+}
+</style>
+<div class="vbox box-con" id="record" >
+	<div class="hbox hz-col-1" >
+		<div class="left-con hz-col-2 vbox">
+				<div class="hz-col-1" style="margin-right:6px;">
+				  		<hz-date 
+					      		tip="选择查询日期" 
+					      		:val.sync="today"
+					      	 	format=Y-m-d
+								maxdate="today"
+					      	/>
+			    </div>
+				<div class="hz-col-9 vbox" style="overflow:auto;color:rgb(255, 255, 255);">
+					<div class="hz-col-1 item" v-cloak>
+						<p class="item col-2"><label style="color:green;width:100%;text-align:left;">已完成：{{done}}</label></p>
+						<p class="item col-2"><label style="color:red;width:100%;text-align:left;">未完成：{{wait}}</label></p>
+					</div>
+					<div class="hz-col-4" id="tableshow"></div>
+					<div class="hz-col-5"></div>
+				</div>
+		</div>
+		
+		<div class="hz-col-5 line" style="overflow:hidden;position:relative;" >
+			<div class="condition" style="right:67%;">
+				<hz-select 
+					  			tip="处理状态" 
+					  			code="ALARM_PROCESS_RESULT"
+					  			:id.sync="alarm.result"
+					  		/>
+			</div>
+			<div class="condition" style="right:34%">
+				<hz-select 
+					  			tip="报警设备类型" 
+					  			code="LDR_ALERTOR_TYPE"
+					  			:id.sync="alarm.type"
+					  		/>
+			</div>
+			<div class="condition" style="right:1%"><input placeholder="报警人" class="find" id="plcTree" v-model="plc" style="background-image:url(../../../css/images/plc.png)"></div>
+			<div  v-if="records.length==0" class="empty" style="padding-top:44px">暂无记录</div>
+			<ul v-cloak class="dateline cardlist" id="scroll">
+				<li  v-for="record in records" >
+					<div @click.capture="showDetail(record,$event);" title="点击查看详情">
+						<p class="item"><label >报警地点:</label><span >{{record.address||'无'}}</span></p>
+						<p class="item"><label >处理状态:</label><span >{{record.ard_oprtn_stts||'无'}}</span></p>
+						<p class="item"><label >设备类型:</label><span >{{record.ard_dvc_type||'无'}}</span></p>
+						<p class="item"  style="height:30px;">
+							<button @click="replay(record)">回放</button>
+						</p>
+					</div>
+					<span></span>
+					<a>{{record.ard_alert_time}}</a>
+				</li>
+			</ul>
+		</div>
+		<!-- 显示详情 -->
+		<div class="detail" id="detail">
+
+				<p class="item col-2"><label >地&nbsp;&nbsp;&nbsp;&nbsp;点:</label><span >{{record.address||'无'}}</span></p>
+				<p class="item col-2"><label >报警器名:</label><span >{{record.name||'无'}}</span></p>
+		
+				<p class="item col-2"><label >报&nbsp;警&nbsp;人:</label><span >{{record.ard_alert_police_name||'无'}}</span></p>
+				<p class="item col-2"><label >报警时间:</label><span >{{record.ard_alert_time||'无'}}</span></p>
+
+				<p class="item col-2"><label >接&nbsp;警&nbsp;人:</label><span >{{record.ard_rec_police_name||'无'}}</span></p>
+				<p class="item col-2"><label >接警时间:</label><span >{{record.ard_receive_time||'无'}}</span></p>
+
+				<p class="item col-2"><label >处&nbsp;理&nbsp;人:</label><span >{{record.ard_oprtr_name ||'无'}}</span></p>
+				<p class="item col-2"><label >处理状态:</label><span >{{record.ard_oprtn_stts ||'无'}}</span></p>
+
+				<p class="item col-2"><label >确&nbsp;认&nbsp;人:</label><span >{{record.ard_sure_police_name ||'无'}}</span></p>
+				<p class="item col-2"><label >事件性质:</label><span >{{record.ard_event_type ||'无'}}</span></p>
+
+				<p class="item col-2"><label >归&nbsp;档&nbsp;人:</label><span >{{record.ard_event_user_name ||'无'}}</span></p>
+				<p class="item col-2"><label >归档时间:</label><span >{{record.ard_event_time ||'无'}}</span></p>
+
+				<p class="item col-2"><label >报警等级:</label><span >{{record.ard_alert_level||'无'}}</span></p>
+				<p class="item col-2"><label >设备类型:</label><span >{{record.ard_dvc_type ||'无'}}</span></p>
+
+				<p class="item divide"><label >触发原因:</label><span >{{record.ard_alert_reason ||'无'}}</span></p>
+				<p class="item"><label >现场情况:</label><span >{{record.ard_local_case ||'无'}}</span></p>
+				<p class="item"><label >处理情况:</label><span >{{record.ard_oprtn_desc ||'无'}}</span></p>
+				<p class="item"><label >处理结果:</label><span >{{record.ard_oprtn_result ||'无'}}</span></p>
+				<p class="item"><label >备&nbsp;&nbsp;&nbsp;&nbsp;注:</label><span >{{record.ard_remark ||'无'}}</span></p>
+				<div class="item divide">
+					<label >处置流程:</label><span>{{procFlow.length?procFlow[0]['hfm_flow_name']:'无相关流程'}}</span>
+					<ul v-if ="procFlow.length" v-cloak>
+						<li v-for="step in procFlow">
+							<label>{{step.hfd_flow_order}}</label>
+							<span>{{step.hfd_flow_item_name}}</span>
+						</li>
+					</ul>
+				</div>
+
+				<p class="item divide"><label >报警图片:</label><img src="{{record.ard_img_src ||''}}" /></p>
+
+			</div>
+	</div>
+
+	<div class="bottom">
+		<div class="buttons" style="float:left">
+			<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>导出</span></a>
+		</div>
+		<div class="buttons" >
+			<a @click="query()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>查询</span></a>
+			<a @click="reset()" class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>重置</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+require(["hz/cds/alarm/alarmRecord"]);
+</script>

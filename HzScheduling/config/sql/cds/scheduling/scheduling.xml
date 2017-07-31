@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_police_info_tree_schedu"  desc="警员通讯录查询">
+		<sql> 
+		   SELECT pbd_user_id   AS  id,
+		          pbd_police_id    AS  policeid,
+		          pbd_drptmnt_id  AS  pid,
+		          pbd_police_name AS  name,
+		          'user.png'      AS  icon,
+		          pbd_phone       AS  tel,
+		          pbd_remark      AS  remark,
+		          1               AS  type
+		     FROM plc_police_base_dtls
+		    WHERE pbd_cus_number = ?
+		    UNION ALL
+		   SELECT DISTINCT odd_id          AS   id,
+		          ''              AS   policeid,
+		          odd_parent_id   AS   pid,
+		          odd_name        AS   name,
+		          'org.png'       AS   icon,
+		          ''              AS   tel,
+		          ''              AS   remark,
+		          2               AS   type
+		     FROM sys_org_dept_dtls
+       INNER JOIN plc_police_base_dtls
+               ON (pbd_drptmnt_id = odd_id)      
+        UNION ALL
+       SELECT odd_id          AS   id,
+              ''              AS   policeid,
+              NULL            AS   pid,
+              odd_name        AS   name,
+              'prison.png'       AS   icon,
+              ''              AS   tel,
+              ''              AS   remark,
+              2               AS   type
+         FROM sys_org_dept_dtls
+        WHERE  odd_id = ?  
+	  ORDER BY policeid,id
+		</sql>
+	</item>  
+</sqlItem>

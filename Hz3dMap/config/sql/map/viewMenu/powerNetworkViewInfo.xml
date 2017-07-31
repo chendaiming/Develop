@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="select_pn_view_info_ztree" desc="查询高压电网图形">
+		<const key="icon">point_type_icon</const>
+		<sql>
+			SELECT 
+				   pnb_id,
+				   pnb_name,
+				   pnb_area,
+			       pgg_cus_number,
+			       pgg_power_grid_id,
+			       pgg_line_color,
+			       pgg_line_width,
+			       pgg_electricity_color,
+			       pgg_create_uid,
+			       0 AS icon,
+			       pnb_id AS id,
+			       pnb_name AS name,
+			       pnb_area AS pid
+			  FROM map_power_grid_geom g
+			  INNER JOIN pnw_power_network_base_dtls n
+			  ON g.pgg_power_grid_id = n.pnb_id
+		</sql>
+		<where id="0">
+			WHERE g.pgg_cus_number = n.pnb_cus_number
+ 			  AND g.pgg_cus_number = :cusNumber
+		</where>
+		<where id="1">
+			WHERE g.pgg_cus_number = n.pnb_cus_number
+ 			  AND g.pgg_cus_number = :cusNumber
+ 			  AND n.pnb_id = :pnb_id
+		</where>
+	</item>
+    <item id="insert_pn_view_info" desc="添加高压电网图形信息">
+		<sql>
+			INSERT INTO map_power_grid_geom
+			  (pgg_cus_number,
+			   pgg_power_grid_id,
+			   pgg_line_color,
+			   pgg_line_width,
+			   pgg_electricity_color,
+			   pgg_view_id,
+		       pgg_pos_x,
+		       pgg_pos_y,
+		       pgg_pos_z,
+		       pgg_rot_x,
+		       pgg_rot_y,
+		       pgg_rot_z,
+		       pgg_tar_x,
+		       pgg_tar_y,
+		       pgg_tar_z,
+			   pgg_create_uid,
+			   pgg_create_datetime,
+			   pgg_update_uid,
+			   pgg_update_datetime)
+			VALUES
+			  (:pgg_cus_number,
+			   :pgg_power_grid_id,
+			   :pgg_line_color,
+			   :pgg_line_width,
+			   :pgg_electricity_color,
+			   :pgg_view_id,
+		       :pgg_pos_x,
+		       :pgg_pos_y,
+		       :pgg_pos_z,
+		       :pgg_rot_x,
+		       :pgg_rot_y,
+		       :pgg_rot_z,
+		       :pgg_tar_x,
+		       :pgg_tar_y,
+		       :pgg_tar_z,
+			   :pgg_create_uid,
+			    SYSDATE,
+			   :pgg_update_uid,
+			    SYSDATE)
+		</sql>
+    </item>
+    <item id="update_pn_view_info" desc="更新高压电网图形信息">
+		<sql>
+			UPDATE map_power_grid_geom SET
+			   pgg_cus_number = :pgg_cus_number,
+			   pgg_power_grid_id = :pgg_power_grid_id,
+			   pgg_line_color = :pgg_line_color,
+			   pgg_line_width = :pgg_line_width,
+			   pgg_electricity_color = :pgg_electricity_color,
+			   pgg_view_id = :pgg_view_id,
+		       pgg_pos_x = :pgg_pos_x,
+		       pgg_pos_y = :pgg_pos_y,
+		       pgg_pos_z = :pgg_pos_z,
+		       pgg_rot_x = :pgg_rot_x,
+		       pgg_rot_y = :pgg_rot_y,
+		       pgg_rot_z = :pgg_rot_z,
+		       pgg_tar_x = :pgg_tar_x,
+		       pgg_tar_y = :pgg_tar_y,
+		       pgg_tar_z = :pgg_tar_z,
+			   pgg_update_uid = :pgg_update_uid,
+			   pgg_update_datetime = SYSDATE
+		</sql>
+		<where id="0">
+			WHERE pgg_cus_number = :pgg_cus_number
+			  AND pgg_power_grid_id = :old_id
+		</where>
+    </item>
+    <item id="delete_pn_view_info" desc="删除点位信息">
+    	<sql>
+    		DELETE FROM map_power_grid_geom WHERE pgg_cus_number = :cusNumber AND pgg_power_grid_id = :pgg_power_grid_id
+    	</sql>
+    </item>
+</sqlItem>

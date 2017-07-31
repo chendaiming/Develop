@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="query_talkback_area_tree"  desc="区域门禁">
+		<sql>
+			SELECT DISTINCT '' || tbd_id    id,
+			               '1-' || tbd_area_id pid,
+			                tbd_name name,
+			               'talk.png' icon,
+			                '1' AS type,
+			                tbd_brand,
+			                tbd_mian_id,
+			                tbd_child_id,
+			                tbd_ip,
+			                tbd_port,
+			                tbd_dept_id dep,
+			                tbd_area_id,
+			                tbd_room_id,
+			                tbd_dvc_addrs,
+			                tbd_dvc_stts,
+			                tbd_use_stts,
+			                tbd_other_id,
+			                tbd_type       ,
+			                tbd_relation_service,
+			                tbd_seq,
+			                tbd_crte_user_id,
+			                tbd_updt_user_id,
+			                tbd_cus_number cus,
+			                a.abd_area_name AS tbd_area_name
+			          FROM tbk_talkback_base_dtls p
+			          INNER JOIN (select abd_area_id, abd_area_name
+			               from (SELECT odd_id
+			                       FROM sys_org_dept_dtls
+			                      START WITH odd_id = ?
+			                     CONNECT BY prior odd_id = odd_parent_id)
+			              INNER JOIN com_org_area_rltn
+			                 ON oar_dept_id = odd_id
+			              INNER JOIN com_area_base_dtls
+			                 ON abd_area_id = oar_area_id
+			             ) a
+			             ON p.tbd_area_id = a.abd_area_id
+			        UNION ALL
+			        SELECT '1-' || abd_area_id id,
+			               '1-' || abd_parent_id pid,
+			                abd_area_name name,
+			               'area.png' icon,
+			                '0' AS type,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null,
+			                null
+			          FROM com_area_base_dtls t
+					  
+		</sql>
+	</item>
+	<item id="select_talk_byid">
+		<const key="tbd_stts_indc_name">TBD_DVC_STTS</const>
+		<sql>
+			SELECT 
+				tbd_id,
+				tbd_name,
+				tbd_dvc_addrs,
+				tbd_dvc_stts,
+				tbd_dvc_stts AS tbd_stts_indc_name
+			FROM  tbk_talkback_base_dtls
+			WHERE tbd_id = ? AND tbd_cus_number = ?
+		</sql>
+	</item>
+	<item id="update_talkback">
+		<sql>
+			UPDATE tbk_talkback_base_dtls
+			SET
+               tbd_other_id   =:tbd_other_id,
+               tbd_name  	  =:name,
+               tbd_brand      =:tbd_brand,
+               tbd_mian_id	  =:tbd_mian_id,	
+               tbd_child_id	  =:tbd_child_id,	
+               tbd_ip		  =:tbd_ip,	
+               tbd_port		  =:tbd_port,	
+               tbd_dept_id	  =:dep,	 
+               tbd_area_id    =:tbd_area_id,
+               tbd_dvc_addrs  =:tbd_dvc_addrs,
+               tbd_dvc_stts   =:tbd_dvc_stts,
+               tbd_use_stts   =:tbd_use_stts,
+               tbd_type       =:tbd_type,
+	           tbd_relation_service =:tbd_relation_service,
+               tbd_seq        =:tbd_seq,
+               tbd_updt_user_id =:tbd_updt_user_id,
+               tbd_updt_time  =SYSDATE,
+               tbd_cus_number =:cus
+            WHERE
+               tbd_id          =:id
+		</sql>
+	</item>
+	<item id="insert_talkback">
+		<seq>tbk_talkback_base_dtls@tbd_id</seq>
+		<sql>
+			INSERT INTO  tbk_talkback_base_dtls
+				(	
+				   tbd_id		  ,
+				   tbd_area_id    ,
+	               tbd_name  	  ,
+	               tbd_other_id	  ,	
+	               tbd_brand	  ,	
+	               tbd_mian_id	  ,	
+	               tbd_child_id	  ,	
+	               tbd_ip	      ,	 
+	               tbd_port       ,
+	               tbd_dept_id	  ,	
+	               tbd_room_id    ,
+	               tbd_dvc_addrs  ,
+	               tbd_dvc_stts   ,
+	               tbd_use_stts   ,
+	               tbd_type       ,
+	               tbd_relation_service,
+	               tbd_seq        ,
+	               tbd_crte_user_id ,
+	               tbd_updt_user_id ,
+	               tbd_cus_number   ,
+	               tbd_crte_time    ,
+	               tbd_updt_time
+				)
+				VALUES(
+				   :tbd_id	          ,
+				   :tbd_area_id       ,
+	               :name  	          ,
+	               :tbd_other_id      ,	
+	               :tbd_brand         ,
+	               :tbd_mian_id	      ,	
+	               :tbd_child_id	  ,	
+	               :tbd_ip            ,
+	               :tbd_port	      ,	
+	               :dep	              ,	 
+	               :tbd_room_id	      ,	
+	               :tbd_dvc_addrs 	  ,
+	               :tbd_dvc_stts      ,
+	               :tbd_use_stts      ,
+	               :tbd_type		  ,
+	               :tbd_relation_service,
+	               :tbd_id           ,
+	               :tbd_crte_user_id  ,
+	               :tbd_updt_user_id  ,
+	               :cus               ,
+	               SYSDATE            ,
+	               SYSDATE
+				)
+		</sql>
+	</item>
+	<item id="delete_talkback_byid">
+		<sql>
+			DELETE FROM tbk_talkback_base_dtls
+			WHERE tbd_id=:id
+		</sql>
+	</item>
+	<item id="query_org_dep_talkback" desc="根据用户当前所属类别查询机构">
+		<sql>
+			SELECT 
+				odd_id AS id,
+				odd_name AS name,
+				odd_parent_id  AS pid,
+				'image/org.png'	   AS icon
+			FROM sys_org_dept_dtls 
+		
+			WHERE odd_use = 1 
+			START WITH odd_id= :org
+			CONNECT BY PRIOR odd_id=odd_parent_id
+			ORDER BY  odd_seq
+		</sql>
+	</item>
+	
+</sqlItem>

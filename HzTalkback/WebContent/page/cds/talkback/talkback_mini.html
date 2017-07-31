@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="css/common.css" >
+<style>
+</style>
+<body style="width:300px;">
+<div class="vbox box-con talkback_mini">
+	<div class="vbox hz-col-1">
+		<div class="hbox hz-col-1">
+				<div class="vbox" style="height:180px;">
+					<div class="hbox">
+						<label> 
+							<span>会话类型:</span> <span v-text="call_type"></span>
+						</label>					
+						<label v-if="call_id"> 
+							<span>会话ID:</span> <span v-text="call_id"></span>
+						</label>
+					</div>
+					<div class="hz-col-9" id="form" style="overflow: auto;">
+						<div v-if="call_info.length==0" class="empty">暂无信息</div>
+						<div class="col-sm-12" v-cloak>
+							<div v-for="info in call_info">
+								<div>
+									<span v-text="info.msg"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>				
+			</div>
+			<div class="bottom">
+				<div class="buttons">	
+						<a v-if="call_type != '直呼'" class="hbtn btn_primary btn_large" @click="call_close()"><span>挂断</span></a>
+						<a v-if="call_type == '直呼'" class="hbtn btn_primary btn_large" @click="stopTalk()"><span>挂断(直呼)</span></a>
+						<a class="hbtn btn_primary btn_large" @click="close()"><span>关闭</span></a>
+			    </div>			
+			</div>
+	</div>
+</div>
+<script>
+	requirejs(['hz/cds/talkback/itcTalkback']);
+</script>
+</body>

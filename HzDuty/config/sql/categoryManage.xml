@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_dty_category_base_dtls" desc="值班类别基础信息新增">
+		<seq>cbd_id@id</seq>
+		<sql>
+			INSERT  INTO
+				dty_category_base_dtls
+				(	
+					cbd_cus_number,
+					cbd_id,	
+					cbd_name,
+					cbd_seq,
+					cbd_crte_time,
+					cbd_crte_user_id,
+					cbd_updt_time,
+					cbd_updt_user_id
+				)
+			values(
+					:cbd_cus_number,
+					:id,
+					:cbd_name,
+					:cbd_seq,
+					SYSDATE,
+					:cbd_crte_user_id,
+					SYSDATE,
+					:cbd_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+    <item id="insert_dty_category_dept_rltn" desc="值班类别使用部门新增">
+		<sql>
+			INSERT  INTO
+				dty_category_dept_rltn
+				(	
+					cdr_cus_number,
+					cdr_category_id,	
+					cdr_dept_id
+				)
+			values(
+					:cdr_cus_number,
+					:cdr_category_id,
+					:cdr_dept_id
+        		)
+		</sql>
+    </item>
+    
+	<item id="select_dty_category_base_dtls" desc="值班类别基础信息查询">
+    	<sql>
+			SELECT cbd_cus_number,
+				   cbd_id,
+				   cbd_name,
+				   cbd_seq,
+				   cbd_crte_time,
+				   cbd_crte_user_id,
+				   cbd_updt_time,
+				   cbd_updt_user_id
+			  FROM dty_category_base_dtls
+		</sql>
+		<where id="0">
+			WHERE cbd_cus_number = ?
+		</where>
+		<order id="0">
+			ORDER BY cbd_id
+		</order>
+	</item>
+	
+	<item id="select_dty_category_base_tree" desc="值班类别基础树信息查询">
+    	<sql>
+			SELECT cbd_id AS id,
+				   cbd_name AS name,
+				   cbd_seq
+			  FROM dty_category_base_dtls
+		</sql>
+		<where id="0">
+			WHERE cbd_cus_number = ?
+		</where>
+		<order id="0">
+			ORDER BY cbd_seq
+		</order>
+	</item>
+	
+	<item id="select_dty_category_dept_rltn" desc="值班类别使用部门查询">
+    	<sql>
+			SELECT cdr_cus_number,
+				   cdr_category_id,
+				   cdr_dept_id
+			  FROM dty_category_dept_rltn
+		</sql>
+		<where id="0">
+			WHERE cdr_cus_number = ?
+		</where>
+		<where id="1">
+			WHERE cdr_cus_number = ? AND
+				  cdr_dept_id = ?
+		</where>
+		<order id="0">
+			ORDER BY cdr_category_id
+		</order>
+	</item>
+	
+	<item id="update_dty_category_base_dtls" desc="值班类别基础信息修改">
+    	<sql>
+			UPDATE dty_category_base_dtls SET
+				   cbd_name = :cbd_name,
+				   cbd_updt_time = SYSDATE,
+				   cbd_updt_user_id = :cbd_updt_user_id
+			 WHERE cbd_cus_number = :cbd_cus_number AND
+			 	   cbd_id = :cbd_id
+		</sql>
+	</item>
+	
+	<item id="update_dty_category_base_orderId" desc="值班类别排序序号修改">
+    	<sql>
+			UPDATE dty_category_base_dtls SET
+				   cbd_seq = :cbd_seq
+			 WHERE cbd_cus_number = :cbd_cus_number AND
+			 	   cbd_id = :cbd_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_category_base_dtls" desc="值班类别基础信息删除">
+    	<sql>
+			DELETE dty_category_base_dtls
+			 WHERE cbd_cus_number = :cbd_cus_number AND
+			 	   cbd_id = :cbd_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_category_dept_rltn" desc="值班类别使用部门删除">
+    	<sql>
+			DELETE dty_category_dept_rltn
+			 WHERE cdr_cus_number = :cdr_cus_number AND
+			 	   cdr_category_id = :cdr_category_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_category_job" desc="值班类别岗位基础信息删除">
+    	<sql>
+			DELETE dty_job_base_dtls
+			 WHERE jbd_cus_number = :jbd_cus_number AND
+			 	   jbd_category_id = :jbd_category_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_category_shift" desc="值班类别班次基础信息删除">
+    	<sql>
+			DELETE dty_shift_base_dtls
+			 WHERE sbd_cus_number = :sbd_cus_number AND
+			 	   sbd_category_id = :sbd_category_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_category_mode" desc="值班模板基础信息删除">
+    	<sql>
+			DELETE dty_mode_base_dtls
+			 WHERE mbd_cus_number = :mbd_cus_number AND
+			 	   mbd_category_id = :mbd_category_id
+		</sql>
+	</item>
+	
+	<item id="select_dty_org_dept" desc="根据机构号查询所有部门">
+		<sql>
+			SELECT odd_id AS id,
+				   odd_name AS name,
+				   odd_parent_id  AS pid
+			  FROM sys_org_dept_dtls 
+		</sql>
+		<where id="0">
+			START WITH odd_id= ? and odd_use = 1 
+			CONNECT BY PRIOR odd_id=odd_parent_id
+		</where>
+		<order id="0">
+			ORDER BY odd_seq
+		</order>
+    </item>
+</sqlItem>

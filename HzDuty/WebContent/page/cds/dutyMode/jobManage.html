@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" charset="utf-8">
+<link rel="stylesheet" href="../../../css/common.css" charset="utf-8">
+<style>
+</style>
+<div class="vbox box-con" id="jobManage">
+	<div class="hbox hz-col-1">
+		<div class="left-con vbox" >
+			<div class="hz-col-1 vbox">
+				<div class="input icon" >
+				  	<input v-model="searchTree" placeholder="输入关键字搜索">
+				  	<span class="find"></span>
+			    </div>
+			    <div class="hz-col-1" style="overflow:auto">
+					<ul id="categoryJobTree" class="ztree"></ul>	    	
+		   		</div>
+			</div>
+		</div>
+		<div class="hz-col-1 right-con" >
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">所属类别</label>
+	      	    	<div class="col-sm-9">
+		      	   		<input class="form-control" v-model="job.category_name" type="text" readonly placeholder="所属类别">
+				    	<input type="hidden" v-model="job.jbd_category_id">
+	          		</div>
+	          	</div>
+				<div class="form-group">
+			    	<label  class="col-sm-2 control-label">岗位名称</label>
+	      	    	<div class="col-sm-9">
+		      	   		<input class="form-control" v-model="job.jbd_name" type="text" placeholder="岗位名称" maxlength="15">
+	          		</div>
+	          	</div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons">
+			<a class="hbtn btn_primary btn_large save"><i class="btn_icon icon_save"></i><span>保存</span></a>
+			<a class="hbtn btn_primary btn_large del"><i class="btn_icon icon_del"></i><span>删除</span></a>		  
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["../js/src/cds/dutyMode/jobManage"]);
+</script>

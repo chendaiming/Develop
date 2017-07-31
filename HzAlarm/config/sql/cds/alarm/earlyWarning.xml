@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_early_warning_info" desc="新增预警信息">
+		<seq>alt_early_warning_info@ewi_id</seq>
+		<sql>
+			INSERT INTO alt_early_warning_info
+				(
+				ewi_cus_number,
+				ewi_id,
+				ewi_title,
+				ewi_level,
+				ewi_content,
+				ewi_crte_uid,
+				ewi_crte_time
+				)
+			VALUES
+				(
+				:ewi_cus_number,
+				:ewi_id,
+				:ewi_title,
+				:ewi_level,
+				:ewi_content,
+				:ewi_crte_uid,
+				 sysdate
+				)
+		</sql>
+	</item>
+	
+	<item id="query_early_warning_info" desc="查询预警信息">
+		<const key="ewi_leve">warningw_level</const>
+		<const key="ewi_name">ewi_status</const>
+		<const key="ewi_crte_name" module="user"></const>
+		<const key="ewi_publish_name" module="user"></const>
+		<sql>
+			SELECT
+				ewi_cus_number,
+				ewi_id,
+				ewi_title,
+				ewi_content,
+				ewi_level,
+				ewi_level as ewi_leve,
+				ewi_status,
+				ewi_status as ewi_name,
+				ewi_crte_uid,
+				ewi_crte_uid AS ewi_crte_name,
+				to_char(ewi_crte_time,'yyyy-mm-dd hh24:mi:ss') as ewi_crte_time,
+				ewi_publish_uid,
+				ewi_publish_uid AS ewi_publish_name,
+				ewi_updt_uid,
+				to_char(ewi_updt_time,'yyyy-mm-dd hh24:mi:ss') as ewi_updt_time,
+				to_char(ewi_publish_time,'yyyy-mm-dd hh24:mi:ss') as ewi_publish_time
+
+			FROM
+				alt_early_warning_info
+			WHERE ewi_cus_number = :cus_number
+		</sql>
+		<where id="0">
+			AND
+			(:ewi_title    IS  NULL  OR  ewi_title LIKE CONCAT('%',CONCAT(:ewi_title,'%')))
+			AND
+			(:ewi_content    IS  NULL  OR  ewi_content LIKE CONCAT('%',CONCAT(:ewi_content,'%')))
+			AND
+			(:ewi_level    IS  NULL  OR  ewi_level LIKE CONCAT('%',CONCAT(:ewi_level,'%')))
+		</where>
+		<where id="1">
+			OR
+			(:ewi_title    IS  NULL  OR  ewi_title LIKE CONCAT('%',CONCAT(:ewi_title,'%')))
+			OR
+			(:ewi_content    IS  NULL  OR  ewi_content LIKE CONCAT('%',CONCAT(:ewi_content,'%')))
+			OR
+			(:ewi_level    IS  NULL  OR  ewi_level LIKE CONCAT('%',CONCAT(:ewi_level,'%')))
+		</where>
+	</item>
+
+
+
+	<item id="updata_early_warning_info" desc="修改预警信息">
+		<sql>
+
+			UPDATE alt_early_warning_info
+			SET ewi_cus_number = :ewi_cus_number,
+			ewi_id         = :ewi_id,
+			ewi_title      = :ewi_title,
+			ewi_level      = :ewi_level,
+			ewi_content    = :ewi_content,
+			ewi_status     = :ewi_status
+
+
+		</sql>
+		<where id="0">
+			WHERE ewi_cus_number = :ewi_cus_number
+			AND ewi_id = :ewi_id
+		</where>
+	</item>
+	<item id="updata_early_warning_info_status1" desc="修改预警信息状态发布">
+		<sql>
+			UPDATE alt_early_warning_info
+			SET ewi_status       = :ewi_status,
+				ewi_publish_uid  = :ewi_publish_uid,
+				ewi_publish_time = sysdate
+			WHERE ewi_cus_number = :ewi_cus_number
+			AND ewi_id = :ewi_id
+
+		</sql>
+	</item>
+	<item id="updata_early_warning_info_status2" desc="修改预警信息状态撤销">
+		<sql>
+			UPDATE alt_early_warning_info
+				SET ewi_status = :ewi_status
+			WHERE ewi_cus_number = :ewi_cus_number
+				AND ewi_id = :ewi_id
+		</sql>
+	</item>
+	<item id="delete_early_warning_info" desc="删除预警信息">
+		<sql>
+			DELETE FROM alt_early_warning_info
+			WHERE ewi_cus_number = :ewi_cus_number
+			AND ewi_id = :ewi_id
+		</sql>
+
+	</item>
+</sqlItem>

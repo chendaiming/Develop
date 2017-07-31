@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>添加模型组件</title>
+	<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+	<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+	<link rel="stylesheet" href="../../../css/common.css" >
+<style>
+	.component-con{
+		padding:12px;
+		width:450px;
+		height:280px;
+	}
+</style>
+</head>
+<body>
+	<div id="compon" class="vbox  box-con">
+		<div class="hbox hz-col-1" style="padding:18px 10px;">
+			<form class="form-horizontal">
+				<div class="col-xs-12" >
+					<div class="form-group">
+						<label class="col-xs-3 control-label">选择模型</label>
+						<div class="col-xs-9">
+							<hz-select
+								tip="选择模型"
+								:id.sync="model.mcl_mci_id"
+								:selected.sync="selectModel"
+								sqlid="select_model_component_list"
+								whereid=0
+								orderid=0
+								:params=[model.mcl_cus_number]
+							/>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12" >
+					<div class="form-group">
+						<label class="col-xs-3 control-label">组件名称</label>
+						<div class="col-xs-9">
+							<input class="form-control" v-model="model.mcl_load_name" type="text" placeholder="组件名称">
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="col-xs-3 control-label">加载模式</label>
+						<div class="col-xs-9">
+							<hz-select
+								tip="加载模式"
+								:id.sync="model.mcl_load_mode"
+								code="MCI_LOAD_MODEL"
+							/>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12" v-if="model.mcl_load_mode==2">
+					<div class="form-group">
+						<label class="col-xs-3 control-label">视角</label>
+						<div class="col-xs-9">
+							<input class="form-control" v-model="model.mcl_view_name" readonly type="text" placeholder="视角菜单名称">
+							<input type="hidden" v-model="model.mpi_view_id">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="bottom">
+			<div class="bottom-label" v-cloak>
+				按<span>[Ctrl + 左键]</span>在地图上进行添加
+			</div>
+			<div class="buttons" >
+				<a @click="save" class="hbtn btn_primary btn_large"><i class="btn_icon icon_save"></i><span>保存</span></a>
+				<a @click="reset" class="hbtn btn_primary btn_large"><span>重置</span></a>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../../js/require.js"></script>
+	<script type="text/javascript" src="../../../js/config.js"></script>
+	<script>
+		requirejs(['hz/map/modelComponent/addModelComponent'])
+	</script>
+</body>
+</html>

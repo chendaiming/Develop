@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>首页</title>
+  <style>
+  	html, body {margin:0; padding:0; width:100%; height:100%; color:white !important; overflow: hidden;}
+  	body {background:url('css/image/login-bg.png') center center no-repeat; background-size: 100% 100%;}
+
+	.pst-abs {position: absolute;}
+	.frosted-glass {width: 100%;height: 100%;background: inherit;-webkit-filter: blur(3px);-moz-filter: blur(3px);-ms-filter: blur(3px);-o-filter: blur(3px); filter: blur(3px);filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=3, MakeShadow=false);}
+
+	.login-header {
+		position: absolute;
+		top: 0px;
+		left: 50%;
+		width: 1248px;
+		height: 50px;
+		margin-left: -624px;
+		background:url('css/image/login-h.png') center center no-repeat;
+		background-size: 100% 100%;
+		z-index: 5;
+	}
+
+	.line-x {top: 45%; left: 50%; margin-top: -125px; margin-left: -315px; width: 631px; height: 167px; z-index: 98;}
+	.line-x >div {width: 300%; height: 100%; background-color: rgba(255,255,255,.2);}
+	.line-x >div.line-left {right: 0px; margin-right: 100%;}
+	.line-x >div.line-right {left: 0px; margin-left: 100%;}
+
+	@keyframes loginBox {
+		0% {box-shadow: 0 0 10px #0ff;}
+		100% {box-shadow: 0 0 35px #0232ff;}
+	}
+	.login-box {
+		animation: loginBox 2s linear 0s infinite alternate;
+		top: 45%;
+	    left: 50%;
+		margin-top: -200px;
+	    margin-left: -315px;
+		width: 631px;
+	    height: 377px;
+	    background: url(css/image/login/login_box.png) -3px -6px no-repeat;
+	    border-radius: 5px;
+	    z-index: 99;
+	}
+
+	@keyframes loginMsg {
+		0% {color: #f2f2f2; text-shadow: 0 0 1px #ffce00;}
+		100% {color: #f2f2f2; text-shadow: 0 0 10px #ffce00;}
+	}
+	.login-msg {animation: loginMsg 2s linear 0s infinite alternate; margin-top: 45px; text-align: center;}
+	.login-msg >span {margin-left: 25px; padding: 5px 0 5px 35px; background: url(css/image/login/tip.png) 0 center no-repeat;}
+
+	.login-user {width: 200px; height: 200px; top: 75px; left: 55px;}
+	.login-user div {position: absolute; width: 100%; height: 100%;}
+	.login-txt {width: 280px; left: 45%; top: 90px;}
+	.login-txt >input.txt {margin: 10px 0; padding: 10px 5px 10px 35px; width: 235px; border: 0px none; border-radius: 3px;background: url(css/image/login/user.png) 10px center no-repeat rgba(255, 255, 255, .9); font-size: 1em;}
+	.login-txt >input.txt.pwd {background-image: url(css/image/login/pwd.png);}
+	.login-txt >input.txt:focus {outline:none; background-color: rgb(255,255,255); box-shadow: 0 0 10px #ffce00;}
+	.login-txt >input.btn {margin-top: 10px; padding: 10px; width: 275px; border: none; background-color: #FF9800; border-radius: 3px; box-shadow: 1px 5px 20px -5px rgba(0,0,0,0.4); color: #fff; cursor: pointer; outline:none;}
+	.login-txt >input.btn:focus,
+	.login-txt >input.btn:hover {text-shadow: 1px 0px 5px #ffce00, 0px 1px 5px #ffce00, -1px 0px 5px #ffce00, 0px -1px 5px #ffce00; border: 1px solid #000;}
+
+	@keyframes blurOne {
+		from {transform: rotateZ(10deg);}
+		to {transform: rotateZ(350deg);}
+	}
+
+	.login-user div.blue-one {
+		animation: blurOne 8s linear 0s infinite alternate;
+		background: url(css/image/login/blue_one.png) 34px 35px no-repeat;
+	    border-radius: 100px;
+	    z-index: 5;
+	}
+
+	@keyframes blurTwo {
+		from {transform: rotateZ(360deg);}
+		to {transform: rotateZ(20deg);}
+	}
+
+	.login-user div.blue-two {
+		animation: blurTwo 8s linear 0s infinite alternate;
+		background: url(css/image/login/blue_two.png) 30px 29px no-repeat;
+	    z-index: 4;
+	}
+
+	@keyframes blurThree {
+		from {transform: rotateZ(10deg);}
+		to {transform: rotateZ(360deg);}
+	}
+	.login-user div.blue-three {
+		animation: blurThree 8s linear 0s infinite alternate;
+		background: url(css/image/login/blue_three.png) 13px 13px no-repeat;
+	    z-index: 3;
+	}
+
+	@keyframes blurFour {
+		from {transform: rotateZ(360deg);}
+		to {transform: rotateZ(10deg);}
+	}
+
+	.login-user div.blue-four {
+		animation: blurFour 8s linear 0s infinite alternate;
+		background: url(css/image/login/blue_four.png) 84px 5px no-repeat, url(css/image/login/blue_five.png) 5px 104px no-repeat;
+		border-radius: 100px;
+	    z-index: 2;
+	}
+	.login-user .user-img {background: url(css/image/login/login_user.png) center center no-repeat;}
+  </style>
+</head>
+
+<body>
+	<div class="login-header"></div>
+	<div class="frosted-glass"></div>
+
+	<div class="pst-abs line-x">
+		<div class="pst-abs line-left"></div>
+		<div class="pst-abs line-right"></div>
+	</div>
+
+	<div class="pst-abs login-box">
+		<div class="login-msg" style="display: none;"><span></span></div>
+		<div class="pst-abs login-txt">
+			<input class="txt user" type="text" id="username" placeholder="用户名"/>
+			<input class="txt pwd" type="password" id="password" placeholder="密码"/>
+			<input class="btn" id="btnLogin" type="button" value="登录">
+		</div>
+		<div class="pst-abs login-user">
+			<div class="blue-one"></div>
+			<div class="blue-two"></div>
+			<div class="blue-three"></div>
+			<div class="blue-four"></div>
+			<div class="user-img"></div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="libs/jquery/jquery.js"></script>
+<script type="text/javascript" src="js/require.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript">
+  requirejs(['hz/login/login']);
+</script>
+</html>

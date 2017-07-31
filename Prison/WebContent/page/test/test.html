@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../css/common.css" charset="utf-8">
+<title>Insert title here</title>
+
+</head>
+<body>
+	<!-- bootstrap的布局系统  默认将可见区域分为 12 列
+			 使用时 若是 1:1 则是 6 : 6 对应的样式还需分为 pc和 mobile（PC的为 col-xs-*）
+	 -->
+	<form class="form-horizontal" role="form" style="padding:15px;width:100%">
+		<!-- 两列排列 -->
+		<div class="row">
+		  <div class="col-xs-6">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label" for="formGroupInputLarge">民警姓名</label>
+			    <div class="col-xs-9">
+			      <input class="form-control" type="text" placeholder="请输入姓名">
+			    </div>
+			  </div>
+		  </div>
+		  <div class="col-xs-6">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label" for="formGroupInputSmall">民警电话</label>
+			    <div class="col-xs-9">
+			      <input class="form-control" type="text"  placeholder="请输入电话">
+			    </div>
+			  </div>
+		  </div>
+		</div>
+		<!-- 两列排列结束 -->
+		<!-- 三列排列结束 -->
+		<div class="row">
+		  <div class="col-xs-4">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label" for="formGroupInputLarge">姓名</label>
+			    <div class="col-xs-9">
+			      <input class="form-control" type="text" placeholder="请输入姓名">
+			    </div>
+			  </div>
+		  </div>
+		  <div class="col-xs-4">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label" for="formGroupInputSmall">电话</label>
+			    <div class="col-xs-9">
+			      <input class="form-control" type="text"  placeholder="请输入电话">
+			    </div>
+			  </div>
+		  </div>
+		  <div class="col-xs-4">
+			  <div class="form-group">
+			    <label class="col-xs-3 control-label" for="formGroupInputSmall">年龄</label>
+			    <div class="col-xs-9">
+			      <input class="form-control" type="text"  placeholder="请输入年龄">
+			    </div>
+			  </div>
+		  </div>
+		</div>
+		<!-- 三列排列结束 -->
+		<div style="padding:15px;">
+	 		<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_save"></i><span>保存</span></a>
+	 		<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_add"></i><span>新增</span></a>
+	 		<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_edit"></i><span>修改</span></a>
+	 		<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_del"></i><span>删除</span></a>
+	 		<a class="hbtn btn_primary btn_mini"><i class="btn_icon icon_search"></i><span>查询</span></a>
+	    </div>
+	</form>
+</body>
+</html>

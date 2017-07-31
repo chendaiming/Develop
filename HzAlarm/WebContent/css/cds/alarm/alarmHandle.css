@@ -1,0 +1,856 @@
+@CHARSET "UTF-8";
+
+.alarm-handle {
+	
+}
+.alarm-handle .ah-close {
+	position: absolute;
+	top: 10px;
+	right: 3px;
+	width: 16px;
+	height: 16px;
+	background: url(../../../css/frm/images/close.png) center center no-repeat;
+	background-size: 100% 100%;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.alarm-handle .ah-title {
+	padding: 7px 0 0 32px;
+    font-size: 16px;
+}
+
+.alarm-handle .ah-alert-box {
+	position: absolute;
+	top: 8%;
+	left: 50%;
+	margin-left: -260px;
+	box-sizing: border-box;
+	width: 520px;
+	height: 120px;
+	border: 5px solid rgba(243, 170, 6, 0.8);
+	background-color: rgba(29, 34, 37, 0.9);
+	box-shadow: 0 0 15px rgba(228, 141, 9, 0.8);
+	z-index: 99999;
+	display: none;
+}
+.alarm-handle .ah-alert-box.one {
+	border: 5px solid rgba(228, 42, 0, 0.8);
+	box-shadow: 0 0 15px rgba(245, 137, 3, 0.8);
+}
+.alarm-handle .ah-alert-box.two {
+	border: 5px solid rgba(243, 170, 6, 0.8);
+	box-shadow: 0 0 15px rgba(228, 141, 9, 0.8);
+}
+.alarm-handle .ah-alert-box >.ah-close {
+	top: 5px;
+	right: 5px;
+}
+.alarm-handle .ah-alert-box >.ah-tab {
+    display: table;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+.alarm-handle .ah-alert-box >.ah-tab >.ah-tab-cell {
+	display: table-cell;
+   	vertical-align: middle;
+}
+.alarm-handle .ah-alert-box >.ah-tab >.ah-tab-cell >.ah-alert-text {
+	padding: 5px;
+    font-size: 2em;
+}
+
+.alarm-handle .ah-alert-box >.ah-handle-btns {
+	position: absolute;
+    right: 0px;
+	margin: -26px 5px 0px 5px;
+	z-index: 1;
+}
+.alarm-handle .ah-alert-box >.ah-handle-btns >.ah-handle-btn {
+    padding: 0px 7px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    background: #366492;
+    cursor: pointer;
+}
+.alarm-handle .ah-alert-box >.ah-handle-btns >.ah-handle-btn:hover {
+	color: #ff8000;
+}
+
+
+.alarm-handle .camera-alarm {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 472px;
+    height: 315px;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 4;
+    border: 2px solid #FFF;
+    padding: 1px;
+    margin-top: -157px;
+    margin-left: -236px;
+    display: none;
+}
+
+.alarm-handle .camera-alarm img.camera-img {
+	width: 100%;
+    height: 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+.alarm-handle .camera-alarm a.camera-close {
+	position: absolute;
+    background: url(../../icons/close.png) center center no-repeat rgba(0,0,0,.9);
+    top: -16px;
+    right: -16px;
+    z-index: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 25px;
+    border: 2px solid #FFF;
+    cursor: pointer;
+}
+
+
+
+.alarm-handle .ah-info-box {
+	position: absolute;
+	top: 10px;
+	width: 300px;
+	height: 350px;
+	background: url(../../../css/images/panel.png) 0 0 no-repeat;
+	z-index: 1;
+	display: none;
+}
+
+.alarm-handle .ah-page-btn {
+	position: absolute;
+    top: 175px;
+    width: 20px;
+    height: 20px;
+    background: url(images/select.png) center center no-repeat;
+    cursor: pointer;
+    opacity: 0.6;
+    z-index: 9;
+}
+.alarm-handle .ah-prve-page {
+    left: 11px;
+	transform: rotate(90deg);
+}
+.alarm-handle .ah-prve-page:hover {
+	opacity: 1;
+}
+.alarm-handle .ah-next-page {
+    right: 15px;
+    transform: rotate(-90deg);
+}
+.alarm-handle .ah-next-page:hover {
+	opacity: 1;
+}
+.alarm-handle .ah-info-box.ah-police-box {
+	left: 50px;
+}
+
+.alarm-handle .ah-info-box.ah-prisoner-box {
+	right: 50px;
+}
+.alarm-handle .ah-info-box.ah-record-box {
+	top:auto;
+	bottom: 50px;
+	left: 50px;
+}
+.alarm-handle .ah-info-box.ah-link-box {
+	top:auto;
+	bottom: 50px;
+	right: 50px;
+}
+.alarm-handle .ah-info-box .ah-info-body {
+	position: absolute;
+	width: 255px;
+	height: 110px;
+	top: 66px;
+    right: 23px;
+}
+
+
+.alarm-handle .ah-info-body span {
+	padding-top: 10px;
+    padding-left: 5px;
+}
+.alarm-handle .ah-info-body .ah-info-img {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 110px;
+	height: 110px;
+	border-radius: 55px;
+	border: 1px solid #123C87;
+	background-color: rgba(102,102,102,0.5);
+	overflow: hidden;
+}
+.alarm-handle .ah-info-body .ah-info-img >img {
+	width: 102%;
+	height: 102%;
+	margin-top: -1%;
+    margin-left: -1%;
+}
+.alarm-handle .ah-info-body .ah-info-img >img.ah-empty-img {
+	background: url(../../../css/images/police.png) center center no-repeat;
+}
+
+.alarm-handle .ah-info-body .ah-info-line {
+	position: absolute;
+	width: 125px;
+	height: 30px;
+	text-align: left;
+	border-bottom: 1px solid #123C87;
+}
+.alarm-handle .ah-info-body .ah-info-line >span {
+	white-space: nowrap;
+}
+.alarm-handle .ah-info-body .ah-info-1 {
+	top: 10px;
+	right: 108px;
+}
+.alarm-handle .ah-info-body .ah-info-2 {
+    top: 40px;
+    right: 108px;
+    width: 125px;
+}
+.alarm-handle .ah-info-body .ah-info-3 {
+    top: 70px;
+    right: 87px;
+    width: 146px;
+}
+
+.alarm-handle .ah-info-body.btm {
+	top: 185px;
+    left: 22px;
+}
+.alarm-handle .ah-info-body.btm .ah-info-img {
+	left: 0px;
+}
+.alarm-handle .ah-info-body.btm .ah-info-1 {
+	left: 108px;
+}
+.alarm-handle .ah-info-body.btm .ah-info-2 {
+    left: 108px;
+}
+.alarm-handle .ah-info-body.btm .ah-info-3 {
+    left: 87px;
+}
+.alarm-handle .ah-info-body.btm .ah-info-3 span {
+	padding-left: 25px;
+}
+
+
+.alarm-handle ul.ah-record-info {
+	margin-top: 25px;
+	margin-left: 30px;
+	list-style: none;
+}
+
+.alarm-handle ul.ah-record-info li {
+	padding: 6px 10px 6px 0px;
+}
+
+
+.alarm-handle .ah-link-type-box {
+	position: absolute;
+	top: 30px;
+	right: -81px;
+	width: 80px;
+}
+
+
+.alarm-handle ul.ah-link-type-list {
+	list-style: none;
+	width: 100%;
+	border: 1px solid rgb(255,153,0);
+}
+.alarm-handle ul.ah-link-type-list li {
+	padding: 5px 0px;
+	text-align: center;
+	background-color: rgba(0,0,0,.58);
+	cursor: pointer;
+}
+.alarm-handle ul.ah-link-type-list li:hover {
+	background-color: rgba(0,0,0,.8);
+}
+.alarm-handle ul.ah-link-type-list li.selected {
+	background-color: rgba(255,153,0,.8);
+}
+
+
+.alarm-handle .ah-link-cameras,
+.alarm-handle .ah-link-doors,
+.alarm-handle .ah-link-talks,
+.alarm-handle .ah-link-broadcasts,
+.alarm-handle .ah-link-screens {
+	margin: 70px 15px 10px 12px;
+}
+
+
+
+.alarm-handle .al-door-func {
+	float: left;
+	border: 1px solid #FF9900;
+	margin-bottom: 5px;
+	background-color: rgba(25, 24, 24, 0.48);
+}
+.alarm-handle .al-door-func li {
+	float: left;
+	width: 75px;
+	padding: 3px 0px;
+	text-align: center;
+}
+.alarm-handle .al-door-func li:hover {
+	background-color: rgba(255, 155, 0, 0.5);
+}
+
+
+
+
+
+
+
+
+.alarm-handle .ah-link-top, 
+.alarm-handle .ah-link-ctr, 
+.alarm-handle .ah-link-btm,
+.alarm-handle .ah-link-door {
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.alarm-handle .ah-link-top {
+	padding-left: 15px;
+	padding-right: 15px;
+	height: 32px;
+}
+
+.alarm-handle .ah-lt-line {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border-bottom: 1px solid rgba(228,228,228,.9);
+}
+.alarm-handle .ah-ltl-selected,
+.alarm-handle .ah-ltl-hoving {
+	position: absolute;
+	bottom: -2px;
+	width: 44px;
+	height: 30px;
+	border-bottom: 3px solid rgba(255,155,51,.9);
+	background: linear-gradient(to top, rgba(255,155,51,0.2) 0%, rgba(0,0,0,0) 30%);
+	display: none;
+}
+.alarm-handle .ah-ltl-hoving {
+	border-bottom: 3px solid rgba(25,158,216,.9);
+	background: linear-gradient(to top, rgba(25,158,216,0.25) 0%, rgba(0,0,0,0) 30%);
+}
+.alarm-handle .ah-ltl-content {
+	position: absolute;
+    text-align: center;
+    width: 100%;
+}
+.alarm-handle .ah-ltl-ul {
+	list-style: none;
+	margin: 0 auto;
+}
+.alarm-handle .ah-ltl-ul >li {
+	float: left;
+	padding: 6px 11px 0px 11px;
+	color: #33CCFF;
+}
+.alarm-handle .ah-ltl-ul >li >span {
+	cursor: pointer;
+}
+.alarm-handle .ah-ltl-ul >li.selected {
+	color: #DC940B;
+    padding-top: 4px;
+    font-weight: bold;
+}
+
+
+
+.alarm-handle .ah-link-door {
+	padding: 8px 20px 0 36px;
+	height: 245px;
+	overflow-y: auto;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box {
+	position: relative;
+	display: table;
+	float: left;
+	width: 100px;
+    height: 100px;
+    margin: 7px;
+    border: 1px dotted rgba(255, 255, 255, 0.3);
+    background: rgba(208, 208, 208, 0.06);
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-span {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-box {
+	margin: 0 auto;
+    width: 65px;
+    height: 65px;
+    background: rgba(51,102,153,.9);
+    border: 1px solid;
+    border-radius: 5px;
+    box-shadow: 3px 3px 5px rgba(0,0,0,.5);
+    overflow: hidden;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-a {
+	display: table;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-a .ah-db-text {
+	display: table-cell;
+	vertical-align: middle;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-a:hover {
+	
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-circle {
+	position: absolute;
+	width: 100%;
+    height: 100%;
+    border: 6px solid rgba(255,255,255,.8);
+    border-radius: 50px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,.7);
+    display: none;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-btns {
+	position: absolute;
+	width: 100%;
+    height: 100%;
+    border: 6px solid rgba(0,0,0,0);
+    z-index: 1;
+    display: none;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-btns .ah-db-btn {
+	width: 30px;
+    height: 30px;
+    background: rgba(51,102,153,.95);
+    border-radius: 15px;
+    position: absolute;
+    text-align: center;
+    line-height: 30px;
+    cursor: pointer;
+    color: #FFF;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-btns .ah-db-btn.left-top {
+	top: 5px; left: -12px;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-btns .ah-db-btn.right-top {
+	top: 5px; right: -12px;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-btns .ah-db-btn.bottom-center {
+	bottom: -18px; left: 28px;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box .ah-db-btns .ah-db-btn:hover {
+	box-shadow: 0 0 8px rgba(197, 173, 7, .8);
+}
+
+.alarm-handle .ah-link-ctr .ah-dvc-box.selected {
+	border-color: rgba(0,0,0,0);
+    background: transparent;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box.selected .ah-db-box {
+	width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    border: 0;
+    color: rgb(255,165,0);
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box.selected .ah-db-circle,
+.alarm-handle .ah-link-ctr .ah-dvc-box.selected .ah-db-btns {
+	display: block;
+}
+.alarm-handle .ah-link-ctr .ah-dvc-box.selected .ah-db-a .ah-db-text {
+	font-size: 12px;
+}
+.alarm-handle .ah-link-btm {
+	position: absolute;
+    bottom: 0px;
+	height: 45px;
+	padding: 0 30px;
+}
+.alarm-handle .ah-link-btm .ah-lt-line {
+    border: 0 none;
+    border-top: 1px solid rgba(228,228,228,0.9);
+}
+.alarm-handle .ah-link-btm .ah-ltl-selected,
+.alarm-handle .ah-link-btm .ah-ltl-hoving {
+    bottom: auto;
+    top: -2px;
+    width: 70px;
+    border: 0px;
+    border-top: 3px solid rgba(255,155,51,.9);
+    background: linear-gradient(to bottom, rgba(255,155,51,0.2) 0%, rgba(0,0,0,0) 30%);
+}
+.alarm-handle .ah-link-btm .ah-ltl-hoving {
+    border-top: 3px solid rgba(25,158,216,.9);
+	background: linear-gradient(to bottom, rgba(25,158,216,0.25) 0%, rgba(0,0,0,0) 40%);
+}
+.alarm-handle .ah-link-btm .ah-ltl-ul li {
+	padding: 0px 8px;
+}
+.alarm-handle .ah-link-btm .ah-ltl-ul li.hover {
+/*     padding-top: 2px; */
+    color: #DC940B;
+}
+
+span.ah-red-title {
+	font-weight: bold;
+	color: #DC940B;
+}
+
+.alarm-handle .ah-link-camera {
+	padding: 8px 20px 0 30px;
+    height: 245px;
+    overflow-y: auto;
+}
+
+
+.alarm-handle .ah-link-camera .ah-lc-box {
+	position: relative;
+    float: left;
+    margin: 5px;
+    width: 70px;
+    height: 70px;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-tl {
+    padding: 6px;
+    position: absolute;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-tr {
+    padding: 6px;
+    position: absolute;
+    right: 0px;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-bl {
+    padding: 6px;
+    position: absolute;
+    bottom: 0px;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-br {
+    padding: 6px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-camera {
+	margin: 5px;
+	width: 60px;
+    height: 60px;
+    background: rgba(51,102,153,.9);
+    border: 1px solid;
+    border-radius: 5px;
+    box-shadow: 3px 3px 5px rgba(0,0,0,.5);
+    text-align: center;
+    overflow: hidden;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-camera .ah-lcb-a {
+	display: table;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    color: #F2F2F2;
+}
+.alarm-handle .ah-link-camera .ah-lc-box .ah-lcb-camera .ah-lcb-a .ah-lcb-text {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.alarm-handle .ah-link-camera .ah-lc-box.selected {
+	color: #DC940B;
+}
+.alarm-handle .ah-link-camera .ah-lc-box.selected .ah-lcb-camera .ah-lcb-a {
+	color: #DC940B;
+}
+.alarm-handle .ah-link-camera .ah-lc-box.selected .ah-lcb-tl {
+	border-left: 1px solid #33CCFF;
+    border-top: 1px solid #33CCFF;
+}
+.alarm-handle .ah-link-camera .ah-lc-box.selected .ah-lcb-tr {
+	border-right: 1px solid #33CCFF;
+    border-top: 1px solid #33CCFF;
+}
+.alarm-handle .ah-link-camera .ah-lc-box.selected .ah-lcb-bl {
+	border-left: 1px solid #33CCFF;
+    border-bottom: 1px solid #33CCFF;
+}
+.alarm-handle .ah-link-camera .ah-lc-box.selected .ah-lcb-br {
+	border-right: 1px solid #33CCFF;
+    border-bottom: 1px solid #33CCFF;
+}
+
+.alarm-handle .ah-ltl-layout {
+	position: absolute;
+    bottom: 45px;
+    right: 0px;
+    padding: 15px 25px;
+    width: 452px;
+    height: 342px;
+    background: rgba(0, 0, 0, 0.83);
+    border: 1px solid #0671ad;
+    display: none;
+}
+
+.alarm-handle .ah-ltl-layout .ah-layout-close {
+	position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    background: url(images/close.png) center center no-repeat;
+    background-size: 100%;
+    cursor: pointer;
+}
+.alarm-handle .ah-ltl-layout .ah-layout-nth {
+	margin: 5px 10px;
+    width: 80px;
+    height: 50px;
+    text-align: center;
+    margin-bottom: 25px;
+    cursor: pointer;
+}
+.alarm-handle .ah-ltl-layout .ah-layout-nth >img {
+	width: 80px;
+    height: 50px;
+}
+.alarm-handle .ah-ltl-layout .ah-layout-nth.selected >span,
+.alarm-handle .ah-ltl-layout .ah-layout-nth:hover >span {
+	color: #DC940B;
+}
+.alarm-handle .ah-ltl-layout .ah-layout-nth.selected >img {
+	box-shadow: 0 0 15px #ecb009;
+    background: #ecb009;
+}
+
+
+.alarm-handle .ah-link-talk {
+	padding: 8px 20px 0 36px;
+	height: 245px;
+	overflow-y: auto;
+}
+
+
+.alarm-handle .ah-link-broadcast {
+	padding: 8px 20px 0 36px;
+	height: 245px;
+	overflow-y: auto;
+}
+
+
+.alarm-handle .ah-link-broadcast .ah-broadcast-list {
+	position: relative;
+    padding: 7px 0px;
+}
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node {
+	position: relative;
+	padding: 5px 10px 5px 18px;
+}
+
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node >.node-icon {
+    position: absolute;
+    left: -8px;
+    top: 8px;
+    height: 100%;
+    margin-right: 15px;
+}
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node >.node-text {
+	cursor: pointer;
+}
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node >.node-icon >a {
+	width: 14px;
+    height: 14px;
+    border: 1px solid #c0c0c0;
+    border-radius: 20px;
+}
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node.selected {
+	color: #33CCFF;
+}
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node.selected >.node-icon {
+}
+.alarm-handle .ah-link-broadcast .ah-broadcast-list >.node.selected >.node-icon >a {
+/*     background: #ef9d03; */
+    background: radial-gradient(#33CCFF 50%, rgba(0, 0, 255, 0) 60%);
+}
+
+
+.alarm-handle .ah-broadcast-btns {
+	margin-top: 5px;
+}
+.alarm-handle .ah-broadcast-btns li >span.btn_large {
+	border-radius: 15px;
+    height: auto;
+    padding: 1px 6px 2px 8px;
+    line-height: normal;
+    margin: 0px;
+}
+.alarm-handle .ah-broadcast-btns a.btn_large {
+	border-radius: 18px;
+    height: auto;
+    line-height: normal;
+    padding: 7px 7px 7px 11px;
+}
+.alarm-handle .ah-broadcast-btns a.btn_large >i.glyphicon {
+
+}
+
+.alarm-handle .popover {
+	background-color: rgba(0, 0, 0, 0.39);
+	border: 1px solid rgb(0, 118, 173);
+}
+
+.alarm-handle .popover.top>.arrow:after {
+	border-top-color: rgba(0, 0, 0, 0);
+}
+
+.alarm-handle .popover.top>.arrow {
+	border-top-color: rgb(0, 118, 173);
+	border-bottom-color: rgb(0, 118, 173);
+}
+
+.alarm-handle .popover-content {
+	font-size: 13px;
+	font-weight: 400;
+	color: #4fc3e1;
+	padding: 0;
+}
+
+.alarm-handle .popover-content li {
+	line-height: 10px;
+	cursor: pointer;
+	padding: 8px 8px;
+	border-radius: 5px;
+}
+
+.alarm-handle .mode-popover {
+	font-size: 13px;
+}
+
+.alarm-handle .popover-content li:focus, .popover-content li:hover {
+	background-color: #0076ad;
+	border-color: #0076ad;
+	color: #fff;
+}
+
+.alarm-handle .popover.top {
+	margin-top: -15px;
+}
+
+/* ================== 音量条样式 ==================== */
+input[type=range]:focus {
+	outline: none;
+}
+
+input[type=range] {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	height: 10px;
+	width: 10px;
+	background: #55D5F6;
+	border-radius: 5px;
+	border: solid 0.125em rgba(205, 224, 230, 0.5); /*设置边框*/
+}
+
+input[type=range]::-moz-range-thumb {
+	-moz-appearance: none;
+	height: 10px;
+	width: 10px;
+	background: #55D5F6;
+	border-radius: 5px;
+	border: solid 0.125em rgba(205, 224, 230, 0.5); /*设置边框*/
+}
+
+input[type=range]::-moz-range-track {
+	-moz-appearance: none;
+}
+/* ================== 音量条样式 ==================== */
+
+
+
+.alarm-handle .ah-handle-box {
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -144px;
+    margin-left: -235px;
+    z-index: 9;
+	box-sizing: border-box;
+	padding: 20px;
+	width: 470px;
+	height: 288px;
+	border: 1px solid #F2F2F2;
+    background: rgba(30, 48, 67, 0.89);
+}
+
+.alarm-handle .ah-handle-box .ah-flow-dtls {
+    margin: 8px 5px 8px 0;
+    padding-left: 18px;
+    height: 175px;
+    overflow-y: auto;
+}
+
+.alarm-handle .ah-handle-box .ah-flow-steps {
+	position: relative;
+	border-left: 1px dotted rgba(218, 218, 218, 0.5);
+    padding: 7px 0px;
+}
+.alarm-handle .ah-handle-box .ah-flow-steps >.step {
+	position: relative;
+	padding: 5px 10px 5px 20px;
+}
+
+.alarm-handle .ah-handle-box .ah-flow-steps >.step >.step-icon {
+    position: absolute;
+    left: -8px;
+    top: 7px;
+    height: 100%;
+    margin-right: 15px;
+}
+.alarm-handle .ah-handle-box .ah-flow-steps >.step >.step-icon >a {
+	width: 15px;
+    height: 15px;
+    background: #ef9d03;
+    border-radius: 20px;
+}
+
+.alarm-handle .ah-handle-box .ah-flow-btns {
+	text-align: right;
+}
+.alarm-handle .ah-handle-box .ah-handle-textarea {
+	padding: 5px;
+	width: 100%;
+	height: 90px;
+    max-width: 100%;
+    max-height: 85px;
+    line-height: 16px;
+    border: 1px solid #FFF;
+    margin: 2px 0 5px 0;
+}
+
+.alarm-handle span.txt-tip {
+	position: absolute;
+    right: 5px;
+    bottom: 2px;
+    font-size: 1em;
+    color: #ffd600;
+}

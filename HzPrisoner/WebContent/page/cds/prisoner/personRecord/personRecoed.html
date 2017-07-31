@@ -1,0 +1,119 @@
+<link rel="stylesheet" href="../../../../libs/bootstrap/css/bootstrap.min.css" charset="utf-8">
+<link rel="stylesheet" href="../../../../css/common.css" >
+<link rel="stylesheet" href="../../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<style>
+.item{
+	margin-top:10px;
+}
+.item>label{
+	width: 90px; text-align: right;
+	color: rgb(96, 255, 168);
+}
+.item>span{
+	margin-left: 10px;
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    width:32%;
+    top: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 15px;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+.combox_panel{
+	max-height:90px;
+}
+.condition>input:focus {outline: none;} 
+ul.cardlist{
+    position: absolute;
+    width: 100%;
+    overflow:auto;
+    top: 54px;
+    bottom: 0px;
+}
+.conditionslid{
+	max-height:180px ;
+}
+.hz-col-1.line::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    height: 100%;
+    border-style: dotted;
+    border: 1px dashed #699ead;
+    margin-left: -3px;
+    margin-top:44px;
+}
+div.condition div{
+	border:none;
+}
+div.condition input{
+	border-radius: 15px;
+}
+ul.dateline:before{
+	content:none;
+}
+</style>
+<div class="vbox box-con" id="recordFace">
+	<div class="hz-col-1 line" style="overflow:hidden;position:relative;" >
+		<div class="condition" style="right:67%;">
+			<hz-date 
+				      		tip="选择查询日期" 
+				      		:val.sync="multi.day"
+				      	 	format=Y-m-d
+				      	/>
+		</div>
+		<div class="condition" style="right:1%">
+			  <hz-select 
+					  			tip="人员类型" 
+					  			code="person_type"
+					  			:id.sync="multi['status']"
+					  			/>
+		</div>
+		<div class="condition" style="right:34%"><input placeholder="人员搜索" class="find" id="dep" v-model="multi['p']" style="background-image:url(../../../../css/images/plc.png)"></div>
+		<div  v-if="records.length==0" class="empty" style="padding-top:44px">暂无记录</div>
+		<ul v-cloak class="dateline cardlist" id="scroll">
+			<li  v-for="record in records">
+				<div>
+					<p class="item"><label >人物:</label><span > {{record.plc}}</span></p>
+					<p class="item"><label >人物类型:</label><span > {{record.status}}</span></p>
+					<p class="item"><label >识别地点:</label><span >{{record.address}}</span></p>
+					<p class="item"><label >识别时间:</label><span >{{record.rtime}}</span></p>
+				</div>
+				<span></span>
+				<a>{{record.rtime}}</a>
+			</li>
+		</ul>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons" style="float:left">
+				<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>导出</span></a>
+		</div>
+		<div class="buttons"  @click="clera">
+				<a  class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>重置</span></a>
+		</div>
+		<div class="buttons"  @click="query">
+				<a  class="hbtn btn_primary btn_large"><i class="btn_icon icon_del"></i><span>查询</span></a>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../../../../js/require.js"></script>
+<script type="text/javascript" src="../../../../js/config.js"></script>
+<script>
+require(["hz/cds/prisoner/personRecord/personRecord"])
+</script>

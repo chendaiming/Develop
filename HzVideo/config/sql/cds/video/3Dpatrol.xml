@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+    <item id="select_patrol_list" desc="初始巡视化列表,公共线路和个人线路">
+    	<sql>
+    		SELECT 
+    			rpm_route_id id,
+    			rpm_route_name name,
+    			rpm_search_ridus radius,
+    			rpm_speed    speed,
+    			rpm_view_height height
+    		FROM
+    			map_route_patrol_master
+    		WHERE 
+    			rpm_cus_number=:cus
+    		AND	
+    			(rpm_user_range=0 OR  (rpm_user_range=1 AND  rpm_create_uid=:user))
+    	</sql>
+    </item>
+    <item id="delete_patrol_batch" desc="删除线路">
+    	<sql>
+    		DELETE FROM 
+    			map_route_patrol_master
+    		WHERE 
+    			rpm_route_id=:routeid
+    	</sql>
+    </item>
+    <item id="delete_pos_batch" desc="删除线路上的点位">
+    	<sql>
+    		DELETE FROM map_route_point_dtls
+    		WHERE
+    			rpd_route_id=:routeid
+    	</sql>
+    </item>
+    <item id="delete_device_batch" desc="删除线路上的摄像机">
+    	<sql>
+    		DELETE FROM map_route_device_link
+    		WHERE
+    			rdl_route_id=:routeid
+    	</sql>
+    </item>
+    
+    <item id="insert_patrol_sql" desc="线路插入">
+    <seq>map_route_patrol_master@rpm_route_id</seq>
+    	<sql>
+    		INSERT INTO 
+    			map_route_patrol_master
+    			(
+   				   rpm_cus_number       ,
+				   rpm_route_id         ,
+				   rpm_route_name       ,
+				   rpm_user_range       ,
+				   rpm_create_uid       ,
+				   rpm_update_uid		,
+				   rpm_create_datetime  ,
+				   rpm_update_datetime	,
+				   rpm_search_ridus     ,
+    			   rpm_speed            ,
+    			   rpm_view_height
+    			)
+    		values(
+    			   :cus,
+    			   :rpm_route_id,
+    			   :name,
+    			   :type,
+    			   :user,
+    			   :user,
+    			   sysdate,
+    			   sysdate,
+    			   :radius,
+    			   :speed,
+    			   :height
+    		)
+    	</sql>
+    </item>
+    <item id="insert_pos_sql" desc="线路的点位">
+    	 <sql>
+    	 	INSERT INTO 
+    	 		map_route_point_dtls
+    	 		(
+    	 		   rpd_cus_number       ,
+				   rpd_route_id         ,
+				   rpd_pos_x            ,
+				   rpd_pos_y            ,
+				   rpd_pos_z            ,
+				   rpd_seq
+    	 		)
+    	 	VALUES(
+    	 		:cus,
+    	 		:routeid,
+    	 		:x,
+    	 		:y,
+    	 		:z,
+    	 		:seq
+    	 	)
+    	 </sql>
+    </item>
+    <item id="insert_device_sql" desc="线路上的摄像机保存">
+    	<sql>
+    	INSERT INTO 
+    		map_route_device_link
+    	(
+    	    rdl_cus_number      ,
+		    rdl_route_id        ,
+		    rdl_dvc_type        ,
+		    rdl_dvc_id          ,
+		    rdl_pos_x			,
+		    rdl_pos_y			,
+		    rdl_pos_z			,
+		    rdl_dvc_seq			,
+		    rdl_link_type
+    	)
+    		VALUES
+    	(
+    		:cus      ,
+		    :routeid  ,
+		    :type     ,
+		    :device   ,
+		    :x		  ,
+		    :y		  ,
+		    :z		  ,
+		    :seq	  ,
+		    :rdl_link_type
+    	)
+    	</sql>
+    </item>
+    
+    <item id="update_patrol_sql" desc="更新线路">
+    	<sql>
+    		UPDATE 
+    			   map_route_patrol_master
+    		SET
+				   rpm_route_name=:name ,
+				   rpm_user_range=:type ,
+				   rpm_update_uid=:user ,
+				   rpm_search_ridus=:radius ,
+    			   rpm_speed=:speed,
+    			   rpm_view_height=:height,
+				   rpm_update_datetime =sysdate 
+			WHERE
+				   rpm_route_id=:routeid
+    	</sql>
+    </item>
+    
+    <item id="select_device_query" desc="获取线路上的设备">
+    	<sql>
+    		SELECT  
+    			rdl_dvc_id  device,
+    			cbd_name	name,
+    			rdl_link_type	,
+   			    rdl_pos_x	x	,
+		        rdl_pos_y	y	,
+		        rdl_pos_z   z	,
+		        rdl_dvc_type	type
+    		FROM	
+    			map_route_device_link
+    		INNER join
+    			cmr_camera_base_dtls
+    		ON
+    			cbd_id=rdl_dvc_id
+    		WHERE
+    			rdl_route_id=:routid
+    		AND
+    			rdl_dvc_type=1
+    		ORDER BY 	rdl_dvc_seq
+    	</sql>
+    </item>
+    <item id="select_pos_query" desc="获取线路的点位">
+    	<sql>
+    		SELECT
+			   rpd_pos_x          x ,
+			   rpd_pos_y          y ,
+			   rpd_pos_z     	  z
+			FROM 
+				map_route_point_dtls
+			WHERE 
+				rpd_route_id=:routid   
+			ORDER BY
+				rpd_seq   
+    	</sql>
+    </item>
+    
+    <item id="select_vedio_by_permission">
+    	<sql>
+			SELECT '1-'||odd_id id,
+			       '1-'||odd_parent_id pid,
+			       odd_name name,
+			       'org.png' icon,
+			      	null    icontype,
+			       odd_id  cus,
+			       -1      type,
+			       odd_seq seq,
+			       'true' nocheck
+			  FROM sys_org_dept_dtls
+			 WHERE level &lt; :type
+			 START WITH odd_id = :org
+			CONNECT BY PRIOR odd_id = odd_parent_id
+			UNION ALL
+			
+			SELECT id, pid, name, icon,icontype, cus, type, seq ,nocheck
+			  FROM (SELECT '1-'||abd_area_id id,
+			               '1-'||abd_parent_id pid,
+			               abd_area_name name,
+			               'area.png' icon,
+			               null		  icontype,
+			               abd_cus_number cus,
+			               0              type,
+			               abd_seq        seq,
+			               'true' nocheck
+			          FROM com_area_base_dtls
+			        UNION ALL
+			        SELECT ''||cbd_id id,
+			               '1-'||cbd_area_id pid,
+			               cbd_name name,
+			               DECODE(cbd_type,
+			                      0,
+			                      'qiang.png',
+			                      1,
+			                      'all_ball.png',
+			                      2,
+			                      'video.png') icon,
+			               cbd_type  	  icontype,
+			               cbd_cus_number cus,
+			               1 type,
+			               cbd_seq seq,
+			               'false' nocheck
+			          FROM cmr_camera_base_dtls t
+			          LEFT JOIN com_dvc_auth_set s
+			            ON das_dvc_id = cbd_id
+			            AND
+                        	das_user_id=:user
+			           AND das_dvc_type = 1
+			         WHERE s.das_dvc_id is null
+			        ) t
+		</sql>
+		<where id="0" desc="非省局用户登录">
+			 WHERE t.org=:org
+		</where>
+		<order id="0">
+			 ORDER　By seq
+		</order>
+    </item>
+</sqlItem>

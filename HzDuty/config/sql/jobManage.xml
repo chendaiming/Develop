@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>
+	<item id="insert_dty_job_base_dtls" desc="值班岗位基础信息新增">
+		<seq>jbd_id@id</seq>
+		<sql>
+			INSERT  INTO
+				dty_job_base_dtls
+				(	
+					jbd_cus_number,
+					jbd_id,
+					jbd_name,
+					jbd_category_id,
+					jbd_seq,
+					jbd_crte_time,
+					jbd_crte_user_id,
+					jbd_updt_time,
+					jbd_updt_user_id
+				)
+			values(
+					:jbd_cus_number,
+					:id,
+					:jbd_name,
+					:jbd_category_id,
+					:jbd_seq,
+					SYSDATE,
+					:jbd_crte_user_id,
+					SYSDATE,
+					:jbd_updt_user_id
+        		)
+		</sql>
+    </item>
+    
+	<item id="select_dty_category_job_tree" desc="根据机构号查询所有类别岗位树信息">
+		<sql>
+			SELECT 'c_' || cbd_id AS id,
+				   cbd_name AS name,
+				   null AS pid,
+				   'category' AS type,
+				   0 AS seq
+			  FROM (SELECT * FROM dty_category_base_dtls WHERE cbd_cus_number = ? ORDER BY cbd_seq)
+			  UNION ALL
+			SELECT 'j_' || jbd_id AS id,
+				   jbd_name AS name,
+				   'c_' || jbd_category_id  AS pid,
+				   'job' AS type,
+				   jbd_seq AS seq
+			  FROM (SELECT * FROM dty_job_base_dtls WHERE jbd_cus_number = ? ORDER BY jbd_seq)
+		</sql>
+    </item>
+    
+    <item id="update_dty_job_base_dtls" desc="值班岗位基础信息修改">
+    	<sql>
+			UPDATE dty_job_base_dtls SET
+				   jbd_name = :jbd_name,
+				   jbd_updt_time = SYSDATE,
+				   jbd_updt_user_id = :jbd_updt_user_id
+			 WHERE jbd_cus_number = :jbd_cus_number AND
+			 	   jbd_id = :jbd_id
+		</sql>
+	</item>
+	
+	<item id="update_dty_job_base_orderId" desc="值班岗位排序序号修改">
+    	<sql>
+			UPDATE dty_job_base_dtls SET
+				   jbd_seq = :jbd_seq
+			 WHERE jbd_cus_number = :jbd_cus_number AND
+			 	   jbd_id = :jbd_id
+		</sql>
+	</item>
+	
+	<item id="delete_dty_job_base_dtls" desc="值班岗位基础信息删除">
+    	<sql>
+			DELETE dty_job_base_dtls
+			 WHERE jbd_cus_number = :jbd_cus_number AND
+			 	   jbd_id = :jbd_id
+		</sql>
+	</item>
+</sqlItem>

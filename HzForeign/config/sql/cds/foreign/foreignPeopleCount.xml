@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlItem>   
+	<item id="select_foreign_people_inout_count"  desc="外来人员在监信息情况查询">
+		<sql>
+			SELECT COUNT(fpd_record_id) AS count,
+			       fpd_check_stts     AS stts,
+			       fpd_inout_stts     AS flag           
+			  FROM fpc_foreign_people_dtls
+			 WHERE fpd_cus_number = ?
+			   AND TRUNC(fpd_updt_time) = TRUNC(SYSDATE)
+		  GROUP BY fpd_check_stts,fpd_inout_stts
+		</sql>
+	</item>
+
+	<item id="select_foreign_people_base_info"  desc="外来人员数据统计页面查询">
+		<const key="sex">pbd_sex</const>
+		<const key="fpd_id_card_type">fpd_id_card_type</const>
+		<const key="fpd_check_stts">check_stts</const>
+		<const key="fpd_inout_stts">inout_stts</const>
+		<sql>
+			SELECT DISTINCT   
+		           fpd_record_id AS id, 
+		           fpd_cus_number,   
+		           fpd_rgstr_id, 
+		           fpd_id_card_type, 
+		           fpd_id_card_code,
+		           fpd_people_name,
+		           fpd_sex_indc AS sex,
+		           fpd_age,
+		           fpd_phone,
+		           fpd_direction,
+		           fpd_accmpny_police_id,
+		           fpd_accmpny_police_name,
+		           fpd_oprtn_police_id,
+		           fpd_oprtn_police_name,
+		           fpd_oprtn_time,
+		           fpd_reason,
+		           fpd_check_stts,
+		           fpd_inout_stts,
+		           pbd_photo_path AS image
+		      FROM fpc_foreign_people_dtls
+		 LEFT JOIN FPC_PHOTO_BASE_DTLS
+		        ON (pbd_record_id = fpd_record_id) 
+		        AND pbd_foreign_type = 1
+			    AND pbd_photo_type = 1                   
+		</sql>
+		<where id="0" remark="根据在监状态查询">
+			WHERE fpd_cus_number = ?
+			  AND fpd_inout_stts = ?
+			  AND TRUNC(fpd_updt_time) = TRUNC(SYSDATE) 
+		</where>
+		<where id="1" remark="根据在监状态查询(待进人员)">
+			WHERE fpd_cus_number = ?
+			  AND fpd_inout_stts IS NULL
+			  AND TRUNC(fpd_updt_time) = TRUNC(SYSDATE)
+		</where>		
+		<where id="2" remark="查询全监狱">
+			WHERE pbd_cus_number = ?
+			  AND TRUNC(fpd_updt_time) = TRUNC(SYSDATE)
+		</where>
+	    <where id="3" remark="时段查询">
+	    LEFT JOIN fpc_foreign_pc_inout
+	           ON (fpi_record_id = fpd_record_id)
+			WHERE fpd_cus_number = ?
+		      AND TRUNC(fpi_inout_time) = TRUNC(SYSDATE)	
+			  AND TO_CHAR(fpi_inout_time,'HH24') = ?
+		</where>
+		<order id="0">
+		  ORDER BY  fpd_record_id 
+		</order> 		
+	</item> 
+
+	<item id="select_foreign_people_inout_infobyid"  desc="查询外来人员进出记录">
+		<const key="flag">pir_inout_flag</const>
+		<sql>
+			SELECT TO_CHAR(fpi_inout_time,'YYYY-MM-DD HH24:MI:SS') AS time,
+			       fpi_inout_flag AS flag
+			 FROM  fpc_foreign_pc_inout
+		</sql>
+		<where id="0" remark="">
+			WHERE  fpi_cus_number = ?
+			  AND  fpi_record_id = ?
+			  AND  fpi_foreign_type = 1
+			  AND  TRUNC(fpi_inout_time) = TRUNC(SYSDATE) 
+		</where>
+		<order id="0">
+		  ORDER BY  fpi_inout_time 
+		</order> 				
+	</item>	
+	
+	<item id="select_foreign_people_inout_count_groupbytime"  desc="外来人员各时段在监人数情况查询">
+		<sql>
+		SELECT   COUNT(DISTINCT fpi_record_id)  AS count,
+		         TO_CHAR(fpi_inout_time,'HH24') AS hours
+		  FROM   fpc_foreign_pc_inout 
+		</sql>
+		<where id="0" remark="">
+			WHERE  fpi_cus_number = ?
+			  AND  fpi_foreign_type = 1
+			  AND  fpi_inout_flag = 0
+			  AND  TRUNC(fpi_inout_time) = TRUNC(SYSDATE)   
+		</where>
+		<order id="0">
+	     GROUP BY    TO_CHAR(fpi_inout_time,'HH24')
+		 ORDER BY    TO_CHAR(fpi_inout_time,'HH24')
+		</order>		
+	</item>		 
+</sqlItem>

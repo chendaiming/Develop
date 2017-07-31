@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 在xml配置中SQL语句里面不能用'<'，所以'<' 用 '#' 号表示，在加载时会自动转换过来 -->
+<sqlItem>
+
+	 <item id="query_role_group" desc="机构树和分类树">
+		<sql>
+			WITH t AS
+			 (SELECT DISTINCT '' || (agd_id) id,
+			                  agd_name name,
+			                  agd_parent_id pid,
+			                  'true' nocheck,
+			                  agd_key flag,
+			                  '0' type,
+			                  'roles.png' icon
+			    FROM sys_auth_group_dtls
+			   WHERE agd_type = 2
+		<where id="0">
+		      START WITH agd_id = (SELECT agd_id FROM sys_auth_group_dtls WHERE agd_key = :agkey)
+			  CONNECT BY PRIOR agd_id = agd_parent_id
+		</where>
+		<order id="0">
+			)
+			SELECT '1-' || rbd_id id,
+			       rbd_name name,
+			       rbd_group_id pid,
+			       null nocheck,
+			       null flag,
+			       '1' type,
+			       'role.png' icon
+			  FROM sys_role_base_dtls
+			 INNER JOIN t
+			    ON rbd_group_id = t.id
+			UNION ALL
+			SELECT id, name, pid, nocheck, flag, type, icon FROM t
+		</order>	 
+		</sql>
+    </item>
+    
+    
+    
+    <item id="insert_role_role" desc="角色插入">
+    <seq>SYS_ROLE_BASE_DTLS@rbd_id</seq>
+		<sql>
+			INSERT INTO 
+				sys_role_base_dtls
+				(
+				rbd_cus_number,
+				rbd_id,
+				rbd_name,
+				rbd_group_id,
+				rbd_seq,
+				rbd_use,
+				rbd_crte_user_id,
+				rbd_crte_time
+				)
+			VALUES(
+				:cusNumber,
+				:rbd_id,
+				:name,
+				:pid,
+				:rbd_id,
+				:use,
+				:rbd_crte_user_id,
+				sysdate
+			)
+		</sql>
+    </item>
+     <item id="update_role_role" desc="角色插入">
+		<sql>
+			UPDATE 
+				sys_role_base_dtls
+			SET
+				rbd_name       =:name,
+				rbd_group_id   =:pid,
+				rbd_use		   =:use,
+				rbd_updt_user_id=:rbd_updt_user_id,
+				rbd_updt_time   =sysdate
+			WHERE
+				rbd_id         =:id
+		</sql>
+    </item>
+    
+    <item id="delete_role_role" desc="角色插入">
+		<sql>
+			DELETE FROM 
+				sys_role_base_dtls  
+			WHERE 
+				rbd_id=:id	
+		</sql>
+    </item>
+    
+    <item id="query_role_menu" desc="查询角色拥有的操作">
+		<sql>
+			SELECT 
+				fmd_id          id
+			FROM  
+				sys_func_menu_dtls 
+			INNER JOIN
+				(SELECT rfr_func_id FROM sys_role_func_rltn WHERE rfr_role_id=:rfr_role_id) t
+			ON 
+				t.rfr_func_id=fmd_id
+		</sql>
+    </item>
+    
+    <item id="query_menu_role" desc="查询角色拥有的操作">
+		<sql>
+			SELECT 
+			   fmd_id          id,
+			   fmd_parent_id   pid,
+			   fmd_name        name
+			FROM 
+				sys_func_menu_dtls
+		</sql>
+		<where id="0">
+			WHERE FMD_SYS_FUNC !=1
+			START WITH fmd_parent_id=-1 and fmd_use=1
+              CONNECT  BY PRIOR  fmd_id = fmd_parent_id
+		</where>
+    </item>
+    
+    <item id="insert_role_menu" desc="插入角色拥有的操作">
+		<sql>
+			INSERT INTO 
+				sys_role_func_rltn 
+				(	
+					rfr_role_id,
+					rfr_func_id
+				)
+			VALUES
+				(
+				:rfr_role_id,
+				:rfr_func_id
+				)
+		</sql>
+    </item>
+    
+     <item id="delete_role_menu" desc="插入角色拥有的操作">
+		<sql>
+			DELETE FROM
+					 sys_role_func_rltn
+			WHERE 
+				rfr_role_id=:id
+		</sql>
+    </item>
+    
+</sqlItem>

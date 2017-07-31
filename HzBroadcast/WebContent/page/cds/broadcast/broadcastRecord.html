@@ -1,0 +1,97 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../../libs/bootstrap/css/bootstrap.min.css" >
+<link rel="stylesheet" href="../../../css/common.css" >
+<link rel="stylesheet" href="../../../libs/hzdate/css/dark.css" >
+<link rel="stylesheet" href="../../../libs/ztree/css/zTreeStyle/zTreeStyle.css" >
+<title></title>
+<style>
+.item{
+	margin-top:10px;
+}
+.item>label{
+	width: 100px; text-align: right;
+}
+.item>span{
+	margin-left: 10px;
+}
+.condition{
+ 	border: 1px solid rgba(31, 105, 158, 0.22);
+    height: 34px;
+    top: 10px;
+    right: 10px;
+    position: absolute;
+    background: rgba(59, 70, 77, 0.62);
+    color: rgb(255, 255, 255);
+    z-index: 100;
+    border-radius: 20px;
+}
+.condition>input{
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: right;
+    position: initial;
+    cursor: auto;
+    color:white;
+    padding-left: 15px;
+}
+.combox_panel{
+	max-height:90px;
+}
+.condition>input:focus {outline: none;} 
+</style>
+<body>
+<div class="vbox box-con"  >
+	<div class="hbox hz-col-1" id="record">
+		<div class="left-con hz-col-2 vbox">
+				<div class="hz-col-1" style="margin-right:6px;">
+				  		<hz-date 
+					      		tip="选择开始时段" 
+					      		:val.sync="today"
+					      	 	format=Y-m-d
+					      	/>
+			    </div>
+				<div class="hz-col-9 vbox" style="color:rgb(255, 255, 255);">
+					<div class="hz-col-1 item" v-cloak>
+						总记录：<label style="color:green;padding-left: 5px;width:auto">{{total}}</label>
+					</div>
+					<div class="hz-col-4" id="areaTable"></div>
+					<div class="hz-col-5" id="timeTable"></div>
+				</div>
+		</div>
+		<div class="condition">
+				<input @keyup.enter="serch()" placeholder="输入后按下回车搜索" class="find"
+					id="search" v-model="search" title="可根据播放地点和文件名进行搜索"/>
+		</div>
+		<div class="hz-col-5" style="overflow:auto;margin-top:20px;" id="scroll">
+		<div  v-if="records.length==0" class="empty">暂无记录</div>
+		<ul v-cloak class="dateline" >
+			<li v-for="record in records">
+				<div>
+					<p class="item"><label >音频文件:</label><span >{{record.bsr_play_file}}</span></p>
+					<p class="item"><label >播放地点:</label><span >{{record.abd_area_name}}</span></p>
+					<p class="item"><label >播放模式:</label><span >{{record.bsr_play_type_name}}</span></p>
+				</div>
+				<span style=""></span>
+				<a>{{record.time}}</a>
+			</li>
+		</ul>
+			<div id="testd" style="color:#fff;height:10px;"></div>
+		</div>
+	</div>
+	
+	<div class="bottom">
+		<div class="buttons" style="float:left">
+			<a class="hbtn btn_primary btn_large"><i class="btn_icon icon_download"></i><span>导出</span></a>
+		</div>
+	</div> 
+</div>
+</body>
+<script type="text/javascript" src="../../../js/require.js"></script>
+<script type="text/javascript" src="../../../js/config.js"></script>
+<script>
+requirejs(["hz/cds/broadcast/broadcastRecord"]);
+</script>
+</html>
